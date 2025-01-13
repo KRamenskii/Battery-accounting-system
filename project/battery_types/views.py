@@ -1,3 +1,4 @@
 from django.shortcuts import render
 
-# Create your views here.
+def battery_types(request):
+    return render(request, 'battery_types/battery_types.html')

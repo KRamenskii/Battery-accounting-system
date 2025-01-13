@@ -1,0 +1,32 @@
+<ul class="nav-menu">
+    <li>
+        <a href="{% url 'personal_account' %}" class="{% if request.resolver_match.url_name == 'personal_account' %}active{% endif %}">
+            <i class="bi bi-person-square"></i>
+            <span>Личный кабинет</span>
+        </a>
+    </li>
+    <li>
+        <a href="#">
+            <i class="bi bi-house-fill"></i>
+            <span>Главная</span>
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'journal_home' %}" class="{% if request.resolver_match.url_name == 'journal_home' %}active{% endif %}">
+            <i class="bi bi-book-half"></i>
+            <span>Журнал</span>
+        </a>
+    </li>
+    <li>
+        <a href="#">
+            <i class="bi bi-calendar2-event"></i>
+            <span>События</span>
+        </a>
+    </li>
+    <li>
+        <a href="{% url 'battery_types' %}" class="{% if request.resolver_match.url_name == 'battery_types' %}active{% endif %}">
+            <i class="bi bi-battery-full"></i>
+            <span>Типы АКБ</span>
+        </a>
+    </li>
+</ul>

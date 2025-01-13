@@ -58,7 +58,7 @@ ROOT_URLCONF = 'battery_management.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -66,6 +66,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'battery_management.context_processors.add_show_menu',
             ],
         },
     },
@@ -131,3 +132,11 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 AUTH_USER_MODEL = 'accounts.CustomUser'
+
+STATICFILES_DIRS = [
+    BASE_DIR / "static"
+]
+
+LOGIN_URL = '/auth/login/'  # Указывает URL страницы входа
+LOGIN_REDIRECT_URL = '/accounts/personal_account/'  # Перенаправление после успешного входа
+LOGOUT_REDIRECT_URL = '/auth/login/'  # Перенаправление после выхода (можно изменить)

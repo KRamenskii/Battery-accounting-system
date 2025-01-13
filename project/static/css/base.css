@@ -1,0 +1,61 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    overflow-y: auto;
+    background: #dff2ff;
+    display: flex;
+    justify-content: flex-start; /* Равномерное распределение элементов по горизонтали */
+    align-items: flex-start; /* Выравнивание элементов по верхнему краю */
+    min-height: 100vh; /* Обеспечивает минимальную высоту страницы на 100% */
+    margin: 0;
+}
+
+/* Стили для бокового меню */
+aside {
+    display: flex; /* Переводим в flex-контейнер */
+    background: rgba(40, 102, 163, 0.8); /* Прозрачный фон */
+    width: 10%; /* Ширина меню */
+    height: 100vh; /* Полная высота экрана */
+    color: #dff2ff; /* Цвет текста */
+    display: flex;
+    flex-direction: column;
+    justify-content: center; /* Центрирование по вертикали */
+    align-items: center; /* Центрирование по горизонтали */
+}
+
+/* Стили для списка навигации */
+.nav-menu {
+    list-style: none; /* Убираем маркеры */
+    padding: 0;
+    margin: 0;
+    width: 100%; /* Полная ширина */
+    text-align: center; /* Центрируем текст */
+}
+
+/* Стили для элементов списка */
+.nav-menu li {
+    margin-bottom: 40px; /* Отступ между элементами */
+}
+
+.nav-menu a {
+    text-decoration: none; /* Убираем подчеркивание */
+    color: #dff2ff70; /* Цвет текста */
+    font-size: 16px; /* Размер текста */
+    display: flex;
+    flex-direction: column; /* Размещаем иконку сверху, текст снизу */
+    align-items: center; /* Центрируем содержимое */
+}
+
+/* Стили для иконок */
+.nav-menu i {
+    font-size: 40px; /* Размер иконок */
+    margin-bottom: 5px; /* Отступ между иконкой и текстом */
+}
+
+.nav-menu a.active {
+    color: #dff2ff;
+    font-weight: bold;
+}
+
+.nav-menu a.active i {
+    color: #dff2ff;
+}
