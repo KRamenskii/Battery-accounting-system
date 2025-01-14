@@ -1,0 +1,94 @@
+/* Контейнер всей страницы */
+.battery-types-container {
+    background-color: rgba(40, 102, 163, 0.5); /* Цвет фона */
+    border-radius: 10px; /* Закругленные углы */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Тень */
+    width: calc(90vw - 40px); /* 90% от ширины экрана минус отступы */
+    height: calc(100vh - 40px); /* Высота экрана минус отступы */
+    margin: 20px;
+    display: flex; /* Для выравнивания содержимого */
+    flex-direction: column; /* Расположение элементов по вертикали */
+    padding: 10px;
+    gap: 10px;
+    overflow: hidden;
+}
+
+/* Настройка шапки таблицы */
+.battery-types-table-header {
+    display: grid; /* Сетка для управления ширинами */
+    grid-template-columns: 50px repeat(5, 1fr); /* Первый столбец фиксированной ширины, остальные равные */
+    background-color: rgba(40, 102, 163, 0.5);
+    border-radius: 10px 10px 0 0;
+    font-weight: bold;
+    text-align: center;
+    border: 2px solid #dff2ff;
+}
+
+.battery-types-table-header div {
+    background-color: #dff2ff; /* Цвет ячеек внутри шапки */
+    padding: 10px;
+    border: 2px solid rgba(40, 102, 163, 0.5);
+}
+
+.battery-types-table-header div:first-child {
+    border-radius: 10px 0 0 0;
+}
+
+.battery-types-table-header div:last-child {
+    border-radius: 0 10px 0 0;
+}
+
+/* Настройка контейнера для таблицы */
+.battery-types-table-wrapper {
+    flex-grow: 1; /* Таблица занимает всё доступное пространство */
+    overflow-y: auto; /* Прокрутка по вертикали */
+    border: 2px solid #dff2ff;
+}
+
+/* Настройка таблицы */
+.battery-types-table {
+    width: 100%; /* Таблица занимает всю ширину обёртки */
+    border-collapse: collapse; /* Убираем промежутки между ячейками */
+    overflow-y: auto; /* Включаем вертикальную прокрутку */
+    overflow-x: hidden; /* Отключаем горизонтальную прокрутку */
+    scrollbar-width: none; /* Скрываем полосу прокрутки в Firefox */
+}
+
+.battery-types-table-wrapper::-webkit-scrollbar {
+    display: none; /* Скрываем полосу прокрутки в Chrome, Safari */
+}
+
+.battery-types-table tr {
+    display: grid; /* Сетка для управления ширинами */
+    grid-template-columns: 50px repeat(5, 1fr); /* Первый столбец фиксированной ширины, остальные равные */
+}
+
+.battery-types-table td {
+    text-align: center;
+    padding: 10px;
+    border: 2px solid #dff2ff; /* Границы ячеек */
+}
+
+.battery-types-table tr:hover {
+    background-color: rgba(40, 102, 163, 0.8); /* Подсветка строки при наведении */
+    cursor: pointer;
+}
+
+/* Настройка кнопки добавления типа АКБ */
+.btn-add-battery-type {
+    background-color: #dff2ff;
+    border-radius: 0 0 10px 10px;
+    color: black;
+    padding: 10px;
+    border: none;
+    width: calc(90vw - 60px);
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: auto;
+}
+
+.btn-add-battery-type:hover {
+    background-color: rgba(40, 102, 163, 0.8);
+    color: white;
+    font-weight: bold;
+}

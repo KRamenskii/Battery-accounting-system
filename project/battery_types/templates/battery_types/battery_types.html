@@ -3,5 +3,36 @@
 {% block title %}Типы АКБ{% endblock %}
 
 {% block content %}
-<h3>Типы АКБ</h3>
+<div class="battery-types-container">
+     <!-- Шапка таблицы -->
+     <div class="battery-types-table-header">
+        <div class="battery-types-table-cell">№</div>
+        <div class="battery-types-table-cell">Производитель</div>
+        <div class="battery-types-table-cell">Модель</div>
+        <div class="battery-types-table-cell">Номинальное напряжение, В</div>
+        <div class="battery-types-table-cell">Номинальная ёмкость, А⋅ч</div>
+        <div class="battery-types-table-cell">Срок службы, лет</div>
+    </div>
+
+    <!-- Обёртка для таблицы -->
+    <div class="battery-types-table-wrapper">
+        <table class="battery-types-table">
+            <tbody>
+                {% for battery in battery_types %}
+                <tr>
+                    <td>{{ forloop.counter }}</td>
+                    <td>{{ battery.manufacturer }}</td>
+                    <td>{{ battery.battery_type_title }}</td>
+                    <td>{{ battery.nominal_voltage }}</td>
+                    <td>{{ battery.nominal_capacity_20 }}</td>
+                    <td>{{ battery.lifespan }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Кнопка -->
+    <button class="btn-add-battery-type">Добавить тип АКБ</button>
+</div>
 {% endblock %}

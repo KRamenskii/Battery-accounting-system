@@ -1,6 +1,6 @@
 body {
     font-family: 'Roboto', sans-serif;
-    overflow-y: auto;
+    overflow: hidden;
     background: #dff2ff;
     display: flex;
     justify-content: flex-start; /* Равномерное распределение элементов по горизонтали */
@@ -20,6 +20,7 @@ aside {
     flex-direction: column;
     justify-content: center; /* Центрирование по вертикали */
     align-items: center; /* Центрирование по горизонтали */
+    box-shadow: 4px 0px 8px rgba(0, 0, 0, 0.2); /* Тень */
 }
 
 /* Стили для списка навигации */
