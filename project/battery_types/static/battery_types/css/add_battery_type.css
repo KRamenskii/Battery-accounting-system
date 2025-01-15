@@ -1,0 +1,58 @@
+.add-container {
+    background-color: rgba(40, 102, 163, 0.5); /* Цвет фона */
+    border-radius: 10px; /* Закругленные углы */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Тень */
+    width: 100%;
+    max-height: calc(100vh - 40px); /* Высота экрана минус отступы */
+    height: 100%;
+    margin: 20px;
+    display: flex; /* Для выравнивания содержимого */
+    flex-direction: column; /* Расположение элементов по вертикали */
+    gap: 10px;
+}
+
+.add-container-header-title {
+    color: black;
+    text-align: center;
+    background-color: #dff2ff;
+    border: 5px solid rgba(40, 102, 163, 0.5);
+    border-radius: 10px 10px 0 0;
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+    margin-top: auto;
+    text-align: center;
+    font-weight: bold;
+}
+
+.add-container-btn {
+    background-color: #dff2ff;
+    border-radius: 0 0 10px 10px;
+    color: black;
+    padding: 10px;
+    border: 5px solid rgba(40, 102, 163, 0.5);
+    width: 100%;
+    cursor: pointer;
+    font-size: 16px;
+    margin-top: auto;
+    text-align: center;
+    font-weight: bold;
+    height: 100%;
+}
+
+.add-container-btn:hover {
+    background-color: rgba(40, 102, 163, 0.8);
+    color: white;
+    border: 5px solid rgba(40, 101, 163, 0);
+}
+
+.scrollable-form {
+    max-height: 100%; /* Ограничение высоты формы */
+    overflow-y: auto;
+    scrollbar-width: none;
+    
+}
+
+.form-container {
+    padding: 0 10px 0 10px;
+}

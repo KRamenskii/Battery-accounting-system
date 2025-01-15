@@ -24,7 +24,7 @@
         </a>
     </li>
     <li>
-        <a href="{% url 'battery_types' %}" class="{% if request.resolver_match.url_name == 'battery_types' %}active{% endif %}">
+        <a href="{% url 'battery_types' %}" class="{% if 'battery_types' in request.path %}active{% endif %}">
             <i class="bi bi-battery-full"></i>
             <span>Типы АКБ</span>
         </a>

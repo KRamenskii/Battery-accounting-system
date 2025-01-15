@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+
+{% block title %}Новый тип АКБ{% endblock %}
+
+{% block content %}
+<div class="add-container">
+    <h3 class="add-container-header-title">Добавить новый тип АКБ</h1>
+    <div class="test"></div>
+    <form method="post" class="scrollable-form">
+        {% csrf_token %}
+        <div class="form-container">
+            {{ form.as_p }}
+        </div>
+        <button class="add-container-btn" type="submit">Добавить</button>
+    </form>
+</div>
+{% endblock %}
