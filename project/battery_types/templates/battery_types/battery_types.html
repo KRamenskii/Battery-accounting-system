@@ -19,7 +19,7 @@
         <table class="battery-types-table">
             <tbody>
                 {% for battery in battery_types %}
-                <tr>
+                <tr data-href="{% url 'battery_type_detail' battery.id %}" class="clickable-row">
                     <td>{{ forloop.counter }}</td>
                     <td>{{ battery.manufacturer }}</td>
                     <td>{{ battery.battery_type_title }}</td>

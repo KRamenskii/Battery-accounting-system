@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}Удалить тип АКБ{% endblock %}
+
+{% block content %}
+<div class="confirm-container">
+    <h2 class="title-confirm">Вы уверены, что хотите удалить тип АКБ: <br>{{ battery_type_confirm_delete.manufacturer }} {{ battery_type_confirm_delete.battery_type_title }}?</h2>
+    <form method="post" class="confirm-form">
+        {% csrf_token %}
+        <button class="battery-type-detail-btn back-btn" type="button" onclick="window.history.back();">Назад</button>
+        <button type="submit" class="battery-type-detail-btn delete-btn">Удалить</button>
+    </form>
+</div>
+{% endblock %}

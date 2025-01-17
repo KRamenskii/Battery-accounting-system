@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}Параметры АКБ{% endblock %}
+
+{% block content %}
+<div class="add-container">
+    <h3 class="add-container-header-title">Параметры аккумуляторной батареи</h3>
+    <!-- Контейнер для параметров -->
+    <div class="detail-content scrollable-form">
+        <table class="detail-table">
+            <tbody>
+                {% for name, value in fields %}
+                    {% if name != 'ID' %}
+                        <tr>
+                            <td>{{ name }}</td>
+                            <td>{{ value }}</td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <!-- Контейнер для кнопок -->
+    <div class="button-container">
+        <button class="battery-type-detail-btn back-btn" type="button" onclick="window.history.back();">Назад</button>
+        <a class="battery-type-detail-btn edit-btn" href="{% url 'battery_type_edit' battery_type.id %}" role="button">Редактировать</a>
+        <a class="battery-type-detail-btn delete-btn" href="{% url 'battery_type_confirm_delete' battery_type.id %}" role="button">Удалить</a>
+    </div>  
+</div>
+{% endblock %}

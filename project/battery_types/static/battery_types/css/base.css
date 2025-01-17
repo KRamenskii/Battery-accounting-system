@@ -94,3 +94,129 @@
     background-color: rgba(40, 102, 163, 0.8);
     color: white;
 }
+
+/* Настройка страницы параметров акб */
+.detail-content {
+    padding-right: 5px;
+    padding-left: 5px;
+    overflow-y: auto;
+}
+
+.detail-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.detail-table td {
+    border: 1px solid rgba(40, 102, 163, 0.5);
+    padding: 10px;
+    text-align: left;
+}
+
+.detail-table td {
+    background-color: #dff2ff;
+}
+
+/* Убираем границу для последней строки */
+.detail-table tr:last-of-type td {
+    border-bottom: none;
+}
+
+/* Убираем границу для последнего столбца */
+.detail-table td:last-child {
+    border-right: none;
+}
+
+/* Контейнер кнопок для выравнивания */
+.button-container {
+    display: flex; /* Ряд для кнопок */
+    justify-content: space-between; /* Равномерное распределение */
+    width: 100%; /* Полная ширина */
+    gap: 10px;
+    padding: 0 5px 5px 5px;
+}
+
+/* Общий стиль для кнопок */
+.battery-type-detail-btn {
+    flex: 1; /* Равное распределение кнопок */
+    padding: 10px; /* Внутренние отступы для текста */
+    font-size: 16px; /* Размер шрифта */
+    font-weight: bold; /* Жирный шрифт */
+    cursor: pointer; /* Указатель мыши */
+    text-align: center; /* Центрирование текста */
+    white-space: nowrap; /* Запрет переноса текста */
+    overflow: hidden; /* Убираем выход текста за пределы кнопки */
+    text-overflow: ellipsis; /* Добавляем троеточие, если текст обрезается */
+    background-color: #dff2ff; /* Фон кнопки */
+    color: black; /* Цвет текста */
+    border: none;
+}
+
+/* Стили для кнопки "Назад" */
+.back-btn {
+    border-radius: 0 0 0 10px; /* Закругление нижнего и левого углов */
+}
+.back-btn:hover {
+    background-color: rgba(40, 102, 163, 0.8); /* Синий фон при наведении */
+    color: white; /* Белый текст */
+}
+
+/* Стили для кнопки "Редактировать" */
+.edit-btn {
+    border-radius: 0; /* Без закругления */
+    text-decoration: none;
+}
+
+.edit-btn:hover {
+    background-color: #ffa500; /* Оранжевый фон при наведении */
+    color: white; /* Белый текст */
+}
+
+/* Стили для кнопки "Удалить" */
+.delete-btn {
+    border-radius: 0 0 10px 0; /* Закругление нижнего и правого углов */
+    text-decoration: none;
+}
+
+.delete-btn:hover {
+    background-color: #ff4d4d; /* Красный фон при наведении */
+    color: white; /* Белый текст */
+}
+
+/* Стили для кнопки "Обновить" */
+.update-btn {
+    border-radius: 0 0 10px 0; /* Закругление нижнего и правого углов */
+    text-decoration: none;
+}
+
+.update-btn:hover {
+    background-color: #20b955; /* Красный фон при наведении */
+}
+
+.confirm-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-40%, -50%);
+    display: flex;           /* Используем Flexbox */
+    flex-direction: column;  /* Располагаем элементы вертикально */
+    justify-content: center; /* Выравниваем по вертикали */
+    align-items: center;     /* Выравниваем по горизонтали */
+    text-align: center;      /* Выравниваем текст по центру */
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.title-confirm {
+    color: rgba(40, 102, 163);
+    margin-bottom: 20px; /* Добавляем отступ снизу */
+    width: 100%;          /* Текст будет занимать всю доступную ширину */
+}
+
+.confirm-form {
+    width: 100%;
+    display: flex;
+    gap: 20px;
+}

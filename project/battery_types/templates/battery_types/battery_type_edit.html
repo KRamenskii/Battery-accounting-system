@@ -1,19 +1,21 @@
 {% extends 'base.html' %}
 
-{% block title %}Новый тип АКБ{% endblock %}
+{% block title %}Редактировать тип АКБ{% endblock %}
 
 {% block content %}
+
 <div class="add-container">
-    <h3 class="add-container-header-title">Добавить новый тип АКБ</h1>
+    <h3 class="add-container-header-title">Редактировать тип АКБ</h3>
     <form method="post" class="scrollable-form">
         {% csrf_token %}
-        <div class="form-container scrollable-form">
+        <div class="form-container">
             {{ form.as_p }}
         </div>
         <div class="button-container">
             <button class="battery-type-detail-btn back-btn" type="button" onclick="window.history.back();">Назад</button>
-            <button class="battery-type-detail-btn update-btn" type="submit">Добавить</button>
-        </div>
+            <button class="battery-type-detail-btn update-btn" type="submit">Обновить</button>
+        </div> 
     </form>
 </div>
+
 {% endblock %}
