@@ -19,7 +19,7 @@ class InstallationLocation(models.Model):
         related_name='sub_locations',
         verbose_name="Родительское место"
     )
-    nesting_level = models.PositiveIntegerField(verbose_name="Уровень вложенности")
+    nesting_level = models.PositiveIntegerField(verbose_name="Уровень вложенности", default=0)
 
     class Meta:
         verbose_name = "Место установки"
@@ -27,6 +27,16 @@ class InstallationLocation(models.Model):
 
     def __str__(self):
         return self.location_title
+    
+    def get_nesting_level(self):
+        if self.parent_location is None:
+            return 0
+        return self.parent_location.get_nesting_level() + 1
+
+    def save(self, *args, **kwargs):
+        # Вычисляем уровень вложенности перед сохранением
+        self.nesting_level = self.get_nesting_level()
+        super().save(*args, **kwargs)
 
 class Battery(models.Model):
     battery_type = models.ForeignKey(
