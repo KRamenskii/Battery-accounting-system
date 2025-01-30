@@ -63,11 +63,6 @@ class Battery(models.Model):
         null=True, 
         blank=True
     )
-    installation_location = models.ManyToManyField(
-        InstallationLocation,
-        verbose_name="Места установки",
-        related_name="batteries"
-    )
 
     class Meta:
         verbose_name = "АКБ"
@@ -75,6 +70,30 @@ class Battery(models.Model):
 
     def __str__(self):
         return f"АКБ №{self.battery_number} ({self.battery_type.battery_type_title})"
+
+class BatteryInstallationHistory(models.Model):
+    battery = models.ForeignKey(
+        Battery, 
+        on_delete=models.CASCADE, 
+        verbose_name="АКБ",
+        related_name='installation_history'
+    )
+    installation_location = models.ForeignKey(
+        InstallationLocation,
+        on_delete=models.CASCADE,
+        verbose_name="Место установки"
+    )
+    installation_date = models.DateField(
+        verbose_name="Дата установки"
+    )
+
+    class Meta:
+        verbose_name = "История установки АКБ"
+        verbose_name_plural = "Истории установки АКБ"
+        ordering = ['-installation_date']
+
+    def __str__(self):
+        return f"{self.battery} установлен в {self.installation_location} на {self.installation_date}"
 
 class TestingDBT12D(models.Model):
     battery = models.ForeignKey(Battery, on_delete=models.CASCADE, verbose_name="АКБ")
