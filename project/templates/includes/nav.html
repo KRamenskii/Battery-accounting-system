@@ -12,7 +12,7 @@
         </a>
     </li>
     <li>
-        <a href="{% url 'journal_home' %}" class="{% if request.resolver_match.url_name == 'journal_home' %}active{% endif %}">
+        <a href="{% url 'journal' %}" class="{% if 'journal' in request.path %}active{% endif %}">
             <i class="bi bi-book-half"></i>
             <span>Журнал</span>
         </a>

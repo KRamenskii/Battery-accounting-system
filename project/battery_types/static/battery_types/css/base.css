@@ -40,7 +40,6 @@
 
 /* Настройка контейнера для таблицы */
 .battery-types-table-wrapper {
-    flex-grow: 1; /* Таблица занимает всё доступное пространство */
     overflow-y: auto; /* Прокрутка по вертикали */
     border: 2px solid #dff2ff;
 }

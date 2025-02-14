@@ -2,5 +2,6 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('journal_home', views.journal_home, name='journal_home')
+    path('', views.journal_view, name='journal'),  # Все АКБ
+    path('<int:location_id>/', views.journal_view, name='journal_filtered'),  # Фильтрация по местоположению
 ]

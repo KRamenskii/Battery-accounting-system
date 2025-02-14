@@ -1,0 +1,25 @@
+<div class="filter-container">
+    <h5>Путь к текущему разделу</h5>
+    <div class="filter-container-path">
+        <a href="{% url 'journal' %}" class="filter-link">Все АКБ</a>
+
+        {% for parent in parent_locations %}
+            <a href="{% url 'journal_filtered' parent.id %}" class="filter-link">{{ parent.location_title }}</a>
+        {% endfor %}
+    
+        {% if selected_location %}
+            <a class="current-location">{{ selected_location.location_title }}</a>
+        {% endif %}
+    </div>
+</div>
+
+{% if locations %}
+    <div class="filter-container no-rounded">
+        <h5>Места установки / хранения</h5>
+        <div class="filter-container-path">
+            {% for location in locations %}
+                <a href="{% url 'journal_filtered' location.id %}" class="filter-link">{{ location.location_title }}</a>
+            {% endfor %}
+        </div>
+    </div>
+{% endif %}

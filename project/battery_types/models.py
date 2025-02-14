@@ -15,7 +15,7 @@ class BatteryType(models.Model):
         decimal_places=2
     )
     elements_count = models.IntegerField(verbose_name = 'Количество элементов в АКБ')
-    lifespan = models.IntegerField(verbose_name = 'Скрок службы, лет')
+    lifespan = models.IntegerField(verbose_name = 'Срок службы, лет')
     nominal_capacity_20 = models.DecimalField(
         verbose_name = 'Номинальная ёмкость при 20-ти часовом разряде',
         max_digits=10, 

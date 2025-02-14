@@ -3,5 +3,55 @@
 {% block title %}Журнал{% endblock %}
 
 {% block content %}
-<h3>Страница журнала АКБ</h3>
+<div class="battery-types-container">
+    <!-- Шапка страницы -->
+    {% include 'journal/header_journal.html' %}
+
+    <!-- Шапка таблицы -->
+    <div class="journal-table-header">
+        <div class="battery-types-table-cell">№</div>
+        <div class="battery-types-table-cell">Место установки</div>
+        <div class="battery-types-table-cell">Номер</div>
+        <div class="battery-types-table-cell">Тип</div>
+        <div class="battery-types-table-cell">Дата измерения</div>
+        <div class="battery-types-table-cell">Состояние</div>
+    </div>
+
+    <!-- Обёртка для таблицы -->
+    <div class="battery-types-table-wrapper">
+        <table class="battery-types-table">
+            <tbody>
+                {% for item in page_obj %}
+                <tr>
+                    <td>{{ item.index }}</td>
+                    <td>{{ item.installation_location }}</td>
+                    <td>{{ item.battery_number }}</td>
+                    <td>{{ item.battery_type }}</td>
+                    <td>{{ item.testing_date }}</td>
+                    <td>{{ item.soh }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Пагинация -->
+    {% if page_obj.paginator.num_pages > 1 %}
+    <div class="pagination">
+        <span>
+            {% if page_obj.has_previous %}
+                <a class="pagination-button" href="?page=1">В начало</a>
+                <a class="pagination-button" href="?page={{ page_obj.previous_page_number }}">Назад</a>
+            {% endif %}
+
+            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+
+            {% if page_obj.has_next %}
+                <a class="pagination-button" href="?page={{ page_obj.next_page_number }}">Далее</a>
+                <a class="pagination-button" href="?page={{ page_obj.paginator.num_pages }}">В конец</a>
+            {% endif %}
+        </span>
+    </div>
+    {% endif %}
+</div>
 {% endblock %}

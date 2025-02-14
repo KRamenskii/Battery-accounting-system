@@ -1,0 +1,78 @@
+/* Стилизация шапки страницы */
+.filter-container {
+    background-color: #dff2ff;
+    border-radius: 10px 10px 0px 0px;
+    padding: 10px;
+}
+
+.no-rounded {
+    border-radius: 0;
+}
+
+.filter-container-path {
+    background-color: #dff2ff;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.filter-link {
+    text-decoration: none;
+    background-color: rgba(40, 102, 163, 0.8);
+    padding:5px 10px 5px 10px;
+    border-radius: 10px;
+    color: white;
+    cursor: pointer;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+.filter-link:hover {
+    cursor: pointer;
+    background-color: #dd862e;
+    color: black;
+}
+
+.filter-divider {
+    width: 100%;
+    background: rgba(40, 102, 163, 0.8);
+    height: 10px;
+}
+
+.current-location {
+    text-decoration: none;
+    background-color: rgba(221, 134, 46, 0.5);
+    padding:5px 10px 5px 10px;
+    border-radius: 10px;
+    color: black;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+/* Стилизация для шапки таблицы */
+.journal-table-header {
+    display: grid; /* Сетка для управления ширинами */
+    grid-template-columns: 50px repeat(5, 1fr); /* Первый столбец фиксированной ширины, остальные равные */
+    background-color: rgba(40, 102, 163, 0.5);
+    font-weight: bold;
+    text-align: center;
+    border: 2px solid #dff2ff;
+}
+
+.journal-table-header div {
+    background-color: #dff2ff; /* Цвет ячеек внутри шапки */
+    padding: 10px;
+    border: 2px solid rgba(40, 102, 163, 0.5);
+}
+
+/* Стилизация для элементов пагинации страниц */
+.pagination-button {
+    text-decoration: none;
+    color: #dff2ff;
+    cursor: pointer;
+}
+
+.pagination-button:hover {
+    cursor: pointer;
+    color: rgb(194, 108, 23);
+}
