@@ -1,8 +1,9 @@
 /* Стилизация шапки страницы */
 .filter-container {
     background-color: #dff2ff;
-    border-radius: 10px 10px 0px 0px;
+    border-radius: 10px 0 0px 0px;
     padding: 10px;
+    width: 100%;
 }
 
 .no-rounded {
@@ -49,6 +50,57 @@
     white-space: nowrap;
 }
 
+/* Стилизация для кнопки добавить */
+.filter-container-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    gap: 10px;
+    position: relative;
+}
+
+.add-button {
+    background-color: #dff2ff;
+    color: black;
+    border: none;
+    border-radius: 0 10px 0 0;
+    padding-inline: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    height: 100%;
+    position: relative;
+}
+
+.add-button:hover {
+    background-color: #dd862e;
+    color: black;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 110%; /* Меню появляется под кнопкой */
+    right: 0; /* Выравнивание по правому краю кнопки */
+    background-color: white;
+    border-radius: 10px;
+    border: solid black 2px;
+    display: none;
+    flex-direction: column;
+    min-width: 200px;
+    z-index: 10;
+}
+
+.dropdown-menu a {
+    display: block;
+    padding: 8px;
+    text-decoration: none;
+    color: black;
+}
+
+.dropdown-menu a:hover {
+    background-color: rgba(40, 102, 163, 0.5);
+}
+
 /* Стилизация для шапки таблицы */
 .journal-table-header {
     display: grid; /* Сетка для управления ширинами */
@@ -75,4 +127,38 @@
 .pagination-button:hover {
     cursor: pointer;
     color: rgb(194, 108, 23);
+}
+
+/* 🔹 Затемненный фон для модального окна */
+.modal {
+    display: none; /* По умолчанию скрыто */
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 🔹 Содержимое модального окна */
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    text-align: center;
+    position: relative;
+}
+
+/* 🔹 Кнопка закрытия */
+.close {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 20px;
+    cursor: pointer;
 }

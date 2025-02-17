@@ -1,15 +1,24 @@
-<div class="filter-container">
-    <h5>Путь к текущему разделу</h5>
-    <div class="filter-container-path">
-        <a href="{% url 'journal' %}" class="filter-link">Все АКБ</a>
-
-        {% for parent in parent_locations %}
-            <a href="{% url 'journal_filtered' parent.id %}" class="filter-link">{{ parent.location_title }}</a>
-        {% endfor %}
+<div class="filter-container-wrapper">
+    <div class="filter-container">
+        <h5>Путь к текущему разделу</h5>
+        <div class="filter-container-path">
+            <a href="{% url 'journal' %}" class="filter-link">Все АКБ</a>
     
-        {% if selected_location %}
-            <a class="current-location">{{ selected_location.location_title }}</a>
-        {% endif %}
+            {% for parent in parent_locations %}
+                <a href="{% url 'journal_filtered' parent.id %}" class="filter-link">{{ parent.location_title }}</a>
+            {% endfor %}
+        
+            {% if selected_location %}
+                <a class="current-location">{{ selected_location.location_title }}</a>
+            {% endif %}
+        </div>
+    </div>
+
+    <button class="add-button" id="addButton">Добавить</button>
+    <div class="dropdown-menu" id="dropdownMenu">
+        <a href="#">Добавить АКБ</a>
+        <a href="#">Добавить измерение</a>
+        <a href="#" id="addLocationLink">Добавить место установки АКБ</a>
     </div>
 </div>
 
