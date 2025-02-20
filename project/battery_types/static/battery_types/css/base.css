@@ -135,6 +135,10 @@
     padding: 0 5px 5px 5px;
 }
 
+.no-padding {
+    padding: 0;
+}
+
 /* Общий стиль для кнопок */
 .battery-type-detail-btn {
     flex: 1; /* Равное распределение кнопок */
@@ -149,6 +153,7 @@
     background-color: #dff2ff; /* Фон кнопки */
     color: black; /* Цвет текста */
     border: none;
+    text-decoration: none;
 }
 
 /* Стили для кнопки "Назад" */

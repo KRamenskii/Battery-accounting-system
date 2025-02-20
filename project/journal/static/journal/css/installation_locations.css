@@ -1,0 +1,79 @@
+/* Контейнер списка */
+.installation-locations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    scrollbar-width: none;
+    height: 100vh;
+}
+
+.installation-location {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    align-items: stretch;
+}
+
+.installation-location-actions {
+    margin-left: auto;
+    display: flex;
+    gap: 10px;
+}
+
+.installation-location-info {
+    background-color: #dff2ff;
+    width: 100%;
+    border-radius: 10px 0 0 10px;
+    padding: 10px;
+}
+
+.installation-location-info:hover {
+    background-color: rgba(40, 102, 163, 0.8);
+}
+
+.installation-location-info:hover .installation-location-title,
+.installation-location-info:hover .installation-location-description {
+    color: white;
+}
+
+.installation-location-title {
+    font-weight: bold;
+    color: rgba(40, 102, 163);
+    text-decoration: none;
+}
+
+.installation-location-description {
+    padding-left: 10px;
+    font-weight: bold;
+    font-size: 0.8em;
+    color: #707070;
+}
+
+.installation-location-actions {
+    display: flex;
+    gap: 10px;
+}
+
+/* Кнопки для редактирования, удаления */
+.installation-location-edit-button, .installation-location-delete-button {
+    border: none;
+    background-color: #dff2ff;
+    padding: 10px 15px 10px 15px;
+    color: black;
+    font-weight: bold;
+}
+
+.installation-location-delete-button {
+    border-radius: 0 10px 10px 0;
+}
+
+.installation-location-edit-button:hover {
+    background-color: #ffa500;
+    color: white;
+}
+
+.installation-location-delete-button:hover {
+    background-color: #ff4d4d;
+    color: white;
+}

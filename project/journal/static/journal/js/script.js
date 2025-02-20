@@ -14,3 +14,10 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 });
+
+// Обработка нажатия на место установки
+document.querySelectorAll('.installation-location-info').forEach(item => {
+    item.addEventListener('click', () => {
+        window.location.href = item.getAttribute('data-url');
+    });
+});

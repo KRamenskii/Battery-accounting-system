@@ -18,13 +18,14 @@
     <div class="dropdown-menu" id="dropdownMenu">
         <a href="#">Добавить АКБ</a>
         <a href="#">Добавить измерение</a>
-        <a href="#" id="addLocationLink">Добавить место установки АКБ</a>
     </div>
 </div>
 
 {% if locations %}
     <div class="filter-container no-rounded">
-        <h5>Места установки / хранения</h5>
+        <a class="header-link" href="{% url 'installation_locations' %}">
+            <h5>Места установки / хранения</h5>
+        </a>
         <div class="filter-container-path">
             {% for location in locations %}
                 <a href="{% url 'journal_filtered' location.id %}" class="filter-link">{{ location.location_title }}</a>

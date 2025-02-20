@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block title %}Удалить место установки{% endblock %}
+
+{% block content %}
+<div class="confirm-container">
+    <h2 class="title-confirm">Вы уверены, что хотите удалить место установки/хранения?
+        <br><h4>{{ installation_location_confirm_delete.location_title }}</h4>
+        {% if installation_location_confirm_delete.system_title %}
+            <h6>{{ installation_location_confirm_delete.system_title }}</h6>
+        {% endif %}
+    </h2>
+    <form method="post" class="confirm-form">
+        {% csrf_token %}
+        <button class="battery-type-detail-btn back-btn" type="button" onclick="window.history.back();">Назад</button>
+        <button type="submit" class="battery-type-detail-btn delete-btn">Удалить</button>
+    </form>
+</div>
+{% endblock %}

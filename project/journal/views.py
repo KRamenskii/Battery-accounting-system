@@ -1,8 +1,42 @@
 from django.core.paginator import Paginator
 from django.db.models import Max, OuterRef, Subquery
 from django.shortcuts import get_object_or_404, render
+from django.urls import reverse_lazy
+from django.views.generic import CreateView, UpdateView, DeleteView
 
 from .models import Battery, BatteryInstallationHistory, InstallationLocation, TestingDBT12D
+from .forms import InstallationLocationForm
+
+
+class InstallationLocationCreateView(CreateView):
+    model = InstallationLocation
+    form_class = InstallationLocationForm
+    template_name = 'journal/installation_location_create.html'
+
+    def get_success_url(self):
+        return reverse_lazy('installation_locations')
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        parent_id = self.request.GET.get('parent_id')
+        if parent_id:
+            kwargs['parent_location'] = get_object_or_404(InstallationLocation, id=parent_id)
+        return kwargs
+
+
+class InstallationLocationUpdateView(UpdateView):
+    model = InstallationLocation
+    form_class = InstallationLocationForm
+    template_name = 'journal/installation_location_edit.html'
+    success_url = reverse_lazy('installation_locations')
+    context_object_name = 'installation_location_edit'
+
+
+class InstallationLocationDeleteView(DeleteView):
+    model = InstallationLocation
+    template_name = 'journal/installation_location_confirm_delete.html'
+    success_url = reverse_lazy('installation_locations')
+    context_object_name = 'installation_location_confirm_delete'
 
 
 def get_last_installation():
@@ -109,4 +143,25 @@ def journal_view(request, location_id=None):
         "locations": locations,
         "selected_location": selected_location,
         "parent_locations": parent_locations  # Передаём родителей в шаблон
+    })
+
+
+def installation_locations(request, location_id=None):
+    selected_location = None
+    parent_locations = []
+
+    if location_id:
+        selected_location = get_object_or_404(InstallationLocation, id=location_id)
+        locations = InstallationLocation.objects.filter(parent_location=selected_location)
+
+        if selected_location.parent_location is not None:
+            parent_locations = get_parent_locations(selected_location)
+
+    else:
+        locations = InstallationLocation.objects.filter(nesting_level=0)
+
+    return render(request, 'journal/installation_locations.html', {
+        'locations': locations,
+        'selected_location': selected_location,
+        'parent_locations': parent_locations,
     })

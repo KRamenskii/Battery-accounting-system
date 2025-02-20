@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}Места установки{% endblock %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'journal/css/installation_locations.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="battery-types-container">
+    <div class="filter-container-wrapper">
+        <div class="filter-container all-rounded">
+            <h5>Путь к текущему разделу</h5>
+            <div class="filter-container-path">
+                <a href="{% url 'installation_locations' %}" class="filter-link">Корневые локации</a>
+            
+                {% for parent in parent_locations %}
+                    <a href="{% url 'installation_locations' parent.id %}" class="filter-link">{{ parent.location_title }}</a>
+                {% endfor %}
+            
+                {% if selected_location %}
+                    <span class="current-location">{{ selected_location.location_title }}</span>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Обёртка для таблицы -->
+    <div class="installation-locations-list">
+        {% for item in locations %}
+        <div class="installation-location"> 
+            <div class="installation-location-info" data-url="{% url 'installation_locations' item.id %}">
+                <span class="installation-location-title">{{ item.location_title }}</span>
+                {% if item.system_title %}
+                    <span class="installation-location-description">{{ item.system_title }}</span>
+                {% endif %}
+            </div>
+            <div class="installation-location-actions">
+                <a class="installation-location-edit-button" href="{% url 'installation_location_edit' item.id %}">
+                    <i class="bi bi-pencil"></i>
+                </a>
+                <a class="installation-location-delete-button" href="{% url 'installation_location_confirm_delete' item.id %}">
+                    <i class="bi bi-trash"></i>
+                </a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="button-container no-padding">
+        <a class="battery-type-detail-btn back-btn all-rounded"
+            href="{% url 'journal' %}">
+            В журнал
+        </a>
+        <a class="battery-type-detail-btn back-btn all-rounded"
+            href="{% url 'installation_location_add' %}{% if selected_location %}?parent_id={{ selected_location.id }}{% endif %}">
+            Добавить место установки
+        </a>
+    </div>
+</div>
+{% endblock %}
