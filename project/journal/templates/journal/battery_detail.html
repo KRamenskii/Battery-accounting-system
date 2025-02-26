@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block title %}АКБ №{{ battery.battery_number }}{% endblock %}
+
+{% block extra_styles %}
+    <link rel="stylesheet" href="{% static 'journal/css/battery_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="battery-detail-container">
+    <!-- Левая часть: параметры АКБ -->
+    <div class="battery-detail-half-container">
+        <div class="testing-container">
+            <h5 class="battery-detail-header">Параметры аккумуляторной батареи №{{ battery.battery_number }}</h5>
+
+            <div class="battery-detail-table-wrapper">
+                <table class="battery-detail-table">
+                    <tbody>
+                        <tr><td>Производитель</td><td>{{ battery.battery_type.manufacturer }}</td></tr>
+                        <tr><td>Тип</td><td>{{ battery.battery_type }}</td></tr>
+                        <tr><td>Серийный номер</td><td>{{ battery.serial_number }}</td></tr>
+                        <tr><td>Дата изготовления</td><td>{{ battery.manufacture_date|default:"Отсутствует"|date:"d.m.Y" }}</td></tr>
+                        <tr><td>Дата приёмки</td><td>{{ battery.acceptance_date|default:"Отсутствует"|date:"d.m.Y" }}</td></tr>
+                        <tr><td>Дата установки</td><td>{{ battery.installation_date|default:"Отсутствует"|date:"d.m.Y" }}</td></tr>
+                        <tr><td>Срок службы</td><td>{{ battery.battery_type.lifespan }}</td></tr>
+                        <tr><td>Номинальное напряжение, В</td><td>{{ battery.battery_type.nominal_voltage }}</td></tr>
+                        <tr><td>Номинальная ёмкость, Ач</td><td>{{ battery.battery_type.nominal_capacity_20 }}</td></tr>
+                        <tr><td>Номинальное сопротивление, мОм</td><td>{{ battery.battery_type.internal_resistance }}</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="test-results-button-container">
+                <button class="battery-type-detail-btn edit-battery-btn" type="button">Редактировать</button>
+            </div>
+        </div>
+
+        <div class="testing-container">
+            <h5 class="battery-detail-header">История мест установки (хранения) АКБ №{{ battery.battery_number }}</h5>
+
+            <div class="battery-detail-table-wrapper">
+                <table class="battery-detail-table">
+                    <thead>
+                        <tr>
+                            <th>Место установки (хранения)</th>
+                            <th>Дата установки</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for location, path in installations_path %}
+                            <tr>
+                                <td>
+                                    {% for place in path %}
+                                        {% if forloop.last %}
+                                            <span class="final-location">{{ place.location_title }}</span>
+                                        {% else %}
+                                            <span class="path-item">{{ place.location_title }}</span> →
+                                        {% endif %}
+                                    {% endfor %}
+                                </td>
+                                <td>{{ location.installation_date|date:"d.m.Y" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="test-results-button-container">
+                <button class="battery-type-detail-btn edit-battery-btn" type="button">Редактировать</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Правая часть: измерения -->
+    <div class="battery-detail-half-container">
+        <!-- Измерения DBT12D -->
+        <div class="testing-container">
+            <h5 class="battery-detail-header">Измерения DBT12D</h5>
+            
+            {% include 'journal/battery_test_table.html' with testings=testings_dbt12d model=model_dbt12d %}
+
+            <div class="test-results-button-container">
+                <button class="battery-type-detail-btn chart-btn" type="button">Построить график</button>
+                <button class="battery-type-detail-btn add-test-btn" type="submit">Добавить измерение</button>
+            </div> 
+        </div>
+
+        <div class="testing-container">
+            <h5 class="battery-detail-header">Измерения IC105</h5>
+            
+            {% include 'journal/battery_test_table.html' with testings=testings_ic105 model=model_ic105 %}
+
+            <div class="test-results-button-container">
+                <button class="battery-type-detail-btn chart-btn" type="button">Построить график</button>
+                <button class="battery-type-detail-btn add-test-btn" type="submit">Добавить измерение</button>
+            </div>  
+        </div>
+    </div>
+</div>
+{% endblock %}

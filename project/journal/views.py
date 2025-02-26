@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
 
-from .models import Battery, BatteryInstallationHistory, InstallationLocation, TestingDBT12D
+from .models import Battery, BatteryInstallationHistory, InstallationLocation, TestingDBT12D, TestingIC105
 from .forms import InstallationLocationForm
 
 
@@ -129,7 +129,8 @@ def journal_view(request, location_id=None):
             "battery_number": battery.battery_number,
             "battery_type": battery.battery_type.battery_type_title,
             "testing_date": battery.last_testing_date or "Нет данных",
-            "soh": battery.last_soh or "Нет данных"
+            "soh": battery.last_soh or "Нет данных",
+            "battery_id": battery.id
         }
         for index, battery in enumerate(batteries, start=1)
     ]
@@ -164,4 +165,26 @@ def installation_locations(request, location_id=None):
         'locations': locations,
         'selected_location': selected_location,
         'parent_locations': parent_locations,
+    })
+
+
+def battery_detail(request, pk):
+    battery = get_object_or_404(Battery, pk=pk)
+    testings_dbt12d = TestingDBT12D.objects.filter(battery=battery).order_by('testing_date')
+    testings_ic105 = TestingIC105.objects.filter(battery=battery).order_by('testing_date')
+    installation_locations = BatteryInstallationHistory.objects.filter(battery=battery).order_by('installation_date')
+
+    installations_path = [
+        (location, get_parent_locations(location.installation_location) + [location.installation_location])
+        for location in installation_locations
+    ]
+
+    return render(request, 'journal/battery_detail.html', {
+        'battery': battery,
+        'testings_dbt12d': testings_dbt12d,
+        'testings_ic105': testings_ic105,
+        'model_dbt12d': 'DBT12D',
+        'model_ic105': 'IC105',
+        'installation_locations': installation_locations,
+        'installations_path': installations_path,
     })

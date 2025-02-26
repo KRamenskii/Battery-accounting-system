@@ -10,4 +10,5 @@ urlpatterns = [
     path('installation_locations/<int:pk>/delete/', InstallationLocationDeleteView.as_view(), name='installation_location_confirm_delete'),
     path('installation_locations/<int:pk>/update/', InstallationLocationUpdateView.as_view(), name='installation_location_edit'),
     path('add/', InstallationLocationCreateView.as_view(), name='installation_location_add'),
+    path('<int:pk>/detail/', views.battery_detail, name='battery_detail'),
 ]

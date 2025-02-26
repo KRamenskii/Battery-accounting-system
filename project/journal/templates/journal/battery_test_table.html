@@ -1,0 +1,32 @@
+<div class="battery-detail-table-wrapper">
+    <table class="testings-dbt-table">
+        <thead class="testings-dbt-header">
+            <tr>
+                <th>Дата</th>
+                <th>SOH, %</th>
+                {% if model == 'DBT12D' %}
+                    <th>SOC, %</th>
+                {% endif %}
+                <th>VOL, В</th>
+                <th>R, мОм</th>
+                <th>STD</th>
+                <th>CCA</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for test in testings %}
+            <tr>
+                <td>{{ test.testing_date|date:"d.m.Y" }}</td>
+                <td>{{ test.SOH }}</td>
+                {% if model == 'DBT12D' %}
+                    <td>{{ test.SOC }}</td>
+                {% endif %}
+                <td>{{ test.VOL }}</td>
+                <td>{{ test.R }}</td>
+                <td>{{ test.STD }}</td>
+                <td>{{ test.CCA }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

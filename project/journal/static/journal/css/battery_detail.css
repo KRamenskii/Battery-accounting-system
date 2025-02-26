@@ -1,0 +1,160 @@
+.battery-detail-container {
+    background-color: rgba(40, 102, 163, 0.5); /* Цвет фона */
+    border-radius: 10px; /* Закругленные углы */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2); /* Тень */
+    width: calc(90vw - 40px); /* 90% от ширины экрана минус отступы */
+    height: calc(100vh - 40px); /* Высота экрана минус отступы */
+    margin: 20px;
+    display: flex; /* Для выравнивания содержимого */
+    flex-direction: row; /* Расположение элементов по вертикали */
+    padding: 10px;
+    gap: 10px;
+    overflow: auto;
+}
+
+.battery-detail-half-container {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+    width: 50%;
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+.battery-detail-table-wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    border: solid 1px black;
+    background-color: #dff2ff;
+}
+
+/* Скрытие полосы прокрутки */
+.battery-detail-table-wrapper::-webkit-scrollbar {
+    display: none;
+}
+
+.battery-detail-header {
+    color: rgba(40, 102, 163);
+    font-weight: bold;
+    background-color: #dff2ff;
+    border-radius: 10px 10px 0 0;
+    padding: 10px;
+    margin-bottom: 0;
+}
+
+.testing-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-height: 50%;
+}
+
+
+/* Таблица с параметрами АКБ */
+.battery-detail-table {
+    background-color: #dff2ff;
+    width: 100%;
+}
+
+.battery-detail-table td,
+.battery-detail-table th {
+    border-right: 1px solid black;
+    padding: 10px;
+}
+
+.battery-detail-table tr {
+    border-bottom: 1px solid black;
+}
+
+.battery-detail-table td:last-child,
+.battery-detail-table th:last-child {
+    border-right: none;
+}
+
+.battery-detail-table td:first-child,
+.battery-detail-table th:first-child {
+    font-weight: bold;
+    text-align: left;
+    padding-left: 15px;
+}
+
+.edit-battery-btn {
+    border-radius: 0 0 10px 10px;
+}
+
+.edit-battery-btn:hover {
+    background-color: #ffa600;
+}
+
+/* Таблицы для тестирований */
+.testings-dbt-table {
+    width: 100%;
+    background-color: #ffa60049;
+}
+
+.testings-dbt-table thead {
+    position: sticky;
+    top: 0;
+}
+
+.testings-dbt-table th {
+    background-color: #dff2ff;
+    padding: 5px;
+}
+
+.testings-dbt-table td {
+    padding: 10px;
+}
+
+.testings-dbt-table tr:hover {
+    background-color: #ffa600;
+}
+
+.testings-dbt-table tr {
+    border-bottom: 1px solid black;
+}
+
+.testings-dbt-table td,
+.testings-dbt-table th {
+    border-right: 1px solid black;
+}
+
+.testings-dbt-table td:last-child,
+.testings-dbt-table th:last-child {
+    border-right: none;
+}
+
+/* Контейнер с кнопками для графика и добавления тестирований */
+.test-results-button-container {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.chart-btn {
+    width: 100%;
+    border-radius: 0 0 0 10px;
+}
+
+.chart-btn:hover,
+.add-test-btn:hover {
+    background-color: #ffa600;
+}
+
+.add-test-btn {
+    width: 100%;
+    border-radius: 0 0 10px 0;
+}
+
+.final-location {
+    font-weight: normal;
+    color: #ffa600;
+}
+
+.path-item {
+    font-weight: normal;
+}

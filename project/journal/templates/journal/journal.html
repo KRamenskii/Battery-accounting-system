@@ -22,7 +22,7 @@
         <table class="battery-types-table">
             <tbody>
                 {% for item in page_obj %}
-                <tr>
+                <tr data-href="{% url 'battery_detail' item.battery_id %}" class="clickable-row">
                     <td>{{ item.index }}</td>
                     <td>{{ item.installation_location }}</td>
                     <td>{{ item.battery_number }}</td>
