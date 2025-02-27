@@ -224,6 +224,7 @@ def battery_detail(request, pk):
     testings_dbt12d = TestingDBT12D.objects.filter(battery=battery).order_by('testing_date')
     testings_ic105 = TestingIC105.objects.filter(battery=battery).order_by('testing_date')
     installation_locations = BatteryInstallationHistory.objects.filter(battery=battery).order_by('installation_date')
+    location_id = installation_locations.last().installation_location.id
 
     installations_path = [
         (location, get_parent_locations(location.installation_location) + [location.installation_location])
@@ -238,4 +239,5 @@ def battery_detail(request, pk):
         'model_ic105': 'IC105',
         'installation_locations': installation_locations,
         'installations_path': installations_path,
+        'location_id': location_id
     })
