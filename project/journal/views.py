@@ -79,6 +79,16 @@ class BatteryUpdateView(UpdateView):
     template_name = 'journal/battery_detail_edit.html'
     context_object_name = 'battery_detail_edit'
 
+    def get_initial(self):
+        initial = super().get_initial()
+        battery = self.get_object()
+        installation_locations = BatteryInstallationHistory.objects.filter(battery=battery).order_by('-installation_date')
+        
+        if installation_locations.exists():
+            initial['installation_location'] = installation_locations.first().installation_location
+
+        return initial
+
     def get_success_url(self):
         return reverse_lazy('battery_detail', kwargs={'pk': self.object.id})
 
@@ -88,6 +98,16 @@ class BatteryCreateView(CreateView):
     form_class = BatteryForm
     template_name = 'journal/add_battery.html'
     success_url = reverse_lazy('journal')
+
+    def get_initial(self):
+        initial = super().get_initial()
+        selected_location_id = self.request.GET.get('selected_location_id')  # Получаем ID места установки из GET-запроса
+        
+        if selected_location_id:
+            location = get_object_or_404(InstallationLocation, id=selected_location_id)
+            initial['installation_location'] = location  # Предзаполняем поле установки
+        
+        return initial
 
 
 def get_last_installation():
@@ -194,7 +214,8 @@ def journal_view(request, location_id=None):
         "page_obj": page_obj,
         "locations": locations,
         "selected_location": selected_location,
-        "parent_locations": parent_locations  # Передаём родителей в шаблон
+        "parent_locations": parent_locations,
+        "selected_location_id": selected_location.id if selected_location else None
     })
 
 

@@ -14,7 +14,7 @@
         </div>
     </div>
 
-    <a class="add-button" href="{% url 'add_battery' %}">Добавить АКБ</a>
+    <a class="add-button" href="{% url 'add_battery' %}?selected_location_id={{ selected_location.id }}">Добавить АКБ</a>
 </div>
 
 {% if locations %}
