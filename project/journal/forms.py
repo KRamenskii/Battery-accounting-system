@@ -1,5 +1,5 @@
 from django import forms
-from .models import InstallationLocation, TestingDBT12D, TestingIC105, Battery
+from .models import InstallationLocation, TestingDBT12D, TestingIC105, Battery, BatteryInstallationHistory
 
 class InstallationLocationForm(forms.ModelForm):
     class Meta:
@@ -26,6 +26,26 @@ class TestingIC105Form(forms.ModelForm):
         fields = ['battery', 'testing_date', 'SOH', 'VOL', 'R', 'STD', 'CCA']
 
 class BatteryForm(forms.ModelForm):
+    installation_location = forms.ModelChoiceField(
+        queryset=InstallationLocation.objects.all(),
+        required=True,
+        label="Место установки"
+    )
+
     class Meta:
         model = Battery
-        fields = ['battery_type', 'serial_number', 'battery_number', 'manufacture_date', 'acceptance_date', 'installation_date']
+        fields = ['battery_type', 'serial_number', 'battery_number', 
+                  'manufacture_date', 'acceptance_date', 'installation_date', 
+                  'installation_location']
+
+    def save(self, commit=True):
+        battery = super().save(commit=False)
+        if commit:
+            battery.save()
+            # Создаём запись в истории установки
+            BatteryInstallationHistory.objects.create(
+                battery=battery,
+                installation_location=self.cleaned_data['installation_location'],
+                installation_date=battery.installation_date
+            )
+        return battery
