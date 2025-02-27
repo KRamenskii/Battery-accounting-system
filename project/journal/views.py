@@ -1,7 +1,7 @@
 from django.core.paginator import Paginator
 from django.db.models import Max, OuterRef, Subquery
 from django.shortcuts import get_object_or_404, render
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
 
 from .models import Battery, BatteryInstallationHistory, InstallationLocation, TestingDBT12D, TestingIC105
@@ -108,6 +108,10 @@ class BatteryCreateView(CreateView):
             initial['installation_location'] = location  # Предзаполняем поле установки
         
         return initial
+
+    def get_success_url(self):
+        selected_location_id = self.request.POST.get('installation_location')  # Получаем ID места установки из POST-запроса
+        return reverse('journal_filtered', kwargs={'location_id': selected_location_id})  # Возвращаем на страницу журнала с фильтром
 
 
 def get_last_installation():
