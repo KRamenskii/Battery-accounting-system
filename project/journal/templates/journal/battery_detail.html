@@ -83,7 +83,7 @@
 
             <div class="test-results-button-container">
                 <button class="battery-type-detail-btn chart-btn" type="button">Построить график</button>
-                <button class="battery-type-detail-btn add-test-btn" type="submit">Добавить измерение</button>
+                <a class="battery-type-detail-btn add-test-btn" href="{% url 'add_testing_dbt12d' battery.id %}">Добавить измерение DBT12D</a>
             </div> 
         </div>
 
@@ -94,7 +94,7 @@
 
             <div class="test-results-button-container">
                 <button class="battery-type-detail-btn chart-btn" type="button">Построить график</button>
-                <button class="battery-type-detail-btn add-test-btn" type="submit">Добавить измерение</button>
+                <a class="battery-type-detail-btn add-test-btn" href="{% url 'add_testing_ic105' battery.id %}">Добавить измерение IC105</a>
             </div>  
         </div>
     </div>

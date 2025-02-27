@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block title %}Добавление тестирования{% endblock %}
+
+{% block content %}
+<div class="add-container">
+    <h3 class="add-container-header-title">Добавить измерение</h3>
+    <form method="post" class="scrollable-form">
+        {% csrf_token %}
+        <div class="form-container">
+            {{ form.as_p }}
+        </div>
+        <div class="button-container">
+            <a class="battery-type-detail-btn back-btn" href="{% url 'battery_detail' form.initial.battery.id %}">Назад</a>
+            <button class="battery-type-detail-btn update-btn" type="submit">Добавить</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

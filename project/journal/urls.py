@@ -11,4 +11,6 @@ urlpatterns = [
     path('installation_locations/<int:pk>/update/', InstallationLocationUpdateView.as_view(), name='installation_location_edit'),
     path('add/', InstallationLocationCreateView.as_view(), name='installation_location_add'),
     path('<int:pk>/detail/', views.battery_detail, name='battery_detail'),
+    path('add_testing_dbt12d/<int:battery_id>/', views.TestingDBT12DCreateView.as_view(), name='add_testing_dbt12d'),
+    path('add_testing_ic105/<int:battery_id>/', views.TestingIC105CreateView.as_view(), name='add_testing_ic105'),
 ]
