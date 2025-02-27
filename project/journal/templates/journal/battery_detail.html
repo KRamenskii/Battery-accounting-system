@@ -21,9 +21,36 @@
                         <tr><td>Производитель</td><td>{{ battery.battery_type.manufacturer }}</td></tr>
                         <tr><td>Тип</td><td>{{ battery.battery_type }}</td></tr>
                         <tr><td>Серийный номер</td><td>{{ battery.serial_number }}</td></tr>
-                        <tr><td>Дата изготовления</td><td>{{ battery.manufacture_date|default:"Отсутствует"|date:"d.m.Y" }}</td></tr>
-                        <tr><td>Дата приёмки</td><td>{{ battery.acceptance_date|default:"Отсутствует"|date:"d.m.Y" }}</td></tr>
-                        <tr><td>Дата установки</td><td>{{ battery.installation_date|default:"Отсутствует"|date:"d.m.Y" }}</td></tr>
+                        <tr>
+                            <td>Дата изготовления</td>
+                            <td>
+                                {% if battery.manufacture_date %}
+                                    {{ battery.manufacture_date|date:"d.m.Y" }}
+                                {% else %}
+                                    Отсутствует
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Дата приёмки</td>
+                            <td>
+                                {% if battery.acceptance_date %}
+                                    {{ battery.acceptance_date|date:"d.m.Y" }}
+                                {% else %}
+                                    Отсутствует
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Дата установки</td>
+                            <td>
+                                {% if battery.installation_date %}
+                                    {{ battery.installation_date|date:"d.m.Y" }}
+                                {% else %}
+                                    Отсутствует
+                                {% endif %}
+                            </td>
+                        </tr>
                         <tr><td>Срок службы</td><td>{{ battery.battery_type.lifespan }}</td></tr>
                         <tr><td>Номинальное напряжение, В</td><td>{{ battery.battery_type.nominal_voltage }}</td></tr>
                         <tr><td>Номинальная ёмкость, Ач</td><td>{{ battery.battery_type.nominal_capacity_20 }}</td></tr>

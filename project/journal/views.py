@@ -83,6 +83,13 @@ class BatteryUpdateView(UpdateView):
         return reverse_lazy('battery_detail', kwargs={'pk': self.object.id})
 
 
+class BatteryCreateView(CreateView):
+    model = Battery
+    form_class = BatteryForm
+    template_name = 'journal/add_battery.html'
+    success_url = reverse_lazy('journal')
+
+
 def get_last_installation():
     """Получаем только последнее место установки АКБ"""
     return BatteryInstallationHistory.objects.filter(

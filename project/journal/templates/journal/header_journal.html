@@ -14,11 +14,7 @@
         </div>
     </div>
 
-    <button class="add-button" id="addButton">Добавить</button>
-    <div class="dropdown-menu" id="dropdownMenu">
-        <a href="#">Добавить АКБ</a>
-        <a href="#">Добавить измерение</a>
-    </div>
+    <a class="add-button" href="{% url 'add_battery' %}">Добавить АКБ</a>
 </div>
 
 {% if locations %}

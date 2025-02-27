@@ -71,6 +71,7 @@
     width: 100%;
     gap: 10px;
     position: relative;
+    place-items: center;
 }
 
 .add-button {
@@ -78,40 +79,18 @@
     color: black;
     border: none;
     border-radius: 0 10px 0 0;
-    padding-inline: 10px;
+    padding: 10px;
     font-weight: bold;
     cursor: pointer;
     height: 100%;
-    position: relative;
+    text-decoration: none;
+    text-align: center;
+    align-content: center;
 }
 
 .add-button:hover {
     background-color: #dd862e;
     color: black;
-}
-
-.dropdown-menu {
-    position: absolute;
-    top: 110%; /* Меню появляется под кнопкой */
-    right: 0; /* Выравнивание по правому краю кнопки */
-    background-color: white;
-    border-radius: 10px;
-    border: solid black 2px;
-    display: none;
-    flex-direction: column;
-    min-width: 200px;
-    z-index: 10;
-}
-
-.dropdown-menu a {
-    display: block;
-    padding: 8px;
-    text-decoration: none;
-    color: black;
-}
-
-.dropdown-menu a:hover {
-    background-color: rgba(40, 102, 163, 0.5);
 }
 
 /* Стилизация для шапки таблицы */
