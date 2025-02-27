@@ -50,9 +50,14 @@ class Battery(models.Model):
     )
     battery_number = models.CharField(
         max_length=255, 
-        verbose_name="Номер АКБ"
+        verbose_name="Номер АКБ",
+        unique=True
     )
-    manufacture_date = models.DateField(verbose_name="Дата изготовления")
+    manufacture_date = models.DateField(
+        verbose_name="Дата изготовления", 
+        null=True, 
+        blank=True
+    )
     acceptance_date = models.DateField(
         verbose_name="Дата приемки", 
         null=True, 
@@ -84,7 +89,9 @@ class BatteryInstallationHistory(models.Model):
         verbose_name="Место установки"
     )
     installation_date = models.DateField(
-        verbose_name="Дата установки"
+        verbose_name="Дата установки",
+        null=True,
+        blank=True
     )
 
     class Meta:
