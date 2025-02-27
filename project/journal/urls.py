@@ -15,4 +15,5 @@ urlpatterns = [
     path('add_testing_ic105/<int:battery_id>/', views.TestingIC105CreateView.as_view(), name='add_testing_ic105'),
     path('battery_detail/<int:pk>/update/', views.BatteryUpdateView.as_view(), name='battery_detail_edit'),
     path('add_battery/', views.BatteryCreateView.as_view(), name='add_battery'),
+    path('add_installation_location_battery/<int:battery_id>/', views.BatteryInstallationHistoryCreateView.as_view(), name='add_installation_location_battery'),
 ]

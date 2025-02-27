@@ -158,3 +158,17 @@
 .path-item {
     font-weight: normal;
 }
+
+/* Таблица с местами установок АКБ */
+.inst-loc thead {
+    position: sticky;
+    top: 0;
+}
+
+.inst-loc th {
+    background-color: #dff2ff;
+}
+
+.inst-loc tr:hover {
+    background-color: rgba(40, 102, 163, 0.5);
+}

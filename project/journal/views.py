@@ -5,7 +5,7 @@ from django.urls import reverse, reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
 
 from .models import Battery, BatteryInstallationHistory, InstallationLocation, TestingDBT12D, TestingIC105
-from .forms import InstallationLocationForm, TestingDBT12DForm, TestingIC105Form, BatteryForm
+from .forms import InstallationLocationForm, TestingDBT12DForm, TestingIC105Form, BatteryForm, BatteryInstallationHistoryForm
 
 
 class InstallationLocationCreateView(CreateView):
@@ -112,6 +112,28 @@ class BatteryCreateView(CreateView):
     def get_success_url(self):
         selected_location_id = self.request.POST.get('installation_location')  # Получаем ID места установки из POST-запроса
         return reverse('journal_filtered', kwargs={'location_id': selected_location_id})  # Возвращаем на страницу журнала с фильтром
+
+
+class BatteryInstallationHistoryCreateView(CreateView):
+    model = BatteryInstallationHistory
+    form_class = BatteryInstallationHistoryForm
+    template_name = 'journal/add_installation_location_battery.html'
+
+    def get_initial(self):
+        initial = super().get_initial()
+        battery_id = self.kwargs.get('battery_id')
+        battery = get_object_or_404(Battery, id=battery_id)
+        initial['battery'] = battery
+        return initial
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        battery_id = self.kwargs.get('battery_id')
+        kwargs['battery'] = get_object_or_404(Battery, id=battery_id)  # Передаем аккумулятор в форму
+        return kwargs
+
+    def get_success_url(self):
+        return reverse_lazy('battery_detail', kwargs={'pk': self.object.battery.id})
 
 
 def get_last_installation():

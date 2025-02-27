@@ -25,6 +25,7 @@ class TestingIC105Form(forms.ModelForm):
         model = TestingIC105
         fields = ['battery', 'testing_date', 'SOH', 'VOL', 'R', 'STD', 'CCA']
 
+
 class BatteryForm(forms.ModelForm):
     installation_location = forms.ModelChoiceField(
         queryset=InstallationLocation.objects.all(),
@@ -49,3 +50,23 @@ class BatteryForm(forms.ModelForm):
                 installation_date=battery.installation_date
             )
         return battery
+
+
+class BatteryInstallationHistoryForm(forms.ModelForm):
+    class Meta:
+        model = BatteryInstallationHistory
+        fields = ['installation_location', 'installation_date']  # Убираем 'battery'
+
+    def __init__(self, *args, **kwargs):
+        # Получаем аккумулятор из аргументов
+        self.battery = kwargs.pop('battery', None)
+        super().__init__(*args, **kwargs)
+
+        # Устанавливаем поле battery в предустановленное значение
+        if self.battery:
+            self.instance.battery = self.battery
+
+    def clean_installation_date(self):
+        installation_date = self.cleaned_data.get('installation_date')
+        # Добавьте здесь любую дополнительную валидацию для даты установки
+        return installation_date

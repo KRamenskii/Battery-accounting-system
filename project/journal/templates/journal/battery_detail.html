@@ -68,7 +68,7 @@
             <h5 class="battery-detail-header">История мест установки (хранения) АКБ №{{ battery.battery_number }}</h5>
 
             <div class="battery-detail-table-wrapper">
-                <table class="battery-detail-table">
+                <table class="battery-detail-table inst-loc">
                     <thead>
                         <tr>
                             <th>Место установки (хранения)</th>
@@ -96,7 +96,7 @@
 
             <div class="test-results-button-container">
                 <a class="battery-type-detail-btn back-btn" href="{% url 'journal_filtered' location_id %}">В журнал</a>
-                <button class="battery-type-detail-btn add-test-btn" type="button">Добавить место установки</button>
+                <a class="battery-type-detail-btn add-test-btn" href="{% url 'add_installation_location_battery' battery.id %}">Добавить место установки</a>
             </div>
         </div>
     </div>
