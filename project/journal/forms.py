@@ -1,5 +1,5 @@
 from django import forms
-from .models import InstallationLocation, TestingDBT12D, TestingIC105
+from .models import InstallationLocation, TestingDBT12D, TestingIC105, Battery
 
 class InstallationLocationForm(forms.ModelForm):
     class Meta:
@@ -24,3 +24,8 @@ class TestingIC105Form(forms.ModelForm):
     class Meta:
         model = TestingIC105
         fields = ['battery', 'testing_date', 'SOH', 'VOL', 'R', 'STD', 'CCA']
+
+class BatteryForm(forms.ModelForm):
+    class Meta:
+        model = Battery
+        fields = ['battery_type', 'serial_number', 'battery_number', 'manufacture_date', 'acceptance_date', 'installation_date']

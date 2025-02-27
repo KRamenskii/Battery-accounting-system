@@ -5,7 +5,7 @@ from django.urls import reverse_lazy
 from django.views.generic import CreateView, UpdateView, DeleteView
 
 from .models import Battery, BatteryInstallationHistory, InstallationLocation, TestingDBT12D, TestingIC105
-from .forms import InstallationLocationForm, TestingDBT12DForm, TestingIC105Form
+from .forms import InstallationLocationForm, TestingDBT12DForm, TestingIC105Form, BatteryForm
 
 
 class InstallationLocationCreateView(CreateView):
@@ -71,6 +71,16 @@ class TestingIC105CreateView(CreateView):
     def get_success_url(self):
         # Используем pk вместо battery_id
         return reverse_lazy('battery_detail', kwargs={'pk': self.object.battery.id})
+
+
+class BatteryUpdateView(UpdateView):
+    model = Battery
+    form_class = BatteryForm
+    template_name = 'journal/battery_detail_edit.html'
+    context_object_name = 'battery_detail_edit'
+
+    def get_success_url(self):
+        return reverse_lazy('battery_detail', kwargs={'pk': self.object.id})
 
 
 def get_last_installation():
