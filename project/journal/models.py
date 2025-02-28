@@ -46,7 +46,9 @@ class Battery(models.Model):
     )
     serial_number = models.CharField(
         max_length=255, 
-        verbose_name="Серийный номер"
+        verbose_name="Серийный номер",
+        null=True, 
+        blank=True
     )
     battery_number = models.CharField(
         max_length=255, 
