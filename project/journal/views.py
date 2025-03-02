@@ -213,9 +213,14 @@ def journal_view(request, location_id=None):
         battery=OuterRef('pk')
     ).order_by('-testing_date').values('SOH')[:1]
 
+    latest_vol_subquery = TestingDBT12D.objects.filter(
+        battery=OuterRef('pk')
+    ).order_by('-testing_date').values('VOL')[:1]
+
     batteries = batteries.annotate(
         last_testing_date=Subquery(latest_test_subquery),
-        last_soh=Subquery(latest_soh_subquery)
+        last_soh=Subquery(latest_soh_subquery),
+        last_vol=Subquery(latest_vol_subquery)
     )
 
     journal_data = [
@@ -227,6 +232,7 @@ def journal_view(request, location_id=None):
             "battery_type": battery.battery_type.battery_type_title,
             "testing_date": battery.last_testing_date or "Нет данных",
             "soh": battery.last_soh or "Нет данных",
+            "vol": battery.last_vol,
             "battery_id": battery.id
         }
         for index, battery in enumerate(batteries, start=1)

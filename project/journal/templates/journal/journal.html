@@ -28,7 +28,21 @@
                     <td>{{ item.battery_number }}</td>
                     <td>{{ item.battery_type }}</td>
                     <td>{{ item.testing_date }}</td>
-                    <td>{{ item.soh }}</td>
+                    <td>
+                        {% if item.soh >= 80 %}
+                            <i class="fa-solid fa-battery-full" style="color: rgb(0, 255, 0);"></i>
+                        {% elif item.soh >= 60 %}
+                            <i class="fa-solid fa-battery-half" style="color: rgb(246, 255, 0);"></i>
+                        {% elif item.soh >= 40 %}
+                            <i class="fa-solid fa-battery-half" style="color: rgb(255, 174, 0);"></i>
+                        {% else %}
+                            <i class="fa-solid fa-battery-empty" style="color: rgb(255, 0, 0);"></i>
+                        {% endif %}
+                        {{ item.soh|floatformat:0 }}%
+                        
+                        <i class="fa-solid fa-car-battery" style="margin-left: 10px;"></i> 
+                        {{ item.vol }} В
+                    </td>
                 </tr>
                 {% endfor %}
             </tbody>
