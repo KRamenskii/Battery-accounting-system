@@ -21,3 +21,30 @@ document.querySelectorAll('.installation-location-info').forEach(item => {
         window.location.href = item.getAttribute('data-url');
     });
 });
+
+function toggleDropdown(event) {
+    event.stopPropagation();
+    const dropdown = document.getElementById('typeFilterDropdown');
+    if (dropdown.style.display === 'block') {
+        dropdown.style.display = 'none';
+    } else {
+        dropdown.style.display = 'block';
+        // Прокрутка к активному элементу
+        const activeItem = dropdown.querySelector('.active');
+        if (activeItem) {
+            activeItem.scrollIntoView({ block: 'nearest' });
+        }
+    }
+}
+
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('typeFilterDropdown');
+    if (!event.target.closest('.dropdown') && dropdown.style.display === 'block') {
+        dropdown.style.display = 'none';
+    }
+});
+
+// Запрещаем закрытие при клике внутри скроллящейся области
+document.querySelector('.dropdown-scroll-container').addEventListener('click', function(e) {
+    e.stopPropagation();
+});

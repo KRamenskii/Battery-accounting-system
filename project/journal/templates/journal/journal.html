@@ -12,7 +12,27 @@
         <div class="battery-types-table-cell">№</div>
         <div class="battery-types-table-cell">Место установки</div>
         <div class="battery-types-table-cell">Номер</div>
-        <div class="battery-types-table-cell">Тип</div>
+        <div class="type-filter-cell">
+            <div class="filter-header">
+                <span class="filter-title center-item">Тип</span>
+                <div class="dropdown right-item">
+                    <button class="dropbtn" title="Фильтр по типу" onclick="toggleDropdown(event)">
+                        <i class="fas fa-filter"></i>
+                    </button>
+                    <div class="dropdown-content" id="typeFilterDropdown">
+                        <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}type=all&page=1" 
+                           onclick="closeDropdown()">Все типы</a>
+                        {% for type_id, type_name in battery_types %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}type={{ type_id }}&page=1"
+                               {% if selected_battery_type == type_id %}class="active"{% endif %}
+                               onclick="closeDropdown()">
+                                {{ type_name }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="battery-types-table-cell">Дата измерения</div>
         <div class="battery-types-table-cell">Состояние</div>
     </div>
@@ -51,21 +71,21 @@
 
     <!-- Пагинация -->
     {% if page_obj.paginator.num_pages > 1 %}
-    <div class="pagination">
-        <span>
-            {% if page_obj.has_previous %}
-                <a class="pagination-button" href="?page=1">В начало</a>
-                <a class="pagination-button" href="?page={{ page_obj.previous_page_number }}">Назад</a>
-            {% endif %}
+        <div class="pagination">
+            <span>
+                {% if page_obj.has_previous %}
+                    <a class="pagination-button" href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}page=1">В начало</a>
+                    <a class="pagination-button" href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}page={{ page_obj.previous_page_number }}">Назад</a>
+                {% endif %}
 
-            Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
 
-            {% if page_obj.has_next %}
-                <a class="pagination-button" href="?page={{ page_obj.next_page_number }}">Далее</a>
-                <a class="pagination-button" href="?page={{ page_obj.paginator.num_pages }}">В конец</a>
-            {% endif %}
-        </span>
-    </div>
+                {% if page_obj.has_next %}
+                    <a class="pagination-button" href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}page={{ page_obj.next_page_number }}">Далее</a>
+                    <a class="pagination-button" href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}page={{ page_obj.paginator.num_pages }}">В конец</a>
+                {% endif %}
+            </span>
+        </div>
     {% endif %}
 </div>
 {% endblock %}

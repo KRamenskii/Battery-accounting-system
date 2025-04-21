@@ -171,7 +171,9 @@ def get_parent_locations(location):
 
 
 def journal_view(request, location_id=None):
-    """Отображение страницы журнала с учетом фильтрации по местоположению"""
+    """Отображение страницы журнала с учетом фильтрации по местоположению и типу АБ"""
+    #  Получаем параметр фильтрации по типу из GET-запроса
+    battery_type_id = request.GET.get('type')
 
     last_installation_subquery = BatteryInstallationHistory.objects.filter(
         battery=OuterRef("pk")
@@ -180,6 +182,10 @@ def journal_view(request, location_id=None):
     batteries = Battery.objects.annotate(
         last_location=Subquery(last_installation_subquery)
     )
+
+    # Применяем фильтр по типу АБ, если он задан
+    if battery_type_id and battery_type_id != 'all':
+        batteries = batteries.filter(battery_type_id=battery_type_id)
 
     used_locations = set(batteries.values_list("last_location", flat=True))
     parent_ids = set()
@@ -223,6 +229,11 @@ def journal_view(request, location_id=None):
         last_vol=Subquery(latest_vol_subquery)
     )
 
+    # Получаем только те типы АКБ, которые есть в отфильтрованном наборе
+    battery_types = batteries.order_by('battery_type__battery_type_title') \
+                           .values_list('battery_type__id', 'battery_type__battery_type_title') \
+                           .distinct()
+
     journal_data = [
         {
             "index": index,
@@ -247,7 +258,9 @@ def journal_view(request, location_id=None):
         "locations": locations,
         "selected_location": selected_location,
         "parent_locations": parent_locations,
-        "selected_location_id": selected_location.id if selected_location else None
+        "selected_location_id": selected_location.id if selected_location else None,
+        "battery_types": battery_types,
+        "selected_battery_type": int(battery_type_id) if battery_type_id and battery_type_id != 'all' else None
     })
 
 
