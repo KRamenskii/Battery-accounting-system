@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<div class="battery-types-container d-flex" style="flex-direction: row;">
+    <div class="battery-card">
+        <h5 class="dashboard-card-title">ОБЩАЯ СТАТИСТИКА АКБ</h5>
+        <div class="stat-main d-flex justify-content-between mb-3">
+            <div><strong>{{ total_batteries }}</strong> шт</div>
+            <div><strong>{{ batteries_on_equipment }}</strong> шт</div>
+        </div>
+        <ul class="battery-stats-list">
+            <li><span class="icon">🧳</span> <span><strong>{{ batteries_on_equipment }}</strong> на оборудовании</span></li>
+            <li><span class="icon">📦</span> <span><strong>{{ batteries_on_storage }}</strong> на складе</span></li>
+            <li><span class="icon">❌</span> <span><strong>{{ batteries_utilized }}</strong> на утилизацию</span></li>
+            <li><span class="icon">⏰</span> <span><strong>{{ batteries_need_check_equipment }}</strong> необходима проверка на 🧳</span></li>
+            <li><span class="icon">⏰</span> <span><strong>{{ batteries_need_check_storage }}</strong> необходима проверка на 📦</span></li>
+        </ul>
+    </div>
+    <div class="battery-card">
+        <h5 class="dashboard-card-title">ЁМКОСТЬ АБ на ОБОРУДОВАНИИ</h5>
+    </div>
+    <div class="battery-card">
+        <h5 class="dashboard-card-title">ЁМКОСТЬ АБ на СКЛАДЕ</h5>
+    </div>
+</div>
+{% endblock %}

@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'accounts',
     'journal',
-    'battery_types'
+    'battery_types',
+    'homepage'
 ]
 
 MIDDLEWARE = [
