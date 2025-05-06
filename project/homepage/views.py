@@ -30,6 +30,9 @@ def homepage(request):
     # Полгода назад
     six_months_ago = date.today() - timedelta(days=180)
 
+    storage_batteries = []
+    equipment_batteries = []
+
     for battery_id, record in latest_by_battery.items():
         location = record.installation_location.location_title.strip()
 
@@ -37,7 +40,7 @@ def homepage(request):
             batteries_utilized += 1
         elif location == storage:
             batteries_on_storage += 1
-
+            storage_batteries.append(record.battery)
             # Проверяем последнюю дату тестирования
             last_test_db = TestingDBT12D.objects.filter(battery_id=battery_id).aggregate(last=Max('testing_date'))['last']
             last_test_ic = TestingIC105.objects.filter(battery_id=battery_id).aggregate(last=Max('testing_date'))['last']
@@ -49,6 +52,7 @@ def homepage(request):
                 batteries_need_check_storage += 1
         else:
             batteries_on_equipment += 1
+            equipment_batteries.append(record.battery)
 
             # Проверяем последнюю дату тестирования
             last_test_db = TestingDBT12D.objects.filter(battery_id=battery_id).aggregate(last=Max('testing_date'))['last']
@@ -59,6 +63,80 @@ def homepage(request):
 
             if last_test is None or last_test < six_months_ago:
                 batteries_need_check_equipment += 1
+    
+    # Создание таблицы по емкости АКБ на складе
+    battery_capacity_table_on_storage = []
+    battery_types = set(b.battery_type for b in storage_batteries)
+
+    for bt in battery_types:
+        batteries = [b for b in storage_batteries if b.battery_type == bt]
+        total = len(batteries)
+        low_mid = 0
+        low = 0
+        no_data = 0
+
+        for battery in batteries:
+            latest_test = (
+                TestingDBT12D.objects
+                .filter(battery=battery)
+                .order_by('-testing_date')
+                .first()
+            )
+
+            if latest_test is None:
+                no_data += 1
+                continue
+
+            soh = float(latest_test.SOH)
+            if soh < 50:
+                low += 1
+            elif soh < 80:
+                low_mid += 1
+
+        battery_capacity_table_on_storage.append({
+            'type': bt.battery_type_title,
+            'total': total,
+            'mid_low': low_mid,
+            'low': low,
+            'no_data': no_data
+        })
+
+    # Создание таблицы по емкости АКБ на оборудовании
+    battery_capacity_table_on_equipment = []
+    battery_types = set(b.battery_type for b in equipment_batteries)
+
+    for bt in battery_types:
+        batteries = [b for b in equipment_batteries if b.battery_type == bt]
+        total = len(batteries)
+        low_mid = 0
+        low = 0
+        no_data = 0
+
+        for battery in batteries:
+            latest_test = (
+                TestingDBT12D.objects
+                .filter(battery=battery)
+                .order_by('-testing_date')
+                .first()
+            )
+
+            if latest_test is None:
+                no_data += 1
+                continue
+
+            soh = float(latest_test.SOH)
+            if soh < 50:
+                low += 1
+            elif soh < 80:
+                low_mid += 1
+
+        battery_capacity_table_on_equipment.append({
+            'type': bt.battery_type_title,
+            'total': total,
+            'mid_low': low_mid,
+            'low': low,
+            'no_data': no_data
+        })
 
     context = {
         'total_batteries': Battery.objects.count(),
@@ -67,6 +145,8 @@ def homepage(request):
         'batteries_utilized': batteries_utilized,
         'batteries_need_check_equipment': batteries_need_check_equipment,
         'batteries_need_check_storage': batteries_need_check_storage,
+        'battery_capacity_table_on_storage': battery_capacity_table_on_storage,
+        'battery_capacity_table_on_equipment': battery_capacity_table_on_equipment,
     }
 
     return render(request, 'homepage/homepage.html', context)

@@ -18,11 +18,47 @@
             <li><span class="icon">⏰</span> <span><strong>{{ batteries_need_check_storage }}</strong> необходима проверка на 📦</span></li>
         </ul>
     </div>
+    
     <div class="battery-card">
         <h5 class="dashboard-card-title">ЁМКОСТЬ АБ на ОБОРУДОВАНИИ</h5>
+        <div class="capacity-grid header">
+            <div>Тип</div>
+            <div>Всего</div>
+            <div>🔋 &lt 80%</div>
+            <div>🪫 &lt 50%</div>
+            <div>❌</div>
+        </div>
+
+        {% for row in battery_capacity_table_on_equipment %}
+            <div class="capacity-grid row">
+                <div>{{ row.type }}</div>
+                <div>{% if row.total %}{{ row.total }}{% endif %}</div>
+                <div>{% if row.mid_low %}{{ row.mid_low }}{% endif %}</div>
+                <div>{% if row.low %}<strong>{{ row.low }}</strong>{% endif %}</div>
+                <div>{% if row.no_data %}{{ row.no_data }}{% endif %}</div>
+            </div>
+        {% endfor %}
     </div>
+    
     <div class="battery-card">
         <h5 class="dashboard-card-title">ЁМКОСТЬ АБ на СКЛАДЕ</h5>
+        <div class="capacity-grid header">
+            <div>Тип</div>
+            <div>Всего</div>
+            <div>🔋 &lt 80%</div>
+            <div>🪫 &lt 50%</div>
+            <div>❌</div>
+        </div>
+    
+        {% for row in battery_capacity_table_on_storage %}
+            <div class="capacity-grid row">
+                <div>{{ row.type }}</div>
+                <div>{% if row.total %}{{ row.total }}{% endif %}</div>
+                <div>{% if row.mid_low %}{{ row.mid_low }}{% endif %}</div>
+                <div>{% if row.low %}<strong>{{ row.low }}</strong>{% endif %}</div>
+                <div>{% if row.no_data %}{{ row.no_data }}{% endif %}</div>
+            </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}

@@ -6,6 +6,9 @@
     padding: 10px;
     height: auto;
     align-self: start;
+    max-height: 100%;
+    overflow: auto;
+    scrollbar-width: none;
 }
 
 .dashboard-card-title {
@@ -46,4 +49,30 @@
 .battery-stats-list strong {
     font-weight: 600;
     color: #000;
+}
+
+.capacity-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+    font-size: 0.95rem;
+    text-align: center;
+    padding: 6px 10px;
+    box-sizing: border-box;
+}
+
+.capacity-grid.header {
+    font-weight: bold;
+    border-bottom: 2px solid #333;
+    margin-bottom: 6px;
+}
+
+.capacity-grid > div {
+    padding: 6px 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.capacity-grid > div:first-child {
+    text-align: left;
 }
