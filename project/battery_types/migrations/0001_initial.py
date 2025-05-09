@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('manufacturer', models.CharField(max_length=255, verbose_name='Производитель')),
                 ('battery_type_title', models.CharField(max_length=255, verbose_name='Модель')),
                 ('nominal_voltage', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Номинальное напряжение, В')),
-                ('elements_count', models.IntegerField(verbose_name='Количество элементов в АКБ')),
+                ('elements_count', models.IntegerField(verbose_name='Количество элементов в АБ')),
                 ('lifespan', models.IntegerField(verbose_name='Скрок службы, лет')),
                 ('nominal_capacity_20', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Номинальная ёмкость при 20-ти часовом разряде')),
                 ('nominal_capacity_10', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Номинальная ёмкость при 10-ти часовом разряде')),
@@ -27,8 +27,8 @@ class Migration(migrations.Migration):
                 ('internal_resistance', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Внутреннее сопротивление, Ом')),
             ],
             options={
-                'verbose_name': 'Тип АКБ',
-                'verbose_name_plural': 'Типы АКБ',
+                'verbose_name': 'Тип АБ',
+                'verbose_name_plural': 'Типы АБ',
             },
         ),
     ]

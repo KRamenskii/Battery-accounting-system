@@ -2,7 +2,7 @@
     <div class="filter-container">
         <h5>Путь к текущему разделу</h5>
         <div class="filter-container-path">
-            <a href="{% url 'journal' %}" class="filter-link">Все АКБ</a>
+            <a href="{% url 'journal' %}" class="filter-link">Все АБ</a>
     
             {% for parent in parent_locations %}
                 <a href="{% url 'journal_filtered' parent.id %}" class="filter-link">{{ parent.location_title }}</a>
@@ -14,7 +14,7 @@
         </div>
     </div>
 
-    <a class="add-button" href="{% url 'add_battery' %}?selected_location_id={{ selected_location.id }}">Добавить АКБ</a>
+    <a class="add-button" href="{% url 'add_battery' %}?selected_location_id={{ selected_location.id }}">Добавить АБ</a>
 </div>
 
 {% if locations %}

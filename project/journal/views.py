@@ -46,7 +46,7 @@ class TestingDBT12DCreateView(CreateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        battery_id = self.kwargs.get('battery_id')  # Получаем ID АКБ из URL
+        battery_id = self.kwargs.get('battery_id')  # Получаем ID АБ из URL
         battery = get_object_or_404(Battery, id=battery_id)
         initial['battery'] = battery  # Предзаполняем поле battery
         return initial
@@ -63,7 +63,7 @@ class TestingIC105CreateView(CreateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        battery_id = self.kwargs.get('battery_id')  # Получаем ID АКБ из URL
+        battery_id = self.kwargs.get('battery_id')  # Получаем ID АБ из URL
         battery = get_object_or_404(Battery, id=battery_id)
         initial['battery'] = battery  # Предзаполняем поле battery
         return initial
@@ -137,7 +137,7 @@ class BatteryInstallationHistoryCreateView(CreateView):
 
 
 def get_last_installation():
-    """Получаем только последнее место установки АКБ"""
+    """Получаем только последнее место установки АБ"""
     return BatteryInstallationHistory.objects.filter(
         battery=OuterRef("pk")
     ).order_by("-installation_date").values("installation_location_id")[:1]
@@ -229,7 +229,7 @@ def journal_view(request, location_id=None):
         last_vol=Subquery(latest_vol_subquery)
     )
 
-    # Получаем только те типы АКБ, которые есть в отфильтрованном наборе
+    # Получаем только те типы АБ, которые есть в отфильтрованном наборе
     battery_types = batteries.order_by('battery_type__battery_type_title') \
                            .values_list('battery_type__id', 'battery_type__battery_type_title') \
                            .distinct()

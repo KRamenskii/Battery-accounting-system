@@ -14,7 +14,7 @@ class BatteryType(models.Model):
         max_digits=10,
         decimal_places=2
     )
-    elements_count = models.IntegerField(verbose_name = 'Количество элементов в АКБ')
+    elements_count = models.IntegerField(verbose_name = 'Количество элементов в АБ')
     lifespan = models.IntegerField(verbose_name = 'Срок службы, лет')
     nominal_capacity_20 = models.DecimalField(
         verbose_name = 'Номинальная ёмкость при 20-ти часовом разряде',
@@ -43,8 +43,8 @@ class BatteryType(models.Model):
     )
 
     class Meta:
-        verbose_name = 'Тип АКБ'
-        verbose_name_plural = 'Типы АКБ'
+        verbose_name = 'Тип АБ'
+        verbose_name_plural = 'Типы АБ'
 
     def __str__(self):
         return self.battery_type_title

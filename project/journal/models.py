@@ -42,7 +42,7 @@ class Battery(models.Model):
     battery_type = models.ForeignKey(
         'battery_types.BatteryType',
         on_delete=models.CASCADE,
-        verbose_name="Тип АКБ"
+        verbose_name="Тип АБ"
     )
     serial_number = models.CharField(
         max_length=255, 
@@ -52,7 +52,7 @@ class Battery(models.Model):
     )
     battery_number = models.CharField(
         max_length=255, 
-        verbose_name="Номер АКБ",
+        verbose_name="Номер АБ",
         unique=True
     )
     manufacture_date = models.DateField(
@@ -72,17 +72,17 @@ class Battery(models.Model):
     )
 
     class Meta:
-        verbose_name = "АКБ"
-        verbose_name_plural = "АКБ"
+        verbose_name = "АБ"
+        verbose_name_plural = "АБ"
 
     def __str__(self):
-        return f"АКБ №{self.battery_number} ({self.battery_type.battery_type_title})"
+        return f"АБ №{self.battery_number} ({self.battery_type.battery_type_title})"
 
 class BatteryInstallationHistory(models.Model):
     battery = models.ForeignKey(
         Battery, 
         on_delete=models.CASCADE, 
-        verbose_name="АКБ",
+        verbose_name="АБ",
         related_name='installation_history'
     )
     installation_location = models.ForeignKey(
@@ -97,15 +97,15 @@ class BatteryInstallationHistory(models.Model):
     )
 
     class Meta:
-        verbose_name = "История установки АКБ"
-        verbose_name_plural = "Истории установки АКБ"
+        verbose_name = "История установки АБ"
+        verbose_name_plural = "Истории установки АБ"
         ordering = ['-installation_date']
 
     def __str__(self):
         return f"{self.battery} установлен в {self.installation_location} на {self.installation_date}"
 
 class TestingDBT12D(models.Model):
-    battery = models.ForeignKey(Battery, on_delete=models.CASCADE, verbose_name="АКБ")
+    battery = models.ForeignKey(Battery, on_delete=models.CASCADE, verbose_name="АБ")
     testing_date = models.DateField(verbose_name="Дата тестирования")
     SOH = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Состояние здоровья (SOH)")
     SOC = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Состояние заряда (SOC)")
@@ -119,7 +119,7 @@ class TestingDBT12D(models.Model):
         verbose_name_plural = "Тестирования DBT12D"
 
 class TestingIC105(models.Model):
-    battery = models.ForeignKey(Battery, on_delete=models.CASCADE, verbose_name="АКБ")
+    battery = models.ForeignKey(Battery, on_delete=models.CASCADE, verbose_name="АБ")
     testing_date = models.DateField(verbose_name="Дата тестирования")
     SOH = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Состояние здоровья (SOH)")
     VOL = models.DecimalField(max_digits=10, decimal_places=2, verbose_name="Напряжение (VOL)")

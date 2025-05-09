@@ -73,7 +73,7 @@
     cursor: pointer;
 }
 
-/* Настройка кнопки добавления типа АКБ */
+/* Настройка кнопки добавления типа АБ */
 .btn-add-battery-type {
     background-color: #dff2ff;
     border-radius: 0 0 10px 10px;
@@ -94,7 +94,7 @@
     color: white;
 }
 
-/* Настройка страницы параметров акб */
+/* Настройка страницы параметров АБ */
 .detail-content {
     padding-right: 5px;
     padding-left: 5px;

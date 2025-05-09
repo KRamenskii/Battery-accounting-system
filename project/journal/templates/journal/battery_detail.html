@@ -2,7 +2,7 @@
 
 {% load static %}
 
-{% block title %}АКБ №{{ battery.battery_number }}{% endblock %}
+{% block title %}АБ №{{ battery.battery_number }}{% endblock %}
 
 {% block extra_styles %}
     <link rel="stylesheet" href="{% static 'journal/css/battery_detail.css' %}">
@@ -10,7 +10,7 @@
 
 {% block content %}
 <div class="battery-detail-container">
-    <!-- Левая часть: параметры АКБ -->
+    <!-- Левая часть: параметры АБ -->
     <div class="battery-detail-half-container">
         <div class="testing-container">
             <h5 class="battery-detail-header">Параметры аккумуляторной батареи №{{ battery.battery_number }}</h5>
@@ -65,7 +65,7 @@
         </div>
 
         <div class="testing-container">
-            <h5 class="battery-detail-header">История мест установки (хранения) АКБ №{{ battery.battery_number }}</h5>
+            <h5 class="battery-detail-header">История мест установки (хранения) АБ №{{ battery.battery_number }}</h5>
 
             <div class="battery-detail-table-wrapper">
                 <table class="battery-detail-table inst-loc">

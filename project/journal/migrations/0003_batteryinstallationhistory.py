@@ -16,12 +16,12 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('installation_date', models.DateField(auto_now_add=True, verbose_name='Дата установки')),
-                ('battery', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='installation_history', to='journal.battery', verbose_name='АКБ')),
+                ('battery', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='installation_history', to='journal.battery', verbose_name='АБ')),
                 ('installation_location', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journal.installationlocation', verbose_name='Место установки')),
             ],
             options={
-                'verbose_name': 'История установки АКБ',
-                'verbose_name_plural': 'Истории установки АКБ',
+                'verbose_name': 'История установки АБ',
+                'verbose_name_plural': 'Истории установки АБ',
                 'ordering': ['-installation_date'],
             },
         ),

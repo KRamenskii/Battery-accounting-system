@@ -54,7 +54,7 @@
 }
 
 
-/* Таблица с параметрами АКБ */
+/* Таблица с параметрами АБ */
 .battery-detail-table {
     background-color: #dff2ff;
     width: 100%;
@@ -159,7 +159,7 @@
     font-weight: normal;
 }
 
-/* Таблица с местами установок АКБ */
+/* Таблица с местами установок АБ */
 .inst-loc thead {
     position: sticky;
     top: 0;

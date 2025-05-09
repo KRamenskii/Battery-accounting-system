@@ -9,7 +9,7 @@ def homepage(request):
     storage = "Б-143, Б-144 (C)"
     utilization = "Б-143, Б-144 (У)"
 
-    # Получаем последнюю установку каждой АКБ
+    # Получаем последнюю установку каждой АБ
     all_installations = (
         BatteryInstallationHistory.objects
         .select_related('installation_location')
@@ -64,7 +64,7 @@ def homepage(request):
             if last_test is None or last_test < six_months_ago:
                 batteries_need_check_equipment += 1
     
-    # Создание таблицы по емкости АКБ на складе
+    # Создание таблицы по емкости АБ на складе
     battery_capacity_table_on_storage = []
     battery_types = set(b.battery_type for b in storage_batteries)
 
@@ -101,7 +101,7 @@ def homepage(request):
             'no_data': no_data
         })
 
-    # Создание таблицы по емкости АКБ на оборудовании
+    # Создание таблицы по емкости АБ на оборудовании
     battery_capacity_table_on_equipment = []
     battery_types = set(b.battery_type for b in equipment_batteries)
 

@@ -32,16 +32,16 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('serial_number', models.CharField(max_length=255, verbose_name='Серийный номер')),
-                ('battery_number', models.CharField(max_length=255, verbose_name='Номер АКБ')),
+                ('battery_number', models.CharField(max_length=255, verbose_name='Номер АБ')),
                 ('manufacture_date', models.DateField(verbose_name='Дата изготовления')),
                 ('acceptance_date', models.DateField(blank=True, null=True, verbose_name='Дата приемки')),
                 ('installation_date', models.DateField(blank=True, null=True, verbose_name='Дата установки на оборудование')),
-                ('battery_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='battery_types.batterytype', verbose_name='Тип АКБ')),
+                ('battery_type', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='battery_types.batterytype', verbose_name='Тип АБ')),
                 ('installation_location', models.ManyToManyField(related_name='batteries', to='journal.installationlocation', verbose_name='Места установки')),
             ],
             options={
-                'verbose_name': 'АКБ',
-                'verbose_name_plural': 'АКБ',
+                'verbose_name': 'АБ',
+                'verbose_name_plural': 'АБ',
             },
         ),
         migrations.CreateModel(
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
                 ('R', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Сопротивление (R)')),
                 ('STD', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Стандарт (STD)')),
                 ('CCA', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Холодный ток запуска (CCA)')),
-                ('battery', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journal.battery', verbose_name='АКБ')),
+                ('battery', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journal.battery', verbose_name='АБ')),
             ],
             options={
                 'verbose_name': 'Тестирование DBT12D',
@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
                 ('R', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Сопротивление (R)')),
                 ('STD', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Стандарт (STD)')),
                 ('CCA', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Холодный ток запуска (CCA)')),
-                ('battery', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journal.battery', verbose_name='АКБ')),
+                ('battery', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='journal.battery', verbose_name='АБ')),
             ],
             options={
                 'verbose_name': 'Тестирование IC-105',
