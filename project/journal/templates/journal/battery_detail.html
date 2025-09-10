@@ -20,12 +20,12 @@
                     <tbody>
                         <tr><td>Производитель</td><td>{{ battery.battery_type.manufacturer }}</td></tr>
                         <tr><td>Тип</td><td>{{ battery.battery_type }}</td></tr>
-                        <tr><td>Серийный номер</td><td>{{ battery.serial_number }}</td></tr>
+                        <tr><td>Серийный номер</td><td>{{ battery.serial_parameters.serial_number }}</td></tr>
                         <tr>
                             <td>Дата изготовления</td>
                             <td>
-                                {% if battery.manufacture_date %}
-                                    {{ battery.manufacture_date|date:"d.m.Y" }}
+                                {% if battery.serial_parameters.manufacture_date %}
+                                    {{ battery.serial_parameters.manufacture_date|date:"d.m.Y" }}
                                 {% else %}
                                     Отсутствует
                                 {% endif %}

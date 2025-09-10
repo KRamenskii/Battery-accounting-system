@@ -1,5 +1,5 @@
 from django import forms
-from .models import InstallationLocation, TestingDBT12D, TestingIC105, Battery, BatteryInstallationHistory
+from .models import InstallationLocation, TestingDBT12D, TestingIC105, Battery, BatteryInstallationHistory, SerialParameters
 
 class InstallationLocationForm(forms.ModelForm):
     class Meta:
@@ -35,9 +35,7 @@ class BatteryForm(forms.ModelForm):
 
     class Meta:
         model = Battery
-        fields = ['battery_type', 'serial_number', 'battery_number', 
-                  'manufacture_date', 'acceptance_date', 'installation_date', 
-                  'installation_location']
+        fields = ['battery_type', 'battery_number', 'acceptance_date', 'installation_date', 'installation_location']
 
     def save(self, commit=True):
         battery = super().save(commit=False)
@@ -70,3 +68,29 @@ class BatteryInstallationHistoryForm(forms.ModelForm):
         installation_date = self.cleaned_data.get('installation_date')
         # Добавьте здесь любую дополнительную валидацию для даты установки
         return installation_date
+
+
+# Создаем кастомную форму для админки
+class BatteryAdminForm(forms.ModelForm):
+    class Meta:
+        model = Battery
+        fields = '__all__'
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        
+        # Фильтруем серийные параметры по выбранному типу АКБ
+        if 'battery_type' in self.data:
+            try:
+                battery_type_id = int(self.data.get('battery_type'))
+                self.fields['serial_parameters'].queryset = SerialParameters.objects.filter(
+                    battery_type_id=battery_type_id
+                )
+            except (ValueError, TypeError):
+                self.fields['serial_parameters'].queryset = SerialParameters.objects.none()
+        elif self.instance and self.instance.battery_type:
+            self.fields['serial_parameters'].queryset = SerialParameters.objects.filter(
+                battery_type=self.instance.battery_type
+            )
+        else:
+            self.fields['serial_parameters'].queryset = SerialParameters.objects.none()
