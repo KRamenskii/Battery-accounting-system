@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
+import os
 from pathlib import Path
 from decouple import config
 
@@ -41,7 +42,9 @@ INSTALLED_APPS = [
     'accounts',
     'journal',
     'battery_types',
-    'homepage'
+    'homepage',
+    'dbbackup',
+    'utils'
 ]
 
 MIDDLEWARE = [
@@ -141,3 +144,8 @@ STATICFILES_DIRS = [
 LOGIN_URL = '/auth/login/'  # Указывает URL страницы входа
 LOGIN_REDIRECT_URL = '/accounts/personal_account/'  # Перенаправление после успешного входа
 LOGOUT_REDIRECT_URL = '/auth/login/'  # Перенаправление после выхода (можно изменить)
+
+# Добавьте эти настройки в конец settings.py
+import os
+DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
+DBBACKUP_STORAGE_OPTIONS = {'location': os.path.join(BASE_DIR, 'backups')}
