@@ -43,7 +43,6 @@ INSTALLED_APPS = [
     'journal',
     'battery_types',
     'homepage',
-    'dbbackup',
     'utils'
 ]
 

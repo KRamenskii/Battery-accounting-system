@@ -96,14 +96,6 @@ class Battery(models.Model):
     def __str__(self):
         serial_info = self.serial_parameters.serial_number if self.serial_parameters else "Н/Д"
         return f"АКБ №{self.battery_number} ({self.battery_type.battery_type_title}, SN: {serial_info})"
-    
-    # Добавляем проверку согласованности
-    def clean(self):
-        if (self.serial_parameters and 
-            self.serial_parameters.battery_type != self.battery_type):
-            raise ValidationError(
-                "Выбранный серийный параметр не принадлежит к типу этой АКБ"
-            )
 
 class BatteryInstallationHistory(models.Model):
     battery = models.ForeignKey(

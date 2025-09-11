@@ -35,7 +35,7 @@ class BatteryForm(forms.ModelForm):
 
     class Meta:
         model = Battery
-        fields = ['battery_type', 'battery_number', 'acceptance_date', 'installation_date', 'installation_location']
+        fields = ['battery_type', 'serial_parameters', 'battery_number', 'acceptance_date', 'installation_date', 'installation_location']
 
     def save(self, commit=True):
         battery = super().save(commit=False)

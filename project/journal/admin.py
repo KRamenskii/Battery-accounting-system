@@ -14,23 +14,6 @@ class SerialParametersAdmin(admin.ModelAdmin):
     list_filter = ('battery_type',)
     search_fields = ('serial_number',)
 
-# @admin.register(Battery)
-# class BatteryAdmin(admin.ModelAdmin):
-#     list_display = ('battery_number', 'battery_type', 'get_serial_number', 'get_manufacture_date', 'acceptance_date')
-#     list_filter = ('battery_type',)
-#     search_fields = ('battery_number',)
-    
-#     # Добавляем методы для отображения связанных данных
-#     def get_serial_number(self, obj):
-#         return obj.serial_parameters.serial_number if obj.serial_parameters else "Не указан"
-#     get_serial_number.short_description = 'Серийный номер'
-#     get_serial_number.admin_order_field = 'serial_parameters__serial_number'  # Для сортировки
-    
-#     def get_manufacture_date(self, obj):
-#         return obj.serial_parameters.manufacture_date if obj.serial_parameters else "Не указана"
-#     get_manufacture_date.short_description = 'Дата изготовления'
-#     get_manufacture_date.admin_order_field = 'serial_parameters__manufacture_date'  # Для сортировки
-
 @admin.register(TestingDBT12D)
 class TestingDBT12DAdmin(admin.ModelAdmin):
     list_display = ('id', 'battery', 'testing_date', 'SOH', 'SOC', 'VOL', 'R', 'STD', 'CCA')

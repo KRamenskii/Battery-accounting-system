@@ -101,17 +101,18 @@ class BatteryCreateView(CreateView):
 
     def get_initial(self):
         initial = super().get_initial()
-        selected_location_id = self.request.GET.get('selected_location_id')  # Получаем ID места установки из GET-запроса
-        
+        selected_location_id = self.request.GET.get('selected_location_id')
         if selected_location_id:
-            location = get_object_or_404(InstallationLocation, id=selected_location_id)
-            initial['installation_location'] = location  # Предзаполняем поле установки
-        
+            initial['installation_location'] = get_object_or_404(InstallationLocation, id=selected_location_id)
+
+        battery_type_id = self.request.GET.get('battery_type')
+        if battery_type_id:
+            initial['battery_type'] = battery_type_id  # достаточно id
         return initial
 
     def get_success_url(self):
-        selected_location_id = self.request.POST.get('installation_location')  # Получаем ID места установки из POST-запроса
-        return reverse('journal_filtered', kwargs={'location_id': selected_location_id})  # Возвращаем на страницу журнала с фильтром
+        selected_location_id = self.request.POST.get('installation_location')
+        return reverse('journal_filtered', kwargs={'location_id': selected_location_id})
 
 
 class BatteryInstallationHistoryCreateView(CreateView):
