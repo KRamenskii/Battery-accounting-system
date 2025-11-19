@@ -70,6 +70,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'battery_management.context_processors.add_show_menu',
+                'utils.context_processors.error_report_count',
             ],
         },
     },

@@ -143,3 +143,51 @@ class CustomUser(AbstractUser):
 
     def __str__(self):
         return f"{self.sur_name} {self.user_name}"
+
+# Модель ошибок
+class ErrorType(models.Model):
+    """Тип ошибки (персональные данные, ошибка системы и т.д.)"""
+    name = models.CharField(max_length=100, unique=True, verbose_name="Название типа ошибки")
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Тип ошибки"
+        verbose_name_plural = "Типы ошибок"
+        ordering = ['name']
+
+class ErrorStatus(models.Model):
+    """Статус обработки запроса"""
+    name = models.CharField(max_length=50, unique=True, verbose_name="Название статуса")
+    color = models.CharField(
+        max_length=20,
+        blank=True,
+        null=True,
+        verbose_name="Цвет (Bootstrap класс, например 'warning' или 'success')"
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = "Статус ошибки"
+        verbose_name_plural = "Статусы ошибок"
+        ordering = ['name']
+
+class ErrorReport(models.Model):
+    """Сообщение об ошибке от пользователя"""
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='Пользователь')
+    error_type = models.ForeignKey(ErrorType, on_delete=models.SET_NULL, null=True, verbose_name='Тип ошибки')
+    description = models.TextField(verbose_name='Описание проблемы')
+    status = models.ForeignKey(ErrorStatus, on_delete=models.SET_NULL, null=True, verbose_name='Статус')
+    created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
+    updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')
+
+    def __str__(self):
+        return f"{self.error_type} ({self.user.username})"
+
+    class Meta:
+        verbose_name = "Сообщение об ошибке"
+        verbose_name_plural = "Сообщения об ошибках"
+        ordering = ['-created_at']

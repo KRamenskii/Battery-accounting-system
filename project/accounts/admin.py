@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Role, CustomUser, Organization, Department, SubDepartment, Job
+from .models import Role, CustomUser, Organization, Department, SubDepartment, Job, ErrorType, ErrorStatus, ErrorReport
 
 @admin.register(Role)
 class RoleAdmin(admin.ModelAdmin):
@@ -28,3 +28,23 @@ class SubDepartmentAdmin(admin.ModelAdmin):
 @admin.register(Job)
 class JobAdmin(admin.ModelAdmin):
     list_display = ('id', 'job_title')
+
+@admin.register(ErrorType)
+class ErrorTypeAdmin(admin.ModelAdmin):
+    list_display = ("id", "name")
+    search_fields = ("name",)
+    ordering = ("name",)
+
+@admin.register(ErrorStatus)
+class ErrorStatusAdmin(admin.ModelAdmin):
+    list_display = ("id", "name", "color")
+    search_fields = ("name",)
+    ordering = ("name",)
+
+@admin.register(ErrorReport)
+class ErrorReportAdmin(admin.ModelAdmin):
+    list_display = ("id", "user", "error_type", "status", "created_at", "updated_at")
+    list_filter = ("error_type", "status", "created_at")
+    search_fields = ("description", "user__username")
+    ordering = ("-created_at",)
+    readonly_fields = ("created_at", "updated_at")
