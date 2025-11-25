@@ -60,11 +60,15 @@
             {% if user.role.role_title == 'Админ' %}
                 <button class="battery-type-detail-btn back-btn" type="submit">Перейти в каталог обращений</button>
             {% else %}
-                <button class="battery-type-detail-btn back-btn" type="submit">Сообщить об ошибке</button>
+                <button type="button" class="battery-type-detail-btn back-btn" data-bs-toggle="modal" data-bs-target="#errorReportModal">
+                    Сообщить об ошибке
+                </button>
             {% endif %}
             <button class="battery-type-detail-btn delete-btn" type="submit">Выйти</button>
         </form>
     </div>
 </div>
+
+{% include 'accounts/add_error_report.html' %}
 
 {% endblock %}
