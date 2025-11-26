@@ -1,0 +1,210 @@
+.accounts-container {
+    display: flex;
+    flex-direction: row;
+}
+
+.add-container {
+    flex: 0 0 auto;
+    width: 50vw;
+}
+
+.accounts-button-container {
+    background: rgba(40, 102, 163, 0.5);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 3fr));
+    grid-auto-rows: 120px;
+    gap: 15px;
+    border-radius: 10px;
+    padding: 5px;
+    width: 30vw;
+    margin-top: 20px;
+    max-height: max-content;
+}
+
+.accounts-btn {
+    background: #dff2ff;
+    border: 2px solid #dff2ff;
+    border-radius: 10px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 10px;
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    text-decoration: none;
+    color: black;
+}
+
+.accounts-btn:hover {
+    background: #dd862e;
+    color: white;
+    transform: translateY(-2px);
+}
+
+.add-container {
+    flex: 0 0 auto;
+    width: 80vw;
+}
+
+.error-reports-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    overflow-y: auto;
+    max-height: calc(100vh - 40px);
+}
+
+.error-report-card {
+    background-color: #dff2ff;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.error-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.badges-container {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.actions-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.action-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 6px;
+    background-color: rgba(40, 102, 163, 0.1);
+    color: #2866A3;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    transition: all 0.3s ease;
+}
+
+.action-btn:hover {
+    background-color: rgba(40, 102, 163, 0.2);
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 6px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    padding: 5px 0;
+    min-width: 120px;
+    z-index: 1000;
+    display: none;
+    border: 1px solid #e0e0e0;
+}
+
+.dropdown-menu.show {
+    display: block;
+}
+
+.dropdown-item {
+    width: 100%;
+    padding: 8px 12px;
+    border: none;
+    background: none;
+    text-align: left;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdown-item.delete-btn {
+    color: #ff4d4d;
+}
+
+.dropdown-item.delete-btn:hover {
+    background-color: #ffe6e6;
+}
+
+.status-badge,
+.type-badge {
+    padding: 3px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    color: white;
+    text-align: center;
+    min-width: 80px;
+}
+
+.type-badge {
+    background-color: rgba(40, 102, 163, 0.7);
+}
+
+.error-description {
+    color: black;
+    font-size: 14px;
+    line-height: 1.4;
+    word-wrap: break-word;
+    flex-grow: 1;
+}
+
+.error-dates {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    color: rgba(0, 0, 0, 0.6);
+}
+
+.created-date {
+    text-align: left;
+    font-weight: bold;
+}
+
+.updated-date {
+    text-align: right;
+}
+
+/* Стили для скролла */
+.error-reports-grid::-webkit-scrollbar {
+    width: 8px;
+}
+
+.error-reports-grid::-webkit-scrollbar-track {
+    background: rgba(40, 102, 163, 0.2);
+    border-radius: 4px;
+}
+
+.error-reports-grid::-webkit-scrollbar-thumb {
+    background: rgba(40, 102, 163, 0.5);
+    border-radius: 4px;
+}
+
+.error-reports-grid::-webkit-scrollbar-thumb:hover {
+    background: rgba(40, 102, 163, 0.7);
+}

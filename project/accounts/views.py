@@ -8,9 +8,14 @@ from .forms import ErrorReportForm
 @login_required
 def personal_account(request):
     user = request.user
-    errorReports = ErrorReport.objects.filter(user=user)
+    error_reports = ErrorReport.objects.filter(user=user)
     error_form = ErrorReportForm()
-    return render(request, 'accounts/personal_account.html', {'user': user, 'errors': errorReports, 'form': error_form})
+    return render(request, 'accounts/personal_account.html', {'user': user, 'errors': error_reports, 'form': error_form})
+
+def error_reports(request):
+    user = request.user
+    error_reports = ErrorReport.objects.filter(user=user)
+    return render(request, 'accounts/error_reports.html', {'user': user, 'errors': error_reports})
 
 class ErrorReportCreateView(CreateView):
     model = ErrorReport

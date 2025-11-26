@@ -82,3 +82,42 @@ document.addEventListener('DOMContentLoaded', function() {
         document.querySelectorAll('.text-danger').forEach(el => el.remove());
     });
 });
+
+// Обработка нажатия на кнопку в ячейке обращения
+function toggleDropdown(button) {
+    // Закрываем все открытые dropdown
+    const allDropdowns = document.querySelectorAll('.dropdown-menu');
+    allDropdowns.forEach(dropdown => {
+        if (dropdown !== button.nextElementSibling) {
+            dropdown.classList.remove('show');
+        }
+    });
+    
+    // Переключаем текущий dropdown
+    const dropdown = button.nextElementSibling;
+    dropdown.classList.toggle('show');
+}
+
+// Закрываем dropdown при клике вне его
+document.addEventListener('click', function(event) {
+    if (!event.target.closest('.actions-container')) {
+        const allDropdowns = document.querySelectorAll('.dropdown-menu');
+        allDropdowns.forEach(dropdown => {
+            dropdown.classList.remove('show');
+        });
+    }
+});
+
+function editError(errorId) {
+    console.log('Редактировать ошибку:', errorId);
+    // Здесь логика редактирования
+    // window.location.href = `/edit-error/${errorId}/`;
+}
+
+function deleteError(errorId) {
+    if (confirm('Вы уверены, что хотите удалить эту ошибку?')) {
+        console.log('Удалить ошибку:', errorId);
+        // Здесь логика удаления
+        // fetch(`/delete-error/${errorId}/`, { method: 'POST' })
+    }
+}

@@ -4,68 +4,74 @@
 
 {% block content %}
 
-<div class="add-container">
-    <h3 class="add-container-header-title">Информация о пользователе</h3>
-    <!-- Контейнер для параметров -->
-    <div class="detail-content scrollable-form">
-        <table class="detail-table">
-            <tbody>
-                <tr>
-                    <td>Имя</td>
-                    <td>{{ user.user_name }}</td>
-                </tr>
-                <tr>
-                    <td>Фамилия</td>
-                    <td>{{ user.sur_name }}</td>
-                </tr>
-                <tr>
-                    <td>Отчество</td>
-                    <td>{{ user.last_name|default:"Не указано" }}</td>
-                </tr>
-                <tr>
-                    <td>Email</td>
-                    <td>{{ user.email }}</td>
-                </tr>
-                <tr>
-                    <td>Сотовый телефон</td>
-                    <td>{{ user.first_phone_number }}</td>
-                </tr>
-                <tr>
-                    <td>Домашний телефон</td>
-                    <td>{{ user.second_phone_number|default:"Не указано" }}</td>
-                </tr>
-                <tr>
-                    <td>Организация</td>
-                    <td>{{ user.organization|default:"Не указана" }}</td>
-                </tr>
-                <tr>
-                    <td>Служба</td>
-                    <td>{{ user.department|default:"Не указана" }}</td>
-                </tr>
-                <tr>
-                    <td>Участок</td>
-                    <td>{{ user.subdepartment|default:"Не указан" }}</td>
-                </tr>
-                <tr>
-                    <td>Должность</td>
-                    <td>{{ user.job|default:"Не указана" }}</td>
-                </tr>
-            </tbody>
-        </table>
+<div class="accounts-container">
+    <div class="add-container">
+        <h3 class="add-container-header-title">Информация о пользователе</h3>
+        <!-- Контейнер для параметров -->
+        <div class="detail-content scrollable-form">
+            <table class="detail-table">
+                <tbody>
+                    <tr>
+                        <td>Имя</td>
+                        <td>{{ user.user_name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Фамилия</td>
+                        <td>{{ user.sur_name }}</td>
+                    </tr>
+                    <tr>
+                        <td>Отчество</td>
+                        <td>{{ user.last_name|default:"Не указано" }}</td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td>{{ user.email }}</td>
+                    </tr>
+                    <tr>
+                        <td>Сотовый телефон</td>
+                        <td>{{ user.first_phone_number }}</td>
+                    </tr>
+                    <tr>
+                        <td>Домашний телефон</td>
+                        <td>{{ user.second_phone_number|default:"Не указано" }}</td>
+                    </tr>
+                    <tr>
+                        <td>Организация</td>
+                        <td>{{ user.organization|default:"Не указана" }}</td>
+                    </tr>
+                    <tr>
+                        <td>Служба</td>
+                        <td>{{ user.department|default:"Не указана" }}</td>
+                    </tr>
+                    <tr>
+                        <td>Участок</td>
+                        <td>{{ user.subdepartment|default:"Не указан" }}</td>
+                    </tr>
+                    <tr>
+                        <td>Должность</td>
+                        <td>{{ user.job|default:"Не указана" }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Контейнер для кнопок -->
+        <div class="button-container">
+            <form class="confirm-form" style="gap: 10px" method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                {% if user.role.role_title == 'Админ' %}
+                    <button class="battery-type-detail-btn back-btn" type="submit">Перейти в каталог обращений</button>
+                {% else %}
+                    <button type="button" class="battery-type-detail-btn back-btn" data-bs-toggle="modal" data-bs-target="#errorReportModal">
+                        Сообщить об ошибке
+                    </button>
+                {% endif %}
+                <button class="battery-type-detail-btn delete-btn" type="submit">Выйти</button>
+            </form>
+        </div>
     </div>
-    <!-- Контейнер для кнопок -->
-    <div class="button-container">
-        <form class="confirm-form" style="gap: 10px" method="post" action="{% url 'logout' %}">
-            {% csrf_token %}
-            {% if user.role.role_title == 'Админ' %}
-                <button class="battery-type-detail-btn back-btn" type="submit">Перейти в каталог обращений</button>
-            {% else %}
-                <button type="button" class="battery-type-detail-btn back-btn" data-bs-toggle="modal" data-bs-target="#errorReportModal">
-                    Сообщить об ошибке
-                </button>
-            {% endif %}
-            <button class="battery-type-detail-btn delete-btn" type="submit">Выйти</button>
-        </form>
+
+    <div class="accounts-button-container">
+        <a class="accounts-btn" href="{% url 'error_reports' %}" role="button">Обращения</a>
     </div>
 </div>
 

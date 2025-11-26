@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Обращения{% endblock %}
+
+{% block content %}
+
+<div class="add-container errors-container">
+    <div class="error-reports-grid">
+        {% for error in errors %}
+        <div class="error-report-card">
+            <div class="error-header">
+                <div class="badges-container">
+                    <div class="status-badge {{ error.status.color }}">{{ error.status.name }}</div>
+                    <div class="type-badge">{{ error.error_type }}</div>
+                </div>
+                <div class="actions-container">
+                    <button class="action-btn" onclick="toggleDropdown(this)">
+                        <i class="fas fa-ellipsis-v"></i> <!-- Иконка троеточия -->
+                    </button>
+                    <div class="dropdown-menu">
+                        <button class="dropdown-item" onclick="editError({{ error.id }})">Редактировать</button>
+                        <button class="dropdown-item delete-btn" onclick="deleteError({{ error.id }})">Удалить</button>
+                    </div>
+                </div>
+            </div>
+            <div class="error-description">
+                {{ error.description }}
+            </div>
+            <div class="error-dates">
+                <div class="created-date">{{ error.created_at|date:"d.m.Y H:i" }}</div>
+                <div class="updated-date">{{ error.updated_at|date:"d.m.Y H:i" }}</div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+{% endblock %}
