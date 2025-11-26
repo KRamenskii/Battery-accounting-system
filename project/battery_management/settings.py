@@ -142,7 +142,7 @@ STATICFILES_DIRS = [
 ]
 
 LOGIN_URL = '/auth/login/'  # Указывает URL страницы входа
-LOGIN_REDIRECT_URL = '/accounts/personal_account/'  # Перенаправление после успешного входа
+LOGIN_REDIRECT_URL = '/accounts/personal-account/'  # Перенаправление после успешного входа
 LOGOUT_REDIRECT_URL = '/auth/login/'  # Перенаправление после выхода (можно изменить)
 
 # Добавьте эти настройки в конец settings.py

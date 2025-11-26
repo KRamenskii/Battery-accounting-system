@@ -58,8 +58,8 @@
         <div class="button-container">
             <form class="confirm-form" style="gap: 10px" method="post" action="{% url 'logout' %}">
                 {% csrf_token %}
-                {% if user.role.role_title == 'Админ' %}
-                    <button class="battery-type-detail-btn back-btn" type="submit">Перейти в каталог обращений</button>
+                {% if user.is_superuser %}
+                    <a class="battery-type-detail-btn back-btn" href="{% url 'error_reports' %}" role="button">Перейти в каталог обращений</a>
                 {% else %}
                     <button type="button" class="battery-type-detail-btn back-btn" data-bs-toggle="modal" data-bs-target="#errorReportModal">
                         Сообщить об ошибке
@@ -69,10 +69,11 @@
             </form>
         </div>
     </div>
-
-    <div class="accounts-button-container">
-        <a class="accounts-btn" href="{% url 'error_reports' %}" role="button">Обращения</a>
-    </div>
+    {% if not user.is_superuser %}
+        <div class="accounts-button-container">
+            <a class="accounts-btn" href="{% url 'error_reports' %}" role="button">Обращения</a>
+        </div>
+    {% endif %}
 </div>
 
 {% include 'accounts/add_error_report.html' %}

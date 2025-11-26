@@ -166,6 +166,12 @@
     background-color: rgba(40, 102, 163, 0.7);
 }
 
+.error-user-name {
+    color: #dd862e;
+    font-size: 12px;
+    font-weight: bold;
+}
+
 .error-description {
     color: black;
     font-size: 14px;
@@ -184,6 +190,7 @@
 .created-date {
     text-align: left;
     font-weight: bold;
+    color: black;
 }
 
 .updated-date {

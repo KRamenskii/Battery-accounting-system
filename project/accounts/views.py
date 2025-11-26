@@ -16,8 +16,18 @@ def personal_account(request):
 
 def error_reports(request):
     user = request.user
-    error_reports = ErrorReport.objects.filter(user=user)
-    return render(request, 'accounts/error_reports.html', {'user': user, 'errors': error_reports})
+
+    if user.is_superuser:
+        # Администратор видит все обращения
+        error_reports = ErrorReport.objects.all()
+    else:
+        # Обычный пользователь видит только свои
+        error_reports = ErrorReport.objects.filter(user=user)
+
+    return render(request, 'accounts/error_reports.html', {
+        'user': user,
+        'errors': error_reports
+    })
 
 class ErrorReportCreateView(CreateView):
     model = ErrorReport
@@ -45,9 +55,15 @@ logger = logging.getLogger(__name__)
 @login_required
 def delete_error_report(request, error_id):
     try:
-        # Находим ошибку текущего пользователя
-        error_report = ErrorReport.objects.get(id=error_id, user=request.user)
+        if request.user.is_superuser:
+            # Суперпользователь — может удалить любую запись
+            error_report = ErrorReport.objects.get(id=error_id)
+        else:
+            # Обычный пользователь — только свои записи
+            error_report = ErrorReport.objects.get(id=error_id, user=request.user)
+
         error_report.delete()
         return JsonResponse({'success': True})
+
     except ErrorReport.DoesNotExist:
         return JsonResponse({'error': 'Error report not found'}, status=404)

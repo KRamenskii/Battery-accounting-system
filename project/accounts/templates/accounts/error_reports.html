@@ -26,6 +26,11 @@
                     </div>
                 </div>
             </div>
+            {% if user.is_superuser %}
+            <div class="error-user-name">
+                {{ error.user.sur_name }} {{ error.user.user_name }} {{ error.user.last_name }}
+            </div>
+            {% endif %}  
             <div class="error-description">
                 {{ error.description }}
             </div>
