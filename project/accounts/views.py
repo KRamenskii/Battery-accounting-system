@@ -1,7 +1,9 @@
 from django.views.generic import CreateView
+from django.views.decorators.http import require_POST
 from django.urls import reverse_lazy
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render
+from django.http import JsonResponse
 from .models import ErrorReport
 from .forms import ErrorReportForm
 
@@ -35,3 +37,17 @@ class ErrorReportCreateView(CreateView):
             form.instance.status = ErrorStatus.objects.first()
             
         return super().form_valid(form)
+
+import logging
+logger = logging.getLogger(__name__)
+
+@require_POST
+@login_required
+def delete_error_report(request, error_id):
+    try:
+        # Находим ошибку текущего пользователя
+        error_report = ErrorReport.objects.get(id=error_id, user=request.user)
+        error_report.delete()
+        return JsonResponse({'success': True})
+    except ErrorReport.DoesNotExist:
+        return JsonResponse({'error': 'Error report not found'}, status=404)

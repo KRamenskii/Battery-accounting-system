@@ -19,7 +19,10 @@
                     </button>
                     <div class="dropdown-menu">
                         <button class="dropdown-item" onclick="editError({{ error.id }})">Редактировать</button>
-                        <button class="dropdown-item delete-btn" onclick="deleteError({{ error.id }})">Удалить</button>
+                        <button class="dropdown-item delete-btn" 
+                                onclick="deleteError('{% url 'delete_error' error.id %}', '{{ csrf_token }}')">
+                            Удалить
+                        </button>
                     </div>
                 </div>
             </div>

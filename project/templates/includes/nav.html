@@ -1,6 +1,6 @@
 <ul class="nav-menu">
     <li>
-        <a href="{% url 'personal_account' %}" class="{% if request.resolver_match.url_name == 'personal_account' %}active{% endif %}">
+        <a href="{% url 'personal_account' %}" class="{% if 'accounts' in request.path %}active{% endif %}">
             <i class="bi bi-person-square"></i>
             <span>Личный кабинет</span>
         </a>

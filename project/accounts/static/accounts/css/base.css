@@ -46,7 +46,7 @@
     transform: translateY(-2px);
 }
 
-.add-container {
+.errors-container {
     flex: 0 0 auto;
     width: 80vw;
 }

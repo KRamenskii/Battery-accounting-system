@@ -114,10 +114,25 @@ function editError(errorId) {
     // window.location.href = `/edit-error/${errorId}/`;
 }
 
-function deleteError(errorId) {
+function deleteError(url, csrfToken) {
     if (confirm('Вы уверены, что хотите удалить эту ошибку?')) {
-        console.log('Удалить ошибку:', errorId);
-        // Здесь логика удаления
-        // fetch(`/delete-error/${errorId}/`, { method: 'POST' })
+        fetch(url, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': csrfToken,
+            },
+        })
+        .then(response => {
+            if (response.ok) {
+                // Просто перезагружаем страницу
+                location.reload();
+            } else {
+                alert('Ошибка при удалении');
+            }
+        })
+        .catch(error => {
+            console.error('Fetch error:', error);
+            alert('Ошибка сети');
+        });
     }
 }
