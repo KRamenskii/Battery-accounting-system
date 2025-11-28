@@ -34,6 +34,9 @@
             <div class="error-description">
                 {{ error.description }}
             </div>
+            <div class="error-description" style="color: gray">
+                {{ error.feedback }}
+            </div>
             <div class="error-dates">
                 <div class="created-date">{{ error.created_at|date:"d.m.Y H:i" }}</div>
                 <div class="updated-date">{{ error.updated_at|date:"d.m.Y H:i" }}</div>
