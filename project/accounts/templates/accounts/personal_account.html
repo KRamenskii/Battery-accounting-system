@@ -69,7 +69,7 @@
             </form>
         </div>
     </div>
-    {% if not user.is_superuser %}
+    {% if not user.is_superuser and errors %}
         <div class="accounts-button-container">
             <a class="accounts-btn" href="{% url 'error_reports' %}" role="button">Обращения</a>
         </div>
