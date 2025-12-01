@@ -1,7 +1,7 @@
 <div class="battery-detail-table-wrapper">
     <table class="testings-dbt-table">
         <thead class="testings-dbt-header">
-            <tr>
+            <tr style="cursor: pointer;">
                 <th>Дата</th>
                 <th>SOH, %</th>
                 {% if model == 'DBT12D' %}
@@ -15,7 +15,7 @@
         </thead>
         <tbody>
             {% for test in testings %}
-            <tr>
+            <tr style="cursor: pointer;">
                 <td>{{ test.testing_date|date:"d.m.Y" }}</td>
                 <td>{{ test.SOH }}</td>
                 {% if model == 'DBT12D' %}
