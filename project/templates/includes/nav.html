@@ -18,7 +18,7 @@
         </a>
     </li>
     <li>
-        <a href="#">
+        <a href="{% url 'events' %}" class="{% if 'events' in request.path %}active{% endif %}">
             <i class="bi bi-calendar2-event"></i>
             <span>События</span>
         </a>

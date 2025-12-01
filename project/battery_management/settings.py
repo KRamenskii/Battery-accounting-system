@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'journal',
     'battery_types',
     'homepage',
-    'utils'
+    'utils',
+    'events',
 ]
 
 MIDDLEWARE = [
