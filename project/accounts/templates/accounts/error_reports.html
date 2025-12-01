@@ -18,7 +18,7 @@
                         <i class="fas fa-ellipsis-v"></i> <!-- Иконка троеточия -->
                     </button>
                     <div class="dropdown-menu">
-                        <button class="dropdown-item" onclick="editError({{ error.id }})">Редактировать</button>
+                        <button class="dropdown-item" onclick="openEditModal({{ error.id }})">Редактировать</button>
                         <button class="dropdown-item delete-btn" 
                                 onclick="deleteError('{% url 'delete_error' error.id %}', '{{ csrf_token }}')">
                             Удалить
@@ -45,5 +45,7 @@
         {% endfor %}
     </div>
 </div>
+
+{% include 'accounts/edit_error_report.html' %}
 
 {% endblock %}

@@ -176,3 +176,143 @@ function editError(errorId) {
     // Логика редактирования
     window.location.href = `/edit-error/${errorId}/`;
 }
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    const editModalEl = document.getElementById('editErrorModal');
+    if (!editModalEl) return; // если модалка не подключена — выходим
+
+    const editModal = new bootstrap.Modal(editModalEl);
+    const form = document.getElementById('editErrorForm');
+    const messages = document.getElementById('editFormMessages');
+    const saveBtn = document.getElementById('editSaveBtn');
+
+    // Поля
+    const inputId = document.getElementById('editErrorId');
+    const selectType = document.getElementById('editErrorType');
+    const textareaDesc = document.getElementById('editDescription');
+    const selectStatus = document.getElementById('editStatus');
+    const textareaFeedback = document.getElementById('editFeedback');
+
+    // вспомогалки
+    function clearMessages() {
+        messages.innerHTML = '';
+        document.querySelectorAll('.is-invalid').forEach(el => el.classList.remove('is-invalid'));
+    }
+    function showMessage(text, type='danger') {
+        const div = document.createElement('div');
+        div.className = `alert alert-${type} alert-dismissible`;
+        div.innerHTML = `${text} <button type="button" class="btn-close" data-bs-dismiss="alert"></button>`;
+        messages.appendChild(div);
+    }
+
+    // Открыть модалку — запрос данных по id
+    window.openEditModal = async function (errorId) {
+        clearMessages();
+        try {
+            const resp = await fetch(`/accounts/api/error/${errorId}/`, {
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            });
+            if (!resp.ok) throw new Error('Ошибка при получении данных');
+            const data = await resp.json();
+
+            // Заполняем поля
+            inputId.value = data.id;
+            // error_type может быть null
+            if (data.error_type) {
+                selectType.value = data.error_type.id;
+            } else {
+                selectType.selectedIndex = 0;
+            }
+            textareaDesc.value = data.description ?? '';
+            if (selectStatus) selectStatus.value = data.status ? data.status.id : '';
+            if (textareaFeedback) textareaFeedback.value = data.feedback ?? '';
+
+            // Права: сервер вернёт is_superuser
+            const isAdmin = data.is_superuser === true;
+
+            // Если админ: показать admin-only элементы и сделать type/desc readonly
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = isAdmin ? '' : 'none');
+
+            if (isAdmin) {
+                // админ видит, но не редактирует тему/описание
+                selectType.setAttribute('disabled', 'disabled');
+                textareaDesc.setAttribute('disabled', 'disabled');
+            } else {
+                selectType.removeAttribute('disabled');
+                textareaDesc.removeAttribute('disabled');
+            }
+
+            editModal.show();
+        } catch (err) {
+            console.error(err);
+            showMessage('Не удалось загрузить данные обращения. Попробуйте ещё раз.', 'danger');
+        }
+    };
+
+    // Обработка сабмита (AJAX POST)
+    form.addEventListener('submit', async function (e) {
+        e.preventDefault();
+        clearMessages();
+
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Сохраняем...';
+
+        const id = inputId.value;
+        const url = `/accounts/api/error/${id}/update/`;
+
+        const fd = new FormData();
+        // Только поля, которые могут быть изменены:
+        // Для пользователя: error_type, description
+        // Для админа: status, feedback
+        // Но отправим все — сервер сам проверит права.
+        fd.append('error_type', selectType.value);
+        fd.append('description', textareaDesc.value);
+        if (selectStatus) fd.append('status', selectStatus.value);
+        if (textareaFeedback) fd.append('feedback', textareaFeedback.value);
+
+        // CSRF
+        const csrf = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+        try {
+            const resp = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': csrf,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: fd
+            });
+
+            const data = await resp.json();
+            if (!resp.ok) {
+                // Приняли ошибки валидации
+                if (data.errors) {
+                    showMessage('Проверьте поля формы', 'danger');
+                    for (const [field, msgs] of Object.entries(data.errors)) {
+                        const el = document.querySelector(`[name="${field}"]`);
+                        if (el) {
+                            el.classList.add('is-invalid');
+                        }
+                    }
+                } else {
+                    showMessage(data.message || 'Ошибка при сохранении', 'danger');
+                }
+            } else {
+                // Успех
+                showMessage(data.message || 'Сохранено', 'success');
+                // закрыть модалку и обновить список
+                setTimeout(() => {
+                    editModal.hide();
+                    location.reload();
+                }, 800);
+            }
+        } catch (err) {
+            console.error(err);
+            showMessage('Ошибка сети при сохранении', 'danger');
+        } finally {
+            saveBtn.disabled = false;
+            saveBtn.textContent = 'Сохранить';
+        }
+    });
+
+});

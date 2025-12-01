@@ -180,7 +180,7 @@ class ErrorReport(models.Model):
     user = models.ForeignKey(CustomUser, on_delete=models.CASCADE, verbose_name='Пользователь')
     error_type = models.ForeignKey(ErrorType, on_delete=models.SET_NULL, null=True, verbose_name='Тип ошибки')
     description = models.TextField(verbose_name='Описание проблемы')
-    feedback = models.TextField(verbose_name='Обратная связь')
+    feedback = models.TextField(verbose_name='Обратная связь', blank=True, null=True)
     status = models.ForeignKey(ErrorStatus, on_delete=models.SET_NULL, null=True, verbose_name='Статус')
     created_at = models.DateTimeField(auto_now_add=True, verbose_name='Дата создания')
     updated_at = models.DateTimeField(auto_now=True, verbose_name='Дата обновления')

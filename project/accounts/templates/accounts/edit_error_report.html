@@ -1,0 +1,57 @@
+<div class="modal fade" id="editErrorModal" tabindex="-1" aria-labelledby="editErrorModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editErrorModalLabel">Редактирование обращения</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+
+            <form id="editErrorForm" method="post">
+                {% csrf_token %}
+                <input type="hidden" id="editErrorId" name="error_id" value="">
+
+                <div class="modal-body">
+
+                    <!-- Тема (ErrorType) -->
+                    <div class="mb-3">
+                        <label for="editErrorType" class="form-label">Тема</label>
+                        <select id="editErrorType" name="error_type" class="form-select">
+                        {% for et in error_types %}
+                            <option value="{{ et.id }}">{{ et.name }}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Описание -->
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Описание</label>
+                        <textarea id="editDescription" name="description" class="form-control" rows="4"></textarea>
+                    </div>
+
+                    <!-- Для администратора: статус -->
+                    <div class="mb-3 admin-only" style="display: none;">
+                        <label for="editStatus" class="form-label">Статус</label>
+                        <select id="editStatus" name="status" class="form-select">
+                        {% for st in statuses %}
+                            <option value="{{ st.id }}">{{ st.name }}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+
+                    <!-- Для администратора: обратная связь -->
+                    <div class="mb-3 admin-only" style="display: none;">
+                        <label for="editFeedback" class="form-label">Обратная связь</label>
+                        <textarea id="editFeedback" name="feedback" class="form-control" rows="3"></textarea>
+                    </div>
+
+                    <div id="editFormMessages"></div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary" id="editSaveBtn">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
