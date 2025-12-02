@@ -1,7 +1,7 @@
 <div class="battery-detail-table-wrapper">
     <table class="testings-dbt-table">
         <thead class="testings-dbt-header">
-            <tr style="cursor: pointer;">
+            <tr>
                 <th>Дата</th>
                 <th>SOH, %</th>
                 {% if model == 'DBT12D' %}
@@ -15,7 +15,11 @@
         </thead>
         <tbody>
             {% for test in testings %}
-            <tr style="cursor: pointer;">
+            <tr style="cursor: pointer;"
+                class="test-row" 
+                data-item-id="{{ test.id }}" 
+                data-item-type="test"
+                data-delete-url="{% url 'delete_test' test_type test.id %}">
                 <td>{{ test.testing_date|date:"d.m.Y" }}</td>
                 <td>{{ test.SOH }}</td>
                 {% if model == 'DBT12D' %}

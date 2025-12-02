@@ -1,8 +1,11 @@
 from django.core.paginator import Paginator
-from django.db.models import Max, OuterRef, Subquery
+from django.db.models import OuterRef, Subquery
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse, reverse_lazy
+from django.http import JsonResponse
 from django.views.generic import CreateView, UpdateView, DeleteView
+from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 
 from .models import Battery, BatteryInstallationHistory, InstallationLocation, TestingDBT12D, TestingIC105
 from .forms import InstallationLocationForm, TestingDBT12DForm, TestingIC105Form, BatteryForm, BatteryInstallationHistoryForm
@@ -308,3 +311,37 @@ def battery_detail(request, pk):
         'installations_path': installations_path,
         'location_id': location_id
     })
+
+
+@require_POST
+@csrf_exempt
+def delete_test(request, test_type, test_id):
+    try:
+        if test_type == 'dbt12d':
+            model = TestingDBT12D
+        elif test_type == 'ic105':
+            model = TestingIC105
+        else:
+            return JsonResponse({'error': 'Неизвестный тип теста'}, status=400)
+        
+        test = model.objects.get(id=test_id)
+        test.delete()
+        return JsonResponse({'success': True})
+    except model.DoesNotExist:
+        model_name = "DBT12D" if test_type == 'dbt12d' else "IC105"
+        return JsonResponse({'error': f'Тест {model_name} не найден'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
+
+
+@require_POST
+@csrf_exempt
+def delete_installation(request, installation_id):
+    try:
+        installation_history = BatteryInstallationHistory.objects.get(id=installation_id)
+        installation_history.delete()
+        return JsonResponse({'success': True})
+    except BatteryInstallationHistory.DoesNotExist:
+        return JsonResponse({'error': 'Запись истории установки не найдена'}, status=404)
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=500)
