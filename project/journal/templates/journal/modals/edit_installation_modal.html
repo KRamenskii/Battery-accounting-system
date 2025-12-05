@@ -1,0 +1,33 @@
+<div class="modal fade" id="editInstallationModal" tabindex="-1" aria-labelledby="editInstallationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editInstallationModalLabel">Редактирование истории установки</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <form id="editInstallationForm" method="post">
+                {% csrf_token %}
+                <input type="hidden" id="editInstallationId" name="installation_id" value="">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editInstallationLocation" class="form-label fw-bold">Место установки</label>
+                        <select id="editInstallationLocation" name="installation_location" class="form-select" required>
+                            {% for location in all_installation_locations %}
+                            <option value="{{ location.id }}">{{ location.location_title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editInstallationDate" class="form-label fw-bold">Дата установки</label>
+                        <input type="date" id="editInstallationDate" name="installation_date" class="form-control" required>
+                    </div>
+                    <div id="editInstallationMessages"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
