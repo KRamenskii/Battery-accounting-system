@@ -22,7 +22,7 @@ document.querySelectorAll('.installation-location-info').forEach(item => {
     });
 });
 
-function toggleDropdown(event) {
+function toggleDropdownJournal(event) {
     event.stopPropagation();
     const dropdown = document.getElementById('typeFilterDropdown');
     if (dropdown.style.display === 'block') {
