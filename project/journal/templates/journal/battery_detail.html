@@ -77,7 +77,12 @@
                     </thead>
                     <tbody>
                         {% for location, path in installations_path %}
-                            <tr>
+                            <tr style="cursor: pointer;"
+                                data-item-id="{{ location.id }}"
+                                class="test-row"
+                                data-item-type="installation"
+                                data-delete-url="{% url 'delete_installation' location.id %}"
+                                onclick="console.log('Location ID: {{ location.id|default:'NO ID' }}')">
                                 <td>
                                     {% for place in path %}
                                         {% if forloop.last %}
@@ -107,7 +112,7 @@
         <div class="testing-container">
             <h5 class="battery-detail-header">Измерения DBT12D</h5>
             
-            {% include 'journal/battery_test_table.html' with testings=testings_dbt12d model=model_dbt12d %}
+            {% include 'journal/battery_test_table.html' with testings=testings_dbt12d model=model_dbt12d test_type='dbt12d' %}
 
             <div class="test-results-button-container">
                 <button class="battery-type-detail-btn chart-btn" type="button">Построить график</button>
@@ -118,7 +123,7 @@
         <div class="testing-container">
             <h5 class="battery-detail-header">Измерения IC105</h5>
             
-            {% include 'journal/battery_test_table.html' with testings=testings_ic105 model=model_ic105 %}
+            {% include 'journal/battery_test_table.html' with testings=testings_ic105 model=model_ic105 test_type='ic105' %}
 
             <div class="test-results-button-container">
                 <button class="battery-type-detail-btn chart-btn" type="button">Построить график</button>
@@ -127,4 +132,20 @@
         </div>
     </div>
 </div>
+
+<!-- Контекстное меню (изначально скрыто) -->
+<div id="contextDropdown" class="dropdown-menu" >
+    <button class="dropdown-item" onclick="openEditModal()">
+        Редактировать
+    </button>
+    <button class="dropdown-item delete-btn"
+            onclick="deleteItem()">
+        Удалить
+    </button>
+</div>
+
+{% include 'journal/modals/edit_test_dbt12d_modal.html' %}
+{% include 'journal/modals/edit_test_ic105_modal.html' %}
+{% include 'journal/modals/edit_installation_modal.html' %}
+
 {% endblock %}

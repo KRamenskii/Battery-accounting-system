@@ -16,4 +16,16 @@ urlpatterns = [
     path('battery_detail/<int:pk>/update/', views.BatteryUpdateView.as_view(), name='battery_detail_edit'),
     path('add_battery/', views.BatteryCreateView.as_view(), name='add_battery'),
     path('add_installation_location_battery/<int:battery_id>/', views.BatteryInstallationHistoryCreateView.as_view(), name='add_installation_location_battery'),
+    path('test/delete/<str:test_type>/<int:test_id>/', views.delete_test, name='delete_test'),
+    path('installation/delete/<int:installation_id>/', views.delete_installation, name='delete_installation'),
+    
+    # API для получения данных
+    path('api/test/dbt12d/<int:test_id>/', views.get_test_dbt12d, name='api_get_test_dbt12d'),
+    path('api/test/ic105/<int:test_id>/', views.get_test_ic105, name='api_get_test_ic105'),
+    path('api/installation/<int:installation_id>/', views.get_installation_history, name='api_get_installation_history'),
+    
+    # API для обновления данных
+    path('api/test/dbt12d/<int:test_id>/update/', views.update_test_dbt12d, name='api_update_test_dbt12d'),
+    path('api/test/ic105/<int:test_id>/update/', views.update_test_ic105, name='api_update_test_ic105'),
+    path('api/installation/<int:installation_id>/update/', views.update_installation_history, name='api_update_installation_history'),
 ]

@@ -1,0 +1,49 @@
+<div class="modal fade" id="editTestDbt12dModal" tabindex="-1" aria-labelledby="editTestDbt12dModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editTestDbt12dModalLabel">Редактирование тестирования DBT12D</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрыть"></button>
+            </div>
+            <form id="editTestDbt12dForm" method="post">
+                {% csrf_token %}
+                <input type="hidden" id="editTestDbt12dId" name="test_id" value="">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="editTestingDateDbt" class="form-label fw-bold">Дата тестирования</label>
+                        <input type="date" id="editTestingDateDbt" name="testing_date" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editSOHDbt" class="form-label fw-bold">SOH, %</label>
+                        <input type="number" step="0.01" id="editSOHDbt" name="SOH" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editSOCDbt" class="form-label fw-bold">SOC, %</label>
+                        <input type="number" step="0.01" id="editSOCDbt" name="SOC" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editVOLDbt" class="form-label fw-bold">VOL, В</label>
+                        <input type="number" step="0.01" id="editVOLDbt" name="VOL" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editRDbt" class="form-label fw-bold">R, мОм</label>
+                        <input type="number" step="0.01" id="editRDbt" name="R" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editSTDDbt" class="form-label fw-bold">STD</label>
+                        <input type="number" step="0.01" id="editSTDDbt" name="STD" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCCADbt" class="form-label fw-bold">CCA</label>
+                        <input type="number" step="0.01" id="editCCADbt" name="CCA" class="form-control" required>
+                    </div>
+                    <div id="editTestDbt12dMessages"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

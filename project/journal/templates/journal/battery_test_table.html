@@ -15,7 +15,11 @@
         </thead>
         <tbody>
             {% for test in testings %}
-            <tr>
+            <tr style="cursor: pointer;"
+                class="test-row" 
+                data-item-id="{{ test.id }}" 
+                data-item-type="test"
+                data-delete-url="{% url 'delete_test' test_type test.id %}">
                 <td>{{ test.testing_date|date:"d.m.Y" }}</td>
                 <td>{{ test.SOH }}</td>
                 {% if model == 'DBT12D' %}
