@@ -135,8 +135,7 @@
 
 <!-- Контекстное меню (изначально скрыто) -->
 <div id="contextDropdown" class="dropdown-menu" >
-    <button class="dropdown-item"
-            onclick="openEditModal()">
+    <button class="dropdown-item" onclick="openEditModal()">
         Редактировать
     </button>
     <button class="dropdown-item delete-btn"
@@ -144,5 +143,9 @@
         Удалить
     </button>
 </div>
+
+{% include 'journal/modals/edit_test_dbt12d_modal.html' %}
+{% include 'journal/modals/edit_test_ic105_modal.html' %}
+{% include 'journal/modals/edit_installation_modal.html' %}
 
 {% endblock %}

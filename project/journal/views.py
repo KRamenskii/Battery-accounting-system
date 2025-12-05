@@ -6,6 +6,8 @@ from django.http import JsonResponse
 from django.views.generic import CreateView, UpdateView, DeleteView
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.http import require_http_methods
 
 from .models import Battery, BatteryInstallationHistory, InstallationLocation, TestingDBT12D, TestingIC105
 from .forms import InstallationLocationForm, TestingDBT12DForm, TestingIC105Form, BatteryForm, BatteryInstallationHistoryForm
@@ -296,6 +298,9 @@ def battery_detail(request, pk):
     installation_locations = BatteryInstallationHistory.objects.filter(battery=battery).order_by('installation_date')
     location_id = installation_locations.last().installation_location.id
 
+    # Получаем все места установки для выпадающего списка
+    all_installation_locations = InstallationLocation.objects.all()
+    
     installations_path = [
         (location, get_parent_locations(location.installation_location) + [location.installation_location])
         for location in installation_locations
@@ -309,7 +314,8 @@ def battery_detail(request, pk):
         'model_ic105': 'IC105',
         'installation_locations': installation_locations,
         'installations_path': installations_path,
-        'location_id': location_id
+        'location_id': location_id,
+        'all_installation_locations': all_installation_locations
     })
 
 
@@ -345,3 +351,203 @@ def delete_installation(request, installation_id):
         return JsonResponse({'error': 'Запись истории установки не найдена'}, status=404)
     except Exception as e:
         return JsonResponse({'error': str(e)}, status=500)
+    
+
+# Редавтирование результатов тестирования АБ и истории мест установок
+# Для сериализации тестирований DBT12D
+def serialize_test_dbt12d(test):
+    return {
+        "id": test.id,
+        "battery_id": test.battery.id,
+        "testing_date": test.testing_date.strftime("%Y-%m-%d"),
+        "SOH": str(test.SOH),
+        "SOC": str(test.SOC),
+        "VOL": str(test.VOL),
+        "R": str(test.R),
+        "STD": str(test.STD),
+        "CCA": str(test.CCA),
+    }
+
+# Для сериализации тестирований IC105
+def serialize_test_ic105(test):
+    return {
+        "id": test.id,
+        "battery_id": test.battery.id,
+        "testing_date": test.testing_date.strftime("%Y-%m-%d"),
+        "SOH": str(test.SOH),
+        "VOL": str(test.VOL),
+        "R": str(test.R),
+        "STD": str(test.STD),
+        "CCA": str(test.CCA),
+    }
+
+# Для сериализации истории установок
+def serialize_installation_history(installation):
+    return {
+        "id": installation.id,
+        "installation_location_id": installation.installation_location.id,
+        "installation_date": installation.installation_date.strftime("%Y-%m-%d") if installation.installation_date else None,
+        "battery_id": installation.battery.id,
+    }
+
+# API для получения данных тестирования DBT12D
+@login_required
+def get_test_dbt12d(request, test_id):
+    test = get_object_or_404(TestingDBT12D, id=test_id)
+    
+    data = serialize_test_dbt12d(test)
+    return JsonResponse(data)
+
+# API для получения данных тестирования IC105
+@login_required
+def get_test_ic105(request, test_id):
+    test = get_object_or_404(TestingIC105, id=test_id)
+    
+    data = serialize_test_ic105(test)
+    return JsonResponse(data)
+
+# API для получения данных истории установки
+@login_required
+def get_installation_history(request, installation_id):
+    installation = get_object_or_404(BatteryInstallationHistory, id=installation_id)
+    
+    data = serialize_installation_history(installation)
+    return JsonResponse(data)
+
+# Обновление тестирования DBT12D
+@login_required
+@require_http_methods(["POST"])
+def update_test_dbt12d(request, test_id):
+    test = get_object_or_404(TestingDBT12D, id=test_id)
+    
+    errors = {}
+    
+    # Получаем данные
+    testing_date = request.POST.get('testing_date')
+    soh = request.POST.get('SOH')
+    soc = request.POST.get('SOC')
+    vol = request.POST.get('VOL')
+    r = request.POST.get('R')
+    std = request.POST.get('STD')
+    cca = request.POST.get('CCA')
+    
+    # Валидация
+    if not testing_date:
+        errors['testing_date'] = ['Дата тестирования обязательна']
+    
+    numeric_fields = ['SOH', 'SOC', 'VOL', 'R', 'STD', 'CCA']
+    for field in numeric_fields:
+        value = request.POST.get(field)
+        if value:
+            try:
+                float(value)
+            except ValueError:
+                errors[field] = ['Должно быть числом']
+    
+    if errors:
+        return JsonResponse({'success': False, 'errors': errors}, status=400)
+    
+    # Обновляем данные
+    try:
+        if testing_date:
+            test.testing_date = testing_date
+        if soh is not None:
+            test.SOH = soh
+        if soc is not None:
+            test.SOC = soc
+        if vol is not None:
+            test.VOL = vol
+        if r is not None:
+            test.R = r
+        if std is not None:
+            test.STD = std
+        if cca is not None:
+            test.CCA = cca
+        
+        test.save()
+        return JsonResponse({'success': True, 'message': 'Тестирование обновлено'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+# Обновление тестирования IC105
+@login_required
+@require_http_methods(["POST"])
+def update_test_ic105(request, test_id):
+    test = get_object_or_404(TestingIC105, id=test_id)
+    
+    errors = {}
+    
+    testing_date = request.POST.get('testing_date')
+    soh = request.POST.get('SOH')
+    vol = request.POST.get('VOL')
+    r = request.POST.get('R')
+    std = request.POST.get('STD')
+    cca = request.POST.get('CCA')
+    
+    if not testing_date:
+        errors['testing_date'] = ['Дата тестирования обязательна']
+    
+    numeric_fields = ['SOH', 'VOL', 'R', 'STD', 'CCA']
+    for field in numeric_fields:
+        value = request.POST.get(field)
+        if value:
+            try:
+                float(value)
+            except ValueError:
+                errors[field] = ['Должно быть числом']
+    
+    if errors:
+        return JsonResponse({'success': False, 'errors': errors}, status=400)
+    
+    try:
+        if testing_date:
+            test.testing_date = testing_date
+        if soh is not None:
+            test.SOH = soh
+        if vol is not None:
+            test.VOL = vol
+        if r is not None:
+            test.R = r
+        if std is not None:
+            test.STD = std
+        if cca is not None:
+            test.CCA = cca
+        
+        test.save()
+        return JsonResponse({'success': True, 'message': 'Тестирование обновлено'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+# Обновление истории установки
+@login_required
+@require_http_methods(["POST"])
+def update_installation_history(request, installation_id):
+    installation = get_object_or_404(BatteryInstallationHistory, id=installation_id)
+    
+    errors = {}
+    
+    installation_location_id = request.POST.get('installation_location')
+    installation_date = request.POST.get('installation_date')
+    
+    if not installation_location_id:
+        errors['installation_location'] = ['Место установки обязательно']
+    
+    if not installation_date:
+        errors['installation_date'] = ['Дата установки обязательна']
+    
+    if errors:
+        return JsonResponse({'success': False, 'errors': errors}, status=400)
+    
+    try:
+        # Получаем объект места установки
+        location = InstallationLocation.objects.get(id=installation_location_id)
+        installation.installation_location = location
+        installation.installation_date = installation_date
+        installation.save()
+        
+        return JsonResponse({'success': True, 'message': 'История установки обновлена'})
+    except InstallationLocation.DoesNotExist:
+        errors['installation_location'] = ['Место установки не найдено']
+        return JsonResponse({'success': False, 'errors': errors}, status=400)
+    except Exception as e:
+        return JsonResponse({'success': False, 'message': str(e)}, status=500)

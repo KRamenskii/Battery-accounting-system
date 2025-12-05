@@ -200,30 +200,6 @@ function deleteItem() {
     });
 }
 
-// Функция редактирования (тоже универсальная)
-function openEditModal() {
-    console.log('=== EDIT ITEM ===');
-    console.log('Item ID:', selectedItemId);
-    console.log('Item Type:', selectedItemType);
-    console.log('Edit URL:', selectedEditUrl);
-    
-    if (!selectedItemId || !selectedItemType) {
-        alert('Не удалось определить элемент для редактирования');
-        hideContextMenu();
-        return;
-    }
-    
-    if (selectedEditUrl) {
-        // Если есть прямой URL для редактирования - переходим по нему
-        window.location.href = selectedEditUrl;
-    } else {
-        // Или показываем сообщение
-        alert(`Редактирование элемента #${selectedItemId}`);
-    }
-    
-    hideContextMenu();
-}
-
 // Вспомогательная функция скрытия меню
 function hideContextMenu() {
     const contextDropdown = document.getElementById('contextDropdown');
@@ -241,5 +217,306 @@ function getCSRFToken() {
 // Инициализация при загрузке DOM
 document.addEventListener("DOMContentLoaded", function () {
     console.log('DOM loaded, initializing context menu...');
+    initTableContextMenu();
+});
+
+// Редактирование тестирований АБ и истории мест установок 
+document.addEventListener('DOMContentLoaded', function () {
+    // Глобальные переменные для хранения типа элемента
+    let currentItemType = null;
+    let currentItemId = null;
+    
+    // Обновляем функцию openEditModal
+    function openEditModal() {
+        if (!currentItemId || !currentItemType) {
+            alert('Не удалось определить элемент для редактирования');
+            hideContextMenu();
+            return;
+        }
+        
+        switch(currentItemType) {
+            case 'test':
+                // Определяем тип теста
+                const testRow = document.querySelector(`.test-row[data-item-id="${currentItemId}"]`);
+                if (testRow) {
+                    const deleteUrl = testRow.getAttribute('data-delete-url');
+                    if (deleteUrl.includes('dbt12d')) {
+                        openTestDbt12dModal(currentItemId);
+                    } else if (deleteUrl.includes('ic105')) {
+                        openTestIc105Modal(currentItemId);
+                    }
+                }
+                break;
+            case 'installation':
+                openInstallationModal(currentItemId);
+                break;
+            default:
+                alert(`Редактирование элемента #${currentItemId}`);
+        }
+        
+        hideContextMenu();
+    }
+    
+    // Функция для открытия модалки DBT12D
+    async function openTestDbt12dModal(testId) {
+        try {
+            const response = await fetch(`/journal/api/test/dbt12d/${testId}/`, {
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            });
+            
+            if (!response.ok) throw new Error('Ошибка при получении данных');
+            const data = await response.json();
+            
+            // Заполняем форму
+            document.getElementById('editTestDbt12dId').value = data.id;
+            document.getElementById('editTestingDateDbt').value = data.testing_date;
+            document.getElementById('editSOHDbt').value = data.SOH;
+            document.getElementById('editSOCDbt').value = data.SOC;
+            document.getElementById('editVOLDbt').value = data.VOL;
+            document.getElementById('editRDbt').value = data.R;
+            document.getElementById('editSTDDbt').value = data.STD;
+            document.getElementById('editCCADbt').value = data.CCA;
+            
+            // Показываем модалку
+            const modal = new bootstrap.Modal(document.getElementById('editTestDbt12dModal'));
+            modal.show();
+            
+        } catch (error) {
+            console.error(error);
+            alert('Не удалось загрузить данные тестирования');
+        }
+    }
+    
+    // Функция для открытия модалки IC105
+    async function openTestIc105Modal(testId) {
+        try {
+            const response = await fetch(`/journal/api/test/ic105/${testId}/`, {
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            });
+            
+            if (!response.ok) throw new Error('Ошибка при получении данных');
+            const data = await response.json();
+            
+            document.getElementById('editTestIc105Id').value = data.id;
+            document.getElementById('editTestingDateIc').value = data.testing_date;
+            document.getElementById('editSOHIc').value = data.SOH;
+            document.getElementById('editVOLIc').value = data.VOL;
+            document.getElementById('editRIc').value = data.R;
+            document.getElementById('editSTDIc').value = data.STD;
+            document.getElementById('editCCAIc').value = data.CCA;
+            
+            const modal = new bootstrap.Modal(document.getElementById('editTestIc105Modal'));
+            modal.show();
+            
+        } catch (error) {
+            console.error(error);
+            alert('Не удалось загрузить данные тестирования');
+        }
+    }
+    
+    // Функция для открытия модалки истории установки
+    async function openInstallationModal(installationId) {
+        try {
+            const response = await fetch(`/journal/api/installation/${installationId}/`, {
+                headers: {'X-Requested-With': 'XMLHttpRequest'}
+            });
+            
+            if (!response.ok) throw new Error('Ошибка при получении данных');
+            const data = await response.json();
+            
+            document.getElementById('editInstallationId').value = data.id;
+            document.getElementById('editInstallationLocation').value = data.installation_location_id;
+            document.getElementById('editInstallationDate').value = data.installation_date;
+            
+            const modal = new bootstrap.Modal(document.getElementById('editInstallationModal'));
+            modal.show();
+            
+        } catch (error) {
+            console.error(error);
+            alert('Не удалось загрузить данные истории установки');
+        }
+    }
+    
+    // Обработка формы DBT12D
+    const editTestDbt12dForm = document.getElementById('editTestDbt12dForm');
+    if (editTestDbt12dForm) {
+        editTestDbt12dForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const testId = document.getElementById('editTestDbt12dId').value;
+            const formData = new FormData(this);
+            const messages = document.getElementById('editTestDbt12dMessages');
+            
+            try {
+                const response = await fetch(`/journal/api/test/dbt12d/${testId}/update/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(messages, data.message, 'success');
+                    setTimeout(() => {
+                        bootstrap.Modal.getInstance(document.getElementById('editTestDbt12dModal')).hide();
+                        location.reload();
+                    }, 1500);
+                } else {
+                    showMessage(messages, data.message || 'Ошибка при сохранении', 'danger');
+                    if (data.errors) {
+                        displayFormErrors(data.errors);
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                showMessage(messages, 'Ошибка сети при сохранении', 'danger');
+            }
+        });
+    }
+    
+    // Обработка формы IC105
+    const editTestIc105Form = document.getElementById('editTestIc105Form');
+    if (editTestIc105Form) {
+        editTestIc105Form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const testId = document.getElementById('editTestIc105Id').value;
+            const formData = new FormData(this);
+            const messages = document.getElementById('editTestIc105Messages');
+            
+            try {
+                const response = await fetch(`/journal/api/test/ic105/${testId}/update/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(messages, data.message, 'success');
+                    setTimeout(() => {
+                        bootstrap.Modal.getInstance(document.getElementById('editTestIc105Modal')).hide();
+                        location.reload();
+                    }, 1500);
+                } else {
+                    showMessage(messages, data.message || 'Ошибка при сохранении', 'danger');
+                    if (data.errors) {
+                        displayFormErrors(data.errors);
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                showMessage(messages, 'Ошибка сети при сохранении', 'danger');
+            }
+        });
+    }
+    
+    // Обработка формы истории установки
+    const editInstallationForm = document.getElementById('editInstallationForm');
+    if (editInstallationForm) {
+        editInstallationForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const installationId = document.getElementById('editInstallationId').value;
+            const formData = new FormData(this);
+            const messages = document.getElementById('editInstallationMessages');
+            
+            try {
+                const response = await fetch(`/journal/api/installation/${installationId}/update/`, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value,
+                        'X-Requested-With': 'XMLHttpRequest'
+                    }
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showMessage(messages, data.message, 'success');
+                    setTimeout(() => {
+                        bootstrap.Modal.getInstance(document.getElementById('editInstallationModal')).hide();
+                        location.reload();
+                    }, 1500);
+                } else {
+                    showMessage(messages, data.message || 'Ошибка при сохранении', 'danger');
+                    if (data.errors) {
+                        displayFormErrors(data.errors);
+                    }
+                }
+            } catch (error) {
+                console.error(error);
+                showMessage(messages, 'Ошибка сети при сохранении', 'danger');
+            }
+        });
+    }
+    
+    // Вспомогательные функции
+    function showMessage(container, text, type = 'danger') {
+        container.innerHTML = `
+            <div class="alert alert-${type} alert-dismissible fade show">
+                ${text}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        `;
+    }
+    
+    function displayFormErrors(errors) {
+        for (const [field, messages] of Object.entries(errors)) {
+            const input = document.querySelector(`[name="${field}"]`);
+            if (input) {
+                input.classList.add('is-invalid');
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'text-danger small mt-1';
+                errorDiv.textContent = messages[0];
+                input.parentNode.appendChild(errorDiv);
+            }
+        }
+    }
+    
+    // Обновляем контекстное меню
+    function initTableContextMenu() {
+        const rows = document.querySelectorAll('.test-row');
+        const contextDropdown = document.getElementById('contextDropdown');
+        
+        if (!contextDropdown) return;
+        
+        rows.forEach(row => {
+            row.addEventListener('contextmenu', function(e) {
+                e.preventDefault();
+                
+                selectedRowElement = this;
+                selectedItemId = this.getAttribute('data-item-id');
+                selectedItemType = this.getAttribute('data-item-type');
+                selectedDeleteUrl = this.getAttribute('data-delete-url');
+                
+                // Сохраняем данные для глобального использования
+                currentItemId = selectedItemId;
+                currentItemType = selectedItemType;
+                
+                const x = e.pageX;
+                const y = e.pageY;
+                
+                contextDropdown.style.left = x + 'px';
+                contextDropdown.style.top = y + 'px';
+                contextDropdown.style.display = 'block';
+            });
+        });
+    }
+    
+    // Переопределяем глобальные функции
+    window.openEditModal = openEditModal;
+    window.deleteItem = deleteItem;
+    
+    // Инициализируем контекстное меню
     initTableContextMenu();
 });
