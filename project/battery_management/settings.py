@@ -56,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'middleware.LoginRequiredMiddleware',
+    'events.middleware.CurrentUserMiddleware',
 ]
 
 ROOT_URLCONF = 'battery_management.urls'
