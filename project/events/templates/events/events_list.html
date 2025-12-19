@@ -1,6 +1,50 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h1>События</h1>
-<p>Раздел событий пока пуст. Скоро здесь появятся журналы действий пользователей и системные уведомления.</p>
+
+<div class="battery-types-container">
+     <!-- Шапка таблицы -->
+     <div class="events-table-header">
+        <div class="battery-types-table-cell">№</div>
+        <div class="battery-types-table-cell">Дата</div>
+        <div class="battery-types-table-cell">Пользователь</div>
+        <div class="battery-types-table-cell">Объект</div>
+    </div>
+
+    <!-- Обёртка для таблицы -->
+    <div class="battery-types-table-wrapper">
+        <table class="battery-types-table events-table">
+            <tbody>
+                {% for event in page_obj.object_list %}
+                <tr class="event-{{ event.event_type }}">
+                    <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
+                    <td>{{ event.timestamp }}</td>
+                    <td>{{ event.user }}</td>
+                    <td>{{ event.content_object }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Пагинация -->
+    {% if page_obj.paginator.num_pages > 1 %}
+        <div class="pagination">
+            <span>
+                {% if page_obj.has_previous %}
+                    <a class="pagination-button" href="?page=1">В начало</a>
+                    <a class="pagination-button" href="?page={{ page_obj.previous_page_number }}">Назад</a>
+                {% endif %}
+
+                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+
+                {% if page_obj.has_next %}
+                    <a class="pagination-button" href="?page={{ page_obj.next_page_number }}">Далее</a>
+                    <a class="pagination-button" href="?page={{ page_obj.paginator.num_pages }}">В конец</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+</div>
+
 {% endblock %}

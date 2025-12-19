@@ -1,0 +1,41 @@
+.event-create {
+    background-color: #d4edda; /* Светло-зеленый */
+}
+
+.event-update {
+    background-color: #fff3cd; /* Светло-желтый */
+}
+
+.event-delete {
+    background-color: #f8d7da; /* Светло-красный */
+}
+
+/* Настройка шапки таблицы */
+.events-table-header {
+    display: grid; /* Сетка для управления ширинами */
+    grid-template-columns: 50px 250px 250px repeat(1, 1fr); /* Первый столбец фиксированной ширины, остальные равные */
+    background-color: rgba(40, 102, 163, 0.5);
+    border-radius: 10px 10px 0 0;
+    font-weight: bold;
+    text-align: center;
+    border: 2px solid #dff2ff;
+}
+
+.events-table-header div {
+    background-color: #dff2ff; /* Цвет ячеек внутри шапки */
+    padding: 10px;
+    border: 2px solid rgba(40, 102, 163, 0.5);
+}
+
+.events-table-header div:first-child {
+    border-radius: 10px 0 0 0;
+}
+
+.events-table-header div:last-child {
+    border-radius: 0 10px 0 0;
+}
+
+.events-table tr {
+    display: grid; /* Сетка для управления ширинами */
+    grid-template-columns: 50px 250px 250px repeat(1, 1fr); /* Первый столбец фиксированной ширины, остальные равные */
+}
