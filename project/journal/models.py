@@ -83,11 +83,6 @@ class Battery(models.Model):
         null=True, 
         blank=True
     )
-    installation_date = models.DateField(
-        verbose_name="Дата установки на оборудование", 
-        null=True, 
-        blank=True
-    )
 
     class Meta:
         verbose_name = "АБ"

@@ -32,10 +32,15 @@ class BatteryForm(forms.ModelForm):
         required=True,
         label="Место установки"
     )
+    installation_date = forms.DateField(
+        required=True,
+        label="Дата установки",
+        widget=forms.DateInput(attrs={'type': 'date'})
+    )
 
     class Meta:
         model = Battery
-        fields = ['battery_type', 'serial_parameters', 'battery_number', 'acceptance_date', 'installation_date', 'installation_location']
+        fields = ['battery_type', 'serial_parameters', 'battery_number', 'acceptance_date', 'installation_location']
 
     def save(self, commit=True):
         battery = super().save(commit=False)
@@ -45,9 +50,21 @@ class BatteryForm(forms.ModelForm):
             BatteryInstallationHistory.objects.create(
                 battery=battery,
                 installation_location=self.cleaned_data['installation_location'],
-                installation_date=battery.installation_date
+                installation_date=self.cleaned_data['installation_date'],
             )
         return battery
+
+
+class BatteryUpdateForm(forms.ModelForm):
+
+    class Meta:
+        model = Battery
+        fields = [
+            'battery_type',
+            'serial_parameters',
+            'battery_number',
+            'acceptance_date',
+        ]
 
 
 class BatteryInstallationHistoryForm(forms.ModelForm):

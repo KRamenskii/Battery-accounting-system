@@ -41,16 +41,6 @@
                                 {% endif %}
                             </td>
                         </tr>
-                        <tr>
-                            <td>Дата установки</td>
-                            <td>
-                                {% if battery.installation_date %}
-                                    {{ battery.installation_date|date:"d.m.Y" }}
-                                {% else %}
-                                    Отсутствует
-                                {% endif %}
-                            </td>
-                        </tr>
                         <tr><td>Срок службы</td><td>{{ battery.battery_type.lifespan }}</td></tr>
                         <tr><td>Номинальное напряжение, В</td><td>{{ battery.battery_type.nominal_voltage }}</td></tr>
                         <tr><td>Номинальная ёмкость, Ач</td><td>{{ battery.battery_type.nominal_capacity_20 }}</td></tr>

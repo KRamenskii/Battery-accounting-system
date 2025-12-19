@@ -10,7 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 
 from .models import Battery, BatteryInstallationHistory, InstallationLocation, TestingDBT12D, TestingIC105
-from .forms import InstallationLocationForm, TestingDBT12DForm, TestingIC105Form, BatteryForm, BatteryInstallationHistoryForm
+from .forms import InstallationLocationForm, TestingDBT12DForm, TestingIC105Form, BatteryForm, BatteryInstallationHistoryForm, BatteryUpdateForm
 
 
 class InstallationLocationCreateView(CreateView):
@@ -80,7 +80,7 @@ class TestingIC105CreateView(CreateView):
 
 class BatteryUpdateView(UpdateView):
     model = Battery
-    form_class = BatteryForm
+    form_class = BatteryUpdateForm
     template_name = 'journal/battery_detail_edit.html'
     context_object_name = 'battery_detail_edit'
 
