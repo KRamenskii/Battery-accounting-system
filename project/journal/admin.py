@@ -18,11 +18,13 @@ class SerialParametersAdmin(admin.ModelAdmin):
 class TestingDBT12DAdmin(admin.ModelAdmin):
     list_display = ('id', 'battery', 'testing_date', 'SOH', 'SOC', 'VOL', 'R', 'STD', 'CCA')
     list_filter = ('testing_date',)
+    search_fields = ('battery__battery_number',)
 
 @admin.register(TestingIC105)
 class TestingIC105Admin(admin.ModelAdmin):
     list_display = ('id', 'battery', 'testing_date', 'SOH', 'VOL', 'R', 'STD', 'CCA')
     list_filter = ('testing_date',)
+    search_fields = ('battery__battery_number',)
 
 @admin.register(BatteryInstallationHistory)
 class BatteryInstallationHistory(admin.ModelAdmin):
