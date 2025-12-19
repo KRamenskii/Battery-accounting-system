@@ -1,13 +1,13 @@
 .event-create {
-    background-color: #d4edda; /* Светло-зеленый */
+    background-color: #00c200;
 }
 
 .event-update {
-    background-color: #fff3cd; /* Светло-желтый */
+    background-color: #eeee0a;
 }
 
 .event-delete {
-    background-color: #f8d7da; /* Светло-красный */
+    background-color: #f73242;
 }
 
 /* Настройка шапки таблицы */
