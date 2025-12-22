@@ -22,6 +22,16 @@ WATCHED_MODELS = {
 
 # ---------------------- UTILS ----------------------
 
+def get_full_representation(instance):
+    """Безопасное получение полного представления с fallback"""
+    if hasattr(instance, 'full_representation'):
+        try:
+            return instance.full_representation()
+        except:
+            pass
+    # Fallback на обычный __str__
+    return str(instance)
+
 def normalize_for_json(value):
     """Преобразуем значение к JSON-safe представлению."""
     if isinstance(value, decimal.Decimal):
@@ -58,8 +68,12 @@ def store_old_state(sender, instance, **kwargs):
     if not old:
         return
 
-    # Сохраняем "сырой" словарь (model_to_dict возвращает Decimal/date и т.д.)
-    _PREVIOUS_RAW[instance.pk] = model_to_dict(old)
+    # Сохраняем ОБА представления
+    _PREVIOUS_RAW[instance.pk] = {
+        'data': model_to_dict(old),
+        'repr': str(old),  # короткое (__str__)
+        'full_repr': get_full_representation(old)  # полное
+    }
 
 # ---------------------- СРАВНЕНИЕ ПО ТИПУ ----------------------
 
@@ -118,9 +132,16 @@ def track_create_update(sender, instance, created, **kwargs):
 
     if created:
         event_type = "create"
+        object_repr_value = str(instance)  # короткое
+        full_repr_value = get_full_representation(instance)  # полное
     else:
         event_type = "update"
-        old_raw = _PREVIOUS_RAW.get(instance.pk)
+        old_data_dict = _PREVIOUS_RAW.get(instance.pk, {})
+        old_raw = old_data_dict.get('data')
+        
+        # Для обновления используем СТАРОЕ полное представление
+        object_repr_value = old_data_dict.get('repr', str(instance))  # короткое
+        full_repr_value = old_data_dict.get('full_repr', get_full_representation(instance))  # полное
 
         if old_raw is None:
             # на всякий случай — попытка получить из БД (если pre_save не сработал)
@@ -152,7 +173,8 @@ def track_create_update(sender, instance, created, **kwargs):
         event_type=event_type,
         content_type=ContentType.objects.get_for_model(instance),
         object_id=instance.pk,
-        object_repr=str(instance),
+        object_repr=object_repr_value,  # короткое представление
+        full_representation=full_repr_value,  # ← НОВОЕ ПОЛЕ: полное представление
         old_data=old_json,
         new_data=new_json,
         changed_fields=changed_fields,
@@ -171,12 +193,16 @@ def track_delete(sender, instance, **kwargs):
     old_raw = model_to_dict(instance)
     old_json = normalize_dict_for_json(old_raw)
 
+    # Получаем полное представление ПЕРЕД удалением
+    full_repr_value = get_full_representation(instance)
+
     Event.objects.create(
         user=get_current_user(),
         event_type="delete",
         content_type=ContentType.objects.get_for_model(instance),
         object_id=instance.pk,
-        object_repr=str(instance),
+        object_repr=str(instance),  # короткое
+        full_representation=full_repr_value,  # ← полное представление
         old_data=old_json,
         new_data=None,
         changed_fields=None,

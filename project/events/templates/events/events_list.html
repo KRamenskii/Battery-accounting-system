@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% block title %}События{% endblock %}
+
 {% block content %}
 
 <div class="battery-types-container">
@@ -20,7 +22,7 @@
                     <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
                     <td>{{ event.timestamp }}</td>
                     <td>{{ event.user }}</td>
-                    <td>{{ event.content_object }}</td>
+                    <td>{{ event.full_representation|default:event.object_repr }}</td>
                 </tr>
                 {% endfor %}
             </tbody>

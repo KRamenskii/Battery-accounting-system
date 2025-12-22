@@ -29,6 +29,7 @@ class Event(models.Model):
     changed_fields = models.JSONField(null=True, blank=True, verbose_name="Изменённые поля")
 
     object_repr = models.CharField(max_length=255, blank=True, null=True, verbose_name="Объект")
+    full_representation = models.TextField(blank=True, null=True)
 
     class Meta:
         verbose_name = "Событие"

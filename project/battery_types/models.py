@@ -48,3 +48,6 @@ class BatteryType(models.Model):
 
     def __str__(self):
         return self.battery_type_title
+
+    def full_representation(self):
+        return f"АБ производителя {self.manufacturer}, тип: {self.battery_type_title}. Параметры: {self.nominal_voltage} В, {self.nominal_capacity_20} A⋅ч"
