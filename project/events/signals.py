@@ -1,3 +1,4 @@
+import json
 from django.db.models.signals import post_save, pre_save, post_delete
 from django.dispatch import receiver
 from django.contrib.contenttypes.models import ContentType
@@ -20,6 +21,55 @@ WATCHED_MODELS = {
     "battery_types.batterytype",
 }
 
+def get_related_object_data(obj):
+    """Получает читаемые данные связанного объекта"""
+    if not obj:
+        return None
+    
+    data = {'id': obj.id}
+    
+    # Добавляем читаемые поля в зависимости от типа объекта
+    if hasattr(obj, 'serial_number'):
+        data['serial_number'] = obj.serial_number
+    elif hasattr(obj, 'battery_type_title'):
+        data['battery_type_title'] = obj.battery_type_title
+    elif hasattr(obj, 'location_title'):
+        data['location_title'] = obj.location_title
+    elif hasattr(obj, 'system_title'):
+        data['system_title'] = obj.system_title
+    elif hasattr(obj, 'battery_number'):
+        data['battery_number'] = obj.battery_number
+    elif hasattr(obj, 'username'):
+        data['username'] = obj.username
+    elif hasattr(obj, 'email'):
+        data['email'] = obj.email
+    elif hasattr(obj, 'name'):
+        data['name'] = obj.name
+    elif hasattr(obj, 'title'):
+        data['title'] = obj.title
+    elif hasattr(obj, '__str__'):
+        data['display_name'] = str(obj)
+    
+    return data
+
+def get_enriched_model_to_dict(instance):
+    """Расширенная версия model_to_dict с данными связанных объектов"""
+    from django.forms.models import model_to_dict
+    
+    # Получаем базовый словарь
+    data = model_to_dict(instance)
+    
+    # Обрабатываем ForeignKey поля
+    for field in instance._meta.get_fields():
+        if (field.many_to_one or field.one_to_one) and field.concrete:
+            field_name = field.name
+            if field_name in data:
+                related_obj = getattr(instance, field_name, None)
+                if related_obj:
+                    data[field_name] = get_related_object_data(related_obj)
+    
+    return data
+
 # ---------------------- UTILS ----------------------
 
 def get_full_representation(instance):
@@ -35,7 +85,6 @@ def get_full_representation(instance):
 def normalize_for_json(value):
     """Преобразуем значение к JSON-safe представлению."""
     if isinstance(value, decimal.Decimal):
-        # можно менять на float или str, float удобнее для числовых сравнений в UI
         return float(value)
     if isinstance(value, (datetime.date, datetime.datetime)):
         return value.isoformat()
@@ -70,7 +119,7 @@ def store_old_state(sender, instance, **kwargs):
 
     # Сохраняем ОБА представления
     _PREVIOUS_RAW[instance.pk] = {
-        'data': model_to_dict(old),
+        'data': get_enriched_model_to_dict(old),
         'repr': str(old),  # короткое (__str__)
         'full_repr': get_full_representation(old)  # полное
     }
@@ -80,18 +129,15 @@ def store_old_state(sender, instance, **kwargs):
 def field_values_equal(model_class, field_name, old_val, new_val):
     """
     Сравнивает старое и новое значение с учетом типа поля модели.
-    Возвращает True если равны (т.е. не менялись).
     """
     try:
         field = model_class._meta.get_field(field_name)
     except Exception:
-        # если поле не найдено — просто обычное сравнение
         return old_val == new_val
 
-    # DecimalField: сравниваем как Decimal (учтёт 1 и 1.00 как равные)
+    # DecimalField
     if isinstance(field, models.DecimalField):
         try:
-            # None обработаем отдельно
             if old_val is None and new_val is None:
                 return True
             if old_val is None or new_val is None:
@@ -100,21 +146,29 @@ def field_values_equal(model_class, field_name, old_val, new_val):
         except Exception:
             return str(old_val) == str(new_val)
 
-    # Date / DateTime / Time: сравниваем приведя к iso строки или прямо
+    # Date / DateTime / Time
     if isinstance(field, (models.DateField, models.DateTimeField, models.TimeField)):
         if old_val is None and new_val is None:
             return True
         return str(old_val) == str(new_val)
 
-    # ForeignKey: model_to_dict возвращает id -> сравним по id (иногда может быть объект)
+    # ForeignKey - теперь это может быть словарь или число
     if isinstance(field, models.ForeignKey):
         try:
-            # model_to_dict возвращает id для FK, поэтому простое сравнение подходит
-            return old_val == new_val
+            # Если оба значения - словари, сравниваем по id
+            if isinstance(old_val, dict) and isinstance(new_val, dict):
+                return old_val.get('id') == new_val.get('id')
+            # Если одно из значений - число (старый формат)
+            elif isinstance(old_val, (int, float)) or isinstance(new_val, (int, float)):
+                old_id = old_val.get('id') if isinstance(old_val, dict) else old_val
+                new_id = new_val.get('id') if isinstance(new_val, dict) else new_val
+                return old_id == new_id
+            else:
+                return old_val == new_val
         except Exception:
             return str(old_val) == str(new_val)
 
-    # По умолчанию — простое сравнение
+    # По умолчанию
     return old_val == new_val
 
 # ---------------------- MAIN SIGNALS ----------------------
@@ -126,7 +180,7 @@ def track_create_update(sender, instance, created, **kwargs):
         return
 
     # Сырой словарь текущего состояния (до нормализации)
-    new_raw = model_to_dict(instance)
+    new_raw = get_enriched_model_to_dict(instance)
     old_raw = None
     changed_fields = None
 
@@ -147,7 +201,7 @@ def track_create_update(sender, instance, created, **kwargs):
             # на всякий случай — попытка получить из БД (если pre_save не сработал)
             try:
                 old_obj = sender.objects.get(pk=instance.pk)
-                old_raw = model_to_dict(old_obj)
+                old_raw = get_enriched_model_to_dict(old_obj)
             except Exception:
                 old_raw = None
 
@@ -190,7 +244,7 @@ def track_delete(sender, instance, **kwargs):
     if model_key not in WATCHED_MODELS:
         return
 
-    old_raw = model_to_dict(instance)
+    old_raw = get_enriched_model_to_dict(instance)
     old_json = normalize_dict_for_json(old_raw)
 
     # Получаем полное представление ПЕРЕД удалением

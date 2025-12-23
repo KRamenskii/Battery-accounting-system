@@ -48,7 +48,7 @@ class SerialParameters(models.Model):
     battery_type = models.ForeignKey(
         'battery_types.BatteryType',
         on_delete=models.CASCADE,
-        verbose_name="Тип АКБ"
+        verbose_name="Тип АБ"
     )
     serial_number = models.CharField(
         max_length=255, 
