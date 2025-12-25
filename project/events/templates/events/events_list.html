@@ -58,7 +58,19 @@
                     style="cursor: pointer;">
                     <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
                     <td>{{ event.timestamp|date:"d.m.Y H:i:s" }}</td>
-                    <td>{{ event.user|default:"Не указан" }}</td>
+                    <td>
+                        {% if event.user %}
+                            {{ event.user.sur_name|default:"" }} 
+                            {% if event.user.user_name %}
+                                {{ event.user.user_name|slice:":1" }}.
+                            {% endif %}
+                            {% if event.user.last_name %}
+                                {{ event.user.last_name|slice:":1" }}.
+                            {% endif %}
+                        {% else %}
+                            Пользователь не указан
+                        {% endif %}
+                    </td>
                     <td>{{ event.full_representation|default:event.object_repr }}</td>
                 </tr>
                 {% endfor %}
