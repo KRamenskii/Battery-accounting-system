@@ -304,3 +304,243 @@
     font-weight: bold;
     margin-right: 6px;
 }
+
+/* Дополнительные стили для фильтра */
+.events-filter-container {
+    background: #dff2ff;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+/* Стили для заголовка фильтров */
+.filters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+    transition: all 0.3s ease;
+}
+
+.filters-header.open {
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid gray;
+}
+
+.filters-header h3 {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #333;
+}
+
+.filter-header-btn {
+    display: flex;
+    gap: 10px;
+}
+
+.filter-reset-all-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(201, 84, 84, 0.57);
+    border: 0px;
+    border-radius: 10px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.filter-reset-all-btn:hover {
+    background: #ff0000;
+}
+
+.filter-reset-all-btn i {
+    font-size: 12px;
+    transition: transform 0.3s;
+}
+
+.toggle-filters-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(40, 102, 163, 0.5);
+    border: 0px;
+    border-radius: 10px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+    transition: all 0.2s;
+}
+
+.toggle-filters-btn:hover {
+    background: #ffa600;
+}
+
+.toggle-filters-btn i {
+    font-size: 12px;
+    transition: transform 0.3s;
+}
+
+/* Дополнительные стили для фильтра */
+.filter-header-container {
+    align-items: center;
+    display: flex;
+    gap: 15px;
+    padding-bottom: 10px;
+    align-items: center;
+}
+
+.filter-clear-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(40, 102, 163, 0.5);
+    border: 0px;
+    border-radius: 10px;
+    padding: 4px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.filter-clear-btn:hover {
+    background: rgb(248, 71, 71);
+}
+
+.filter-clear-btn i {
+    font-size: 12px;
+    transition: transform 0.3s;
+}
+
+.filter-form-date {
+    display: flex;
+    gap: 15px;
+    padding-left: 10px;
+}
+
+.filter-input-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.filter-input-label {
+    font-weight: bold;
+}
+
+.filter-input {
+    border: none;
+    padding:5px 10px 5px 10px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 15px;
+    white-space: nowrap;
+}
+
+/* Дополнительные стили для фильтра даты */
+.date-input {
+    width: 100%;
+    padding: 4px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #495057;
+    background-color: white;
+    transition: border-color 0.2s;
+}
+
+.date-input:focus {
+    outline: none;
+    border-color: #2866a3;
+    box-shadow: 0 0 0 0.2rem rgba(40, 102, 163, 0.25);
+}
+
+.date-input::placeholder {
+    color: #adb5bd;
+}
+
+.date-apply-btn {
+    padding: 4px 16px;
+    background-color: rgba(40, 102, 163, 0.8);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background 0.2s;
+    white-space: nowrap;
+}
+
+.date-apply-btn:hover {
+    background: #1a4a7a;
+}
+
+.current-filter {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-radius: 10px;
+    padding: 4px 12px;
+    font-size: 14px;
+}
+
+/* Стили для статистики */
+.events-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 15px;
+}
+
+.stat-card {
+    background: #dff2ff;
+    border-radius: 10px;
+    padding-left: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    display: flex;
+    gap: 15px;
+    align-items: center;
+}
+
+.stat-value {
+    font-size: 1.6rem;
+    font-weight: 600;
+    color: #2866a3;
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #6c757d;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.stat-total {
+    border-left: 15px solid #2866a3;
+}
+
+.stat-create {
+    border-left: 15px solid #00c200;
+}
+
+.stat-update {
+    border-left: 15px solid #eeee0a;
+}
+
+.stat-delete {
+    border-left: 15px solid #f73242;
+}
+
+.event-header {
+    padding-top: 10px;
+    font-weight: bold;
+}

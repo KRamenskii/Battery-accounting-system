@@ -5,96 +5,299 @@
 {% block content %}
 
 <div class="battery-types-container">
-     <!-- Шапка таблицы -->
-     <div class="events-table-header">
-        <div class="battery-types-table-cell">№</div>
-        <div class="battery-types-table-cell">Дата</div>
-        <div class="battery-types-table-cell">Пользователь</div>
-        <div class="battery-types-table-cell">Объект</div>
-    </div>
-
-    <!-- Обёртка для таблицы -->
-    <div class="battery-types-table-wrapper">
-        <table class="battery-types-table events-table">
-            <tbody>
-                {% for event in page_obj.object_list %}
-                <tr class="event-{{ event.event_type }}" 
-                    onclick="showEventModal(
-                        {{ event.id }}, 
-                        '{{ event.event_type|escapejs }}', 
-                        '{{ event.get_event_type_display|escapejs }}',
-                        '{{ event.timestamp|date:"d.m.Y H:i:s"|escapejs }}',
-                        {% if event.user %}
-                            '{{ event.user|escapejs }}',
-                        {% else %}
-                            null,
-                        {% endif %}
-                        {% if event.object_repr %}
-                            '{{ event.object_repr|escapejs }}',
-                        {% else %}
-                            null,
-                        {% endif %}
-                        {% if event.full_representation %}
-                            '{{ event.full_representation|escapejs }}',
-                        {% else %}
-                            null,
-                        {% endif %}
-                        {% if event.old_data %}
-                            {{ event.old_data|safe }},
-                        {% else %}
-                            null,
-                        {% endif %}
-                        {% if event.new_data %}
-                            {{ event.new_data|safe }},
-                        {% else %}
-                            null,
-                        {% endif %}
-                        {% if event.changed_fields %}
-                            {{ event.changed_fields|safe }}
-                        {% else %}
-                            null
-                        {% endif %}
-                    )"
-                    style="cursor: pointer;">
-                    <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
-                    <td>{{ event.timestamp|date:"d.m.Y H:i:s" }}</td>
-                    <td>
-                        {% if event.user %}
-                            {{ event.user.sur_name|default:"" }} 
-                            {% if event.user.user_name %}
-                                {{ event.user.user_name|slice:":1" }}.
-                            {% endif %}
-                            {% if event.user.last_name %}
-                                {{ event.user.last_name|slice:":1" }}.
-                            {% endif %}
-                        {% else %}
-                            Пользователь не указан
-                        {% endif %}
-                    </td>
-                    <td>{{ event.full_representation|default:event.object_repr }}</td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Пагинация -->
-    {% if page_obj.paginator.num_pages > 1 %}
-        <div class="pagination">
-            <span>
-                {% if page_obj.has_previous %}
-                    <a class="pagination-button" href="?page=1">В начало</a>
-                    <a class="pagination-button" href="?page={{ page_obj.previous_page_number }}">Назад</a>
-                {% endif %}
-
-                Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
-
-                {% if page_obj.has_next %}
-                    <a class="pagination-button" href="?page={{ page_obj.next_page_number }}">Далее</a>
-                    <a class="pagination-button" href="?page={{ page_obj.paginator.num_pages }}">В конец</a>
-                {% endif %}
-            </span>
+    <!-- Статистика событий -->
+    {% if total_events > 0 %}
+        <div class="events-stats">
+            <div class="stat-card stat-total">
+                <div class="stat-value">{{ total_events }}</div>
+                <div class="stat-label">Всего событий</div>
+            </div>
+            <div class="stat-card stat-create">
+                <div class="stat-value">{{ create_count }}</div>
+                <div class="stat-label">Созданий</div>
+            </div>
+            <div class="stat-card stat-update">
+                <div class="stat-value">{{ update_count }}</div>
+                <div class="stat-label">Редактирований</div>
+            </div>
+            <div class="stat-card stat-delete">
+                <div class="stat-value">{{ delete_count }}</div>
+                <div class="stat-label">Удалений</div>
+            </div>
         </div>
+    {% endif %}
+
+    <!-- Фильтры событий -->
+    <div class="events-filter-container">
+        <!-- Заголовок фильтров с кнопкой скрытия -->
+        <div class="filters-header">
+            <h3>Фильтры</h3>
+            <div class="filter-header-btn">
+                {% if selected_user or selected_event_type or date_from or date_to %}
+                    <a href="{% url 'events_list' %}" class="filter-reset-all-btn">
+                        <i class="fas fa-redo"></i> Сбросить все фильтры
+                    </a>
+                {% endif %}
+                <button class="toggle-filters-btn" onclick="toggleFilters()">
+                    <!-- Иконка будет изменена JavaScript -->
+                    <i class="fas fa-chevron-down"></i>
+                    Показать
+                </button>
+            </div>
+        </div>
+
+        <div id="filterContent">
+            <!-- Фильтр по пользователю -->
+            <div class="filter-group">
+                <div class="filter-container">
+                    <div class="filter-header-container">
+                        <h5 style="margin-bottom: 0px">Пользователь</h5>
+                        {% if selected_user and selected_user != 'all' %}
+                            <a href="{% url 'events_list' %}?{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}{% endif %}" class="filter-clear-btn">Сбросить</a>
+                        {% endif %}
+                    </div>
+                    <div class="filter-container-path">
+                        {% for user in users %}
+                            {% if selected_user == user.id|stringformat:"i" %}
+                                <!-- Выбранный пользователь - span вместо ссылки -->
+                                <span class="current-location">
+                                    {{ user.sur_name|default:"" }}
+                                    {{ user.user_name|slice:":1" }}.
+                                    {{ user.last_name|slice:":1" }}.
+                                </span>
+                            {% else %}
+                                <!-- Не выбранный пользователь - обычная ссылка -->
+                                <a href="{% url 'events_list' %}?{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}user={{ user.id }}&page=1"
+                                class="filter-link"
+                                onclick="closeDropdown()">
+                                    {{ user.sur_name|default:"" }}
+                                    {{ user.user_name|slice:":1" }}.
+                                    {{ user.last_name|slice:":1" }}.
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Фильтр по типу события -->
+            <div class="filter-group">
+                <div class="filter-container">
+                    <h5>Тип события</h5>
+                    <div class="filter-container-path">
+                        <!-- Ссылка "Все типы" -->
+                        {% if selected_event_type and selected_event_type != 'all' %}
+                            <!-- Если выбран конкретный тип - показываем "Все типы" как обычную ссылку -->
+                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                Все типы
+                            </a>
+                        {% else %}
+                            <!-- Если выбран "Все типы" или ничего - показываем как выбранный элемент -->
+                            <span class="current-location">
+                                Все типы
+                            </span>
+                        {% endif %}
+                        
+                        <!-- Список типов событий -->
+                        {% for type_code, type_name in event_types %}
+                            {% if selected_event_type == type_code %}
+                                <!-- Выбранный тип события - span вместо ссылки -->
+                                <span class="current-location">
+                                    {{ type_name }}
+                                </span>
+                            {% else %}
+                                <!-- Не выбранный тип события - обычная ссылка -->
+                                <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}event_type={{ type_code }}&page=1"
+                                class="filter-link"
+                                onclick="closeDropdown()">
+                                    {{ type_name }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Фильтр по дате -->
+            <div class="filter-group">
+                <div class="filter-container">
+                    <div class="filter-header-container">
+                        <h5 style="margin-bottom: 0px">Дата события</h5>
+
+                        {% if date_from or date_to %}
+                            <div class="current-location current-filter">
+                                {% if date_from %}<span>{{ date_from_display }}</span>{% endif %}
+                                {% if date_to %}<span>&nbsp;÷&nbsp;</span><span>{{ date_to_display }}</span>{% endif %}
+                            </div>
+                        {% endif %}
+
+                        {% if date_from or date_to %}
+                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}{% endif %}" 
+                            class="filter-clear-btn">Сбросить</a>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="filter-container-path">
+                        <!-- Быстрые фильтры по дате -->
+                        <!-- Сегодня -->
+                        {% if date_from == today and date_to == today %}
+                            <span class="current-location">Сегодня</span>
+                        {% else %}
+                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}date_from={{ today }}&date_to={{ today }}&page=1"
+                            class="filter-link">Сегодня</a>
+                        {% endif %}
+                        
+                        <!-- Вчера -->
+                        {% if date_from == yesterday and date_to == yesterday %}
+                            <span class="current-location">Вчера</span>
+                        {% else %}
+                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}date_from={{ yesterday }}&date_to={{ yesterday }}&page=1"
+                            class="filter-link">Вчера</a>
+                        {% endif %}
+                        
+                        <!-- Неделя -->
+                        {% if date_from == week_ago and date_to == today %}
+                            <span class="current-location">Неделя</span>
+                        {% else %}
+                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}date_from={{ week_ago }}&date_to={{ today }}&page=1"
+                            class="filter-link">Неделя</a>
+                        {% endif %}
+                        
+                        <!-- Месяц -->
+                        {% if date_from == month_ago and date_to == today %}
+                            <span class="current-location">Месяц</span>
+                        {% else %}
+                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}date_from={{ month_ago }}&date_to={{ today }}&page=1"
+                            class="filter-link">Месяц</a>
+                        {% endif %}
+
+                        <!-- Ручной ввод дат -->
+                        <form class="filter-form-date" method="get" action="{% url 'events_list' %}">
+                            {% if selected_user %}
+                                <input type="hidden" name="user" value="{{ selected_user }}">
+                            {% endif %}
+                            {% if selected_event_type %}
+                                <input type="hidden" name="event_type" value="{{ selected_event_type }}">
+                            {% endif %}
+                            
+                            <div class="filter-input-container">
+                                <label class="filter-input-label">С:</label>
+                                <input class="filter-input" type="date" name="date_from" id="dateFromInput" 
+                                    value="{{ date_from_html|default:'' }}" 
+                                    class="date-input">
+                            </div>
+                            
+                            <div class="filter-input-container">
+                                <label class="filter-input-label">По:</label>
+                                <input class="filter-input" type="date" name="date_to" id="dateToInput" 
+                                    value="{{ date_to_html|default:'' }}" 
+                                    class="date-input">
+                            </div>
+
+                            <button type="submit" class="date-apply-btn">Применить</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if total_events > 0 %}
+        <!-- Шапка таблицы -->
+        <div class="events-table-header">
+            <div class="battery-types-table-cell">№</div>
+            <div class="battery-types-table-cell">Дата</div>
+            <div class="battery-types-table-cell">Пользователь</div>
+            <div class="battery-types-table-cell">Объект</div>
+        </div>
+
+        <!-- Обёртка для таблицы -->
+        <div class="battery-types-table-wrapper">
+            <table class="battery-types-table events-table">
+                <tbody>
+                    {% for event in page_obj.object_list %}
+                    <tr class="event-{{ event.event_type }}" 
+                        onclick="showEventModal(
+                            {{ event.id }}, 
+                            '{{ event.event_type|escapejs }}', 
+                            '{{ event.get_event_type_display|escapejs }}',
+                            '{{ event.timestamp|date:"d.m.Y H:i:s"|escapejs }}',
+                            {% if event.user %}
+                                '{{ event.user|escapejs }}',
+                            {% else %}
+                                null,
+                            {% endif %}
+                            {% if event.object_repr %}
+                                '{{ event.object_repr|escapejs }}',
+                            {% else %}
+                                null,
+                            {% endif %}
+                            {% if event.full_representation %}
+                                '{{ event.full_representation|escapejs }}',
+                            {% else %}
+                                null,
+                            {% endif %}
+                            {% if event.old_data %}
+                                {{ event.old_data|safe }},
+                            {% else %}
+                                null,
+                            {% endif %}
+                            {% if event.new_data %}
+                                {{ event.new_data|safe }},
+                            {% else %}
+                                null,
+                            {% endif %}
+                            {% if event.changed_fields %}
+                                {{ event.changed_fields|safe }}
+                            {% else %}
+                                null
+                            {% endif %}
+                        )"
+                        style="cursor: pointer;">
+                        <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
+                        <td>{{ event.timestamp|date:"d.m.Y H:i:s" }}</td>
+                        <td>
+                            {% if event.user %}
+                                {{ event.user.sur_name|default:"" }} 
+                                {% if event.user.user_name %}
+                                    {{ event.user.user_name|slice:":1" }}.
+                                {% endif %}
+                                {% if event.user.last_name %}
+                                    {{ event.user.last_name|slice:":1" }}.
+                                {% endif %}
+                            {% else %}
+                                Пользователь не указан
+                            {% endif %}
+                        </td>
+                        <td>{{ event.full_representation|default:event.object_repr }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Пагинация с учетом фильтров -->
+        {% if page_obj.paginator.num_pages > 1 %}
+            <div class="pagination">
+                <span>
+                    {% if page_obj.has_previous %}
+                        <a class="pagination-button" href="?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page=1">В начало</a>
+                        <a class="pagination-button" href="?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page={{ page_obj.previous_page_number }}">Назад</a>
+                    {% endif %}
+
+                    Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
+
+                    {% if page_obj.has_next %}
+                        <a class="pagination-button" href="?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page={{ page_obj.next_page_number }}">Далее</a>
+                        <a class="pagination-button" href="?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page={{ page_obj.paginator.num_pages }}">В конец</a>
+                    {% endif %}
+                </span>
+            </div>
+        {% endif %}
+    {% else %}
+        <h5 class="event-header">Событий не найдено</h5>
     {% endif %}
 </div>
 
