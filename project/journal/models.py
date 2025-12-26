@@ -30,7 +30,7 @@ class InstallationLocation(models.Model):
 
     def full_representation(self):
         if self.parent_location:
-            return f"{str(self.parent_location)} ---> {self.location_title}"
+            return f"{str(self.parent_location)} → {self.location_title}"
         return self.location_title
     
     def get_nesting_level(self):

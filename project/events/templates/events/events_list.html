@@ -219,42 +219,17 @@
                 <tbody>
                     {% for event in page_obj.object_list %}
                     <tr class="event-{{ event.event_type }}" 
-                        onclick="showEventModal(
-                            {{ event.id }}, 
-                            '{{ event.event_type|escapejs }}', 
-                            '{{ event.get_event_type_display|escapejs }}',
-                            '{{ event.timestamp|date:"d.m.Y H:i:s"|escapejs }}',
-                            {% if event.user %}
-                                '{{ event.user|escapejs }}',
-                            {% else %}
-                                null,
-                            {% endif %}
-                            {% if event.object_repr %}
-                                '{{ event.object_repr|escapejs }}',
-                            {% else %}
-                                null,
-                            {% endif %}
-                            {% if event.full_representation %}
-                                '{{ event.full_representation|escapejs }}',
-                            {% else %}
-                                null,
-                            {% endif %}
-                            {% if event.old_data %}
-                                {{ event.old_data|safe }},
-                            {% else %}
-                                null,
-                            {% endif %}
-                            {% if event.new_data %}
-                                {{ event.new_data|safe }},
-                            {% else %}
-                                null,
-                            {% endif %}
-                            {% if event.changed_fields %}
-                                {{ event.changed_fields|safe }}
-                            {% else %}
-                                null
-                            {% endif %}
-                        )"
+                        data-event-id="{{ event.id }}"
+                        data-event-type="{{ event.event_type }}"
+                        data-event-type-display="{{ event.get_event_type_display }}"
+                        data-timestamp="{{ event.timestamp|date:'d.m.Y H:i:s' }}"
+                        data-user="{% if event.user %}{{ event.user|escapejs }}{% endif %}"
+                        data-object-repr="{% if event.object_repr %}{{ event.object_repr|escapejs }}{% endif %}"
+                        data-full-repr="{% if event.full_representation %}{{ event.full_representation }}{% endif %}"
+                        data-old-data="{{ event.old_data }}"
+                        data-new-data="{{ event.new_data }}"
+                        data-changed-fields="{{ event.changed_fields }}"
+                        onclick="showEventModalFromAttributes(this)"
                         style="cursor: pointer;">
                         <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
                         <td>{{ event.timestamp|date:"d.m.Y H:i:s" }}</td>

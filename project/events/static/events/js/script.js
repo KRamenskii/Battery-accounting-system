@@ -529,3 +529,153 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+function showEventModalFromAttributes(element) {
+    const id = element.getAttribute('data-event-id');
+    const eventType = element.getAttribute('data-event-type');
+    const eventTypeDisplay = element.getAttribute('data-event-type-display');
+    const timestamp = element.getAttribute('data-timestamp');
+    const user = element.getAttribute('data-user') || null;
+    const objectRepr = element.getAttribute('data-object-repr') || null;
+    const fullRepr = element.getAttribute('data-full-repr') || null;
+    
+    // Получаем сырые строки
+    let oldDataStr = element.getAttribute('data-old-data') || '';
+    let newDataStr = element.getAttribute('data-new-data') || '';
+    const changedFieldsStr = element.getAttribute('data-changed-fields') || '';
+    
+    let oldData = null, newData = null, changedFields = null;
+    
+    try {
+        // Функция для полного декодирования всех escape последовательностей
+        const fullyDecodeString = (str) => {
+            if (!str) return str;
+            
+            let decoded = str;
+            
+            // 1. Декодируем Unicode escapes (\uXXXX)
+            decoded = decoded.replace(/\\u([0-9a-fA-F]{4})/g, (match, hex) => {
+                return String.fromCharCode(parseInt(hex, 16));
+            });
+            
+            // 2. Декодируем стандартные escape последовательности
+            decoded = decoded
+                .replace(/\\n/g, '\n')
+                .replace(/\\r/g, '\r')
+                .replace(/\\t/g, '\t')
+                .replace(/\\"/g, '"')
+                .replace(/\\'/g, "'")
+                .replace(/\\\\/g, '\\');
+            
+            // 3. Декодируем HTML entities (&#xxxx; и &entity;)
+            const textarea = document.createElement('textarea');
+            textarea.innerHTML = decoded;
+            decoded = textarea.value;
+            
+            // 4. Декодируем возможные двойные экранирования
+            // Если после всех замен остались \u, пробуем еще раз
+            if (decoded.includes('\\u')) {
+                decoded = decoded.replace(/\\\\u([0-9a-fA-F]{4})/g, (match, hex) => {
+                    return String.fromCharCode(parseInt(hex, 16));
+                });
+            }
+            
+            return decoded;
+        };
+        
+        // Декодируем строки
+        oldDataStr = fullyDecodeString(oldDataStr);
+        newDataStr = fullyDecodeString(newDataStr);
+        
+        console.log('После декодирования:', {
+            oldDataStr: oldDataStr.substring(0, 200),
+            newDataStr: newDataStr.substring(0, 200)
+        });
+        
+        // Парсим JSON
+        if (oldDataStr.trim() && oldDataStr !== 'null' && oldDataStr !== 'None') {
+            try {
+                oldData = JSON.parse(oldDataStr);
+            } catch (e) {
+                console.error('JSON parse error for oldData:', e);
+                // Если не JSON, пробуем как Python dict
+                try {
+                    const fixedStr = oldDataStr
+                        .replace(/None/g, 'null')
+                        .replace(/True/g, 'true')
+                        .replace(/False/g, 'false');
+                    oldData = new Function('return (' + fixedStr + ')')();
+                } catch (e2) {
+                    console.error('Python dict parse error:', e2);
+                }
+            }
+        }
+        
+        if (newDataStr.trim() && newDataStr !== 'null' && newDataStr !== 'None') {
+            try {
+                newData = JSON.parse(newDataStr);
+            } catch (e) {
+                console.error('JSON parse error for newData:', e);
+                try {
+                    const fixedStr = newDataStr
+                        .replace(/None/g, 'null')
+                        .replace(/True/g, 'true')
+                        .replace(/False/g, 'false');
+                    newData = new Function('return (' + fixedStr + ')')();
+                } catch (e2) {
+                    console.error('Python dict parse error:', e2);
+                }
+            }
+        }
+        
+        if (changedFieldsStr.trim() && changedFieldsStr !== 'null' && changedFieldsStr !== 'None') {
+            try {
+                changedFields = JSON.parse(changedFieldsStr);
+            } catch (e) {
+                try {
+                    const fixedStr = changedFieldsStr
+                        .replace(/None/g, 'null')
+                        .replace(/True/g, 'true')
+                        .replace(/False/g, 'false')
+                        .replace(/'/g, '"');
+                    changedFields = JSON.parse(fixedStr);
+                } catch (e2) {
+                    console.error('Changed fields parse error:', e2);
+                }
+            }
+        }
+        
+        // Рекурсивно декодируем все строки в объектах
+        const deepDecode = (obj) => {
+            if (!obj) return obj;
+            
+            if (typeof obj === 'string') {
+                return fullyDecodeString(obj);
+            }
+            
+            if (Array.isArray(obj)) {
+                return obj.map(item => deepDecode(item));
+            }
+            
+            if (typeof obj === 'object') {
+                const result = {};
+                for (const key in obj) {
+                    if (obj.hasOwnProperty(key)) {
+                        result[key] = deepDecode(obj[key]);
+                    }
+                }
+                return result;
+            }
+            
+            return obj;
+        };
+        
+        if (oldData) oldData = deepDecode(oldData);
+        if (newData) newData = deepDecode(newData);
+        
+    } catch (e) {
+        console.error('Error in showEventModalFromAttributes:', e);
+    }
+    
+    showEventModal(id, eventType, eventTypeDisplay, timestamp, user, objectRepr, fullRepr, oldData, newData, changedFields);
+}
