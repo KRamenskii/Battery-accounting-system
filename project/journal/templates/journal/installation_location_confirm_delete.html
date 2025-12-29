@@ -10,7 +10,7 @@
             <h6>{{ installation_location_confirm_delete.system_title }}</h6>
         {% endif %}
     </h2>
-    <form method="post" class="confirm-form">
+    <form method="post" class="confirm-form" action="?next={{ next_param|urlencode }}">
         {% csrf_token %}
         <button class="battery-type-detail-btn back-btn" type="button" onclick="window.history.back();">Назад</button>
         <button type="submit" class="battery-type-detail-btn delete-btn">Удалить</button>
