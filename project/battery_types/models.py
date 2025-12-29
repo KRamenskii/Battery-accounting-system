@@ -52,6 +52,13 @@ class BatteryType(models.Model):
     class Meta:
         verbose_name = 'Тип АБ'
         verbose_name_plural = 'Типы АБ'
+        # Уникальность по комбинации производителя и модели
+        constraints = [
+            models.UniqueConstraint(
+                fields=['manufacturer', 'battery_type_title'],
+                name='unique_battery_type'
+            )
+        ]
 
     def __str__(self):
         return self.battery_type_title
