@@ -22,10 +22,13 @@
 }
 
 .installation-location-info {
+    display: flex;
+    justify-content: space-between;
     background-color: #dff2ff;
     width: 100%;
     border-radius: 10px 0 0 10px;
     padding: 10px;
+    align-items: center;
 }
 
 .installation-location-info:hover {
@@ -77,3 +80,4 @@
     background-color: #ff4d4d;
     color: white;
 }
+
