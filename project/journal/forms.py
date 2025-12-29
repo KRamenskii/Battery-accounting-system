@@ -4,7 +4,7 @@ from .models import InstallationLocation, TestingDBT12D, TestingIC105, Battery, 
 class InstallationLocationForm(forms.ModelForm):
     class Meta:
         model = InstallationLocation
-        fields = ['location_title', 'system_title', 'parent_location', 'nesting_level']
+        fields = ['location_title', 'location_type', 'system_title', 'system_name', 'nominal_capacity', 'battery_count', 'parent_location', 'nesting_level']
 
     def __init__(self, *args, **kwargs):
         parent_location = kwargs.pop('parent_location', None)

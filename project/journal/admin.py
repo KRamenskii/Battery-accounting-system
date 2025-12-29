@@ -6,7 +6,7 @@ from .forms import BatteryAdminForm
 class InstallationLocationAdmin(admin.ModelAdmin):
     list_display = ('id', 'location_title', 'parent_location', 'nesting_level')
     search_fields = ('location_title',)
-    list_filter = ('nesting_level',)
+    list_filter = ('nesting_level', 'system_name', 'location_type')
 
 @admin.register(SerialParameters)
 class SerialParametersAdmin(admin.ModelAdmin):

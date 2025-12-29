@@ -1,15 +1,43 @@
 from django.db import models
 
 class InstallationLocation(models.Model):
+    LOCATION_TYPES = [
+        ('container', 'Шкаф'),
+        ('virtual', 'Промежуточное место, путь'),
+    ]
+
     location_title = models.CharField(
         max_length=255, 
         verbose_name="Название места установки"
     )
+    location_type = models.CharField(
+        max_length=20,
+        choices=LOCATION_TYPES,
+        default='container',
+        verbose_name="Тип места установки"
+    )
     system_title = models.CharField(
         max_length=255, 
-        verbose_name="Название системы", 
+        verbose_name="Описание", 
         null=True, 
         blank=True
+    )
+    system_name = models.CharField(
+        max_length=255, 
+        verbose_name="Название системы",
+        null=True,
+        blank=True
+    )
+    nominal_capacity = models.DecimalField(
+        verbose_name="Номинальная емкость АБ, А⋅ч",
+        max_digits=10,
+        decimal_places=2,
+        null=True,
+        blank=True
+    )
+    battery_count = models.PositiveIntegerField(
+        verbose_name="Количество АБ",
+        default=0
     )
     parent_location = models.ForeignKey(
         'self',
@@ -24,6 +52,12 @@ class InstallationLocation(models.Model):
     class Meta:
         verbose_name = "Место установки"
         verbose_name_plural = "Места установки"
+        constraints = [
+            models.UniqueConstraint(
+                fields=['location_title', 'location_type', 'system_name'],
+                name='unique_installation_location'
+            )
+        ]
 
     def __str__(self):
         return self.full_representation()
@@ -37,10 +71,21 @@ class InstallationLocation(models.Model):
         if self.parent_location is None:
             return 0
         return self.parent_location.get_nesting_level() + 1
+    
+    @property
+    def is_container(self):
+        """Проверка, является ли место контейнером (где стоят АБ)"""
+        return self.location_type == 'container'
 
     def save(self, *args, **kwargs):
         # Вычисляем уровень вложенности перед сохранением
         self.nesting_level = self.get_nesting_level()
+        
+        # Автоматически заполняем поля для не-контейнеров
+        if not self.is_container:
+            self.nominal_capacity = None
+            self.battery_count = 0
+        
         super().save(*args, **kwargs)
 
 
