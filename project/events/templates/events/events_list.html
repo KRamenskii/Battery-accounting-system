@@ -33,7 +33,7 @@
         <div class="filters-header">
             <h3>Фильтры</h3>
             <div class="filter-header-btn">
-                {% if selected_user or selected_event_type or date_from or date_to %}
+                {% if selected_user or selected_event_type or date_from or date_to or selected_content_type %}
                     <a href="{% url 'events_list' %}" class="filter-reset-all-btn">
                         <i class="fas fa-redo"></i> Сбросить все фильтры
                     </a>
@@ -53,7 +53,8 @@
                     <div class="filter-header-container">
                         <h5 style="margin-bottom: 0px">Пользователь</h5>
                         {% if selected_user and selected_user != 'all' %}
-                            <a href="{% url 'events_list' %}?{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}{% endif %}" class="filter-clear-btn">Сбросить</a>
+                            <a href="{% url 'events_list' %}?{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}{% if selected_content_type %}content_type={{ selected_content_type }}{% endif %}" 
+                            class="filter-clear-btn">Сбросить</a>
                         {% endif %}
                     </div>
                     <div class="filter-container-path">
@@ -67,12 +68,55 @@
                                 </span>
                             {% else %}
                                 <!-- Не выбранный пользователь - обычная ссылка -->
-                                <a href="{% url 'events_list' %}?{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}user={{ user.id }}&page=1"
+                                <a href="{% url 'events_list' %}?{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}{% if selected_content_type %}content_type={{ selected_content_type }}&{% endif %}user={{ user.id }}&page=1"
                                 class="filter-link"
                                 onclick="closeDropdown()">
                                     {{ user.sur_name|default:"" }}
                                     {{ user.user_name|slice:":1" }}.
                                     {{ user.last_name|slice:":1" }}.
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Фильтр по типу объекта -->
+            <div class="filter-group">
+                <div class="filter-container">
+                    <div class="filter-header-container">
+                        <h5 style="margin-bottom: 0px">Тип объекта</h5>
+                    </div>
+                    
+                    <div class="filter-container-path">
+                        <!-- Ссылка "Все типы" -->
+                        {% if selected_content_type %}
+                            <!-- Если выбран конкретный тип - показываем "Все типы" как обычную ссылку -->
+                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}{% endif %}&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                Все типы
+                            </a>
+                        {% else %}
+                            <!-- Если выбран "Все типы" или ничего - показываем как выбранный элемент -->
+                            <span class="current-location">
+                                Все типы
+                            </span>
+                        {% endif %}
+                        
+                        <!-- Список типов объектов -->
+                        {% for ct in content_types %}
+                            {% if selected_content_type == ct.id|stringformat:"i" %}
+                                <!-- Выбранный тип объекта - span вместо ссылки -->
+                                <span class="current-location">
+                                    {{ ct.name }}
+                                </span>
+                            {% else %}
+                                <!-- Не выбранный тип объекта - обычная ссылка -->
+                                <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}content_type={{ ct.id }}&page=1"
+                                class="filter-link"
+                                onclick="closeDropdown()">
+                                    {{ ct.name }}
                                 </a>
                             {% endif %}
                         {% endfor %}
@@ -88,7 +132,7 @@
                         <!-- Ссылка "Все типы" -->
                         {% if selected_event_type and selected_event_type != 'all' %}
                             <!-- Если выбран конкретный тип - показываем "Все типы" как обычную ссылку -->
-                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page=1"
+                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}{% if selected_content_type %}content_type={{ selected_content_type }}&{% endif %}page=1"
                             class="filter-link"
                             onclick="closeDropdown()">
                                 Все типы
@@ -109,7 +153,7 @@
                                 </span>
                             {% else %}
                                 <!-- Не выбранный тип события - обычная ссылка -->
-                                <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}event_type={{ type_code }}&page=1"
+                                <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}{% if selected_content_type %}content_type={{ selected_content_type }}&{% endif %}event_type={{ type_code }}&page=1"
                                 class="filter-link"
                                 onclick="closeDropdown()">
                                     {{ type_name }}
@@ -134,7 +178,7 @@
                         {% endif %}
 
                         {% if date_from or date_to %}
-                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}{% endif %}" 
+                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if selected_content_type %}content_type={{ selected_content_type }}{% endif %}" 
                             class="filter-clear-btn">Сбросить</a>
                         {% endif %}
                     </div>
@@ -145,7 +189,7 @@
                         {% if date_from == today and date_to == today %}
                             <span class="current-location">Сегодня</span>
                         {% else %}
-                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}date_from={{ today }}&date_to={{ today }}&page=1"
+                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if selected_content_type %}content_type={{ selected_content_type }}&{% endif %}date_from={{ today }}&date_to={{ today }}&page=1"
                             class="filter-link">Сегодня</a>
                         {% endif %}
                         
@@ -153,7 +197,7 @@
                         {% if date_from == yesterday and date_to == yesterday %}
                             <span class="current-location">Вчера</span>
                         {% else %}
-                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}date_from={{ yesterday }}&date_to={{ yesterday }}&page=1"
+                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if selected_content_type %}content_type={{ selected_content_type }}&{% endif %}date_from={{ yesterday }}&date_to={{ yesterday }}&page=1"
                             class="filter-link">Вчера</a>
                         {% endif %}
                         
@@ -161,7 +205,7 @@
                         {% if date_from == week_ago and date_to == today %}
                             <span class="current-location">Неделя</span>
                         {% else %}
-                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}date_from={{ week_ago }}&date_to={{ today }}&page=1"
+                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if selected_content_type %}content_type={{ selected_content_type }}&{% endif %}date_from={{ week_ago }}&date_to={{ today }}&page=1"
                             class="filter-link">Неделя</a>
                         {% endif %}
                         
@@ -169,7 +213,7 @@
                         {% if date_from == month_ago and date_to == today %}
                             <span class="current-location">Месяц</span>
                         {% else %}
-                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}date_from={{ month_ago }}&date_to={{ today }}&page=1"
+                            <a href="{% url 'events_list' %}?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if selected_content_type %}content_type={{ selected_content_type }}&{% endif %}date_from={{ month_ago }}&date_to={{ today }}&page=1"
                             class="filter-link">Месяц</a>
                         {% endif %}
 
@@ -180,6 +224,9 @@
                             {% endif %}
                             {% if selected_event_type %}
                                 <input type="hidden" name="event_type" value="{{ selected_event_type }}">
+                            {% endif %}
+                            {% if selected_content_type %}
+                                <input type="hidden" name="content_type" value="{{ selected_content_type }}">
                             {% endif %}
                             
                             <div class="filter-input-container">
@@ -258,19 +305,31 @@
             <div class="pagination">
                 <span>
                     {% if page_obj.has_previous %}
-                        <a class="pagination-button" href="?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page=1">В начало</a>
-                        <a class="pagination-button" href="?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page={{ page_obj.previous_page_number }}">Назад</a>
+                        <a class="pagination-button" 
+                        href="?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}{% if selected_content_type %}content_type={{ selected_content_type }}&{% endif %}page=1">
+                            В начало
+                        </a>
+                        <a class="pagination-button" 
+                        href="?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}{% if selected_content_type %}content_type={{ selected_content_type }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                            Назад
+                        </a>
                     {% endif %}
 
                     Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
 
                     {% if page_obj.has_next %}
-                        <a class="pagination-button" href="?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page={{ page_obj.next_page_number }}">Далее</a>
-                        <a class="pagination-button" href="?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}page={{ page_obj.paginator.num_pages }}">В конец</a>
+                        <a class="pagination-button" 
+                        href="?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}{% if selected_content_type %}content_type={{ selected_content_type }}&{% endif %}page={{ page_obj.next_page_number }}">
+                            Далее
+                        </a>
+                        <a class="pagination-button" 
+                        href="?{% if selected_user %}user={{ selected_user }}&{% endif %}{% if selected_event_type %}event_type={{ selected_event_type }}&{% endif %}{% if date_from %}date_from={{ date_from }}&{% endif %}{% if date_to %}date_to={{ date_to }}&{% endif %}{% if selected_content_type %}content_type={{ selected_content_type }}&{% endif %}page={{ page_obj.paginator.num_pages }}">
+                            В конец
+                        </a>
                     {% endif %}
                 </span>
             </div>
-        {% endif %}
+    {% endif %}
     {% else %}
         <h5 class="event-header">Событий не найдено</h5>
     {% endif %}
