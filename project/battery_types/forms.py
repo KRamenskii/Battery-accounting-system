@@ -15,4 +15,5 @@ class BatteryTypeForm(forms.ModelForm):
             'nominal_capacity_5',
             'self_discharge',
             'internal_resistance',
+            'weight'
         ]

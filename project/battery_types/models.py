@@ -41,6 +41,13 @@ class BatteryType(models.Model):
         max_digits=10, 
         decimal_places=2
     )
+    weight = models.DecimalField(
+        verbose_name='Вес АБ, кг',
+        max_digits=10,
+        decimal_places=2,
+        null=True,  # Разрешаем NULL для существующих записей
+        blank=True  # Поле не обязательно для заполнения в формах
+    )
 
     class Meta:
         verbose_name = 'Тип АБ'
