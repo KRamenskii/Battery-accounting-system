@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator
 from django.db.models import OuterRef, Subquery
 from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.http import JsonResponse
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -19,7 +20,18 @@ class InstallationLocationCreateView(CreateView):
     template_name = 'journal/installation_location_create.html'
 
     def get_success_url(self):
+        next_url = self.request.POST.get('next') or self.request.GET.get('next')
+        if next_url:
+            return next_url
         return reverse_lazy('installation_locations')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        referer = self.request.META.get('HTTP_REFERER', '')
+        current_url = self.request.build_absolute_uri()
+        if referer != current_url:
+            context['next_param'] = referer
+        return context
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()
@@ -33,15 +45,44 @@ class InstallationLocationUpdateView(UpdateView):
     model = InstallationLocation
     form_class = InstallationLocationForm
     template_name = 'journal/installation_location_edit.html'
-    success_url = reverse_lazy('installation_locations')
     context_object_name = 'installation_location_edit'
+
+    def get_success_url(self):
+        # Получаем next из GET или POST
+        next_url = self.request.POST.get('next') or self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy('installation_locations')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        # Передаем текущий referer как параметр next
+        referer = self.request.META.get('HTTP_REFERER', '')
+        # Проверяем, что это не текущая страница редактирования
+        current_url = self.request.build_absolute_uri()
+        if referer != current_url:
+            context['next_param'] = referer
+        return context
 
 
 class InstallationLocationDeleteView(DeleteView):
     model = InstallationLocation
     template_name = 'journal/installation_location_confirm_delete.html'
-    success_url = reverse_lazy('installation_locations')
     context_object_name = 'installation_location_confirm_delete'
+
+    def get_success_url(self):
+        next_url = self.request.POST.get('next') or self.request.GET.get('next')
+        if next_url:
+            return next_url
+        return reverse_lazy('installation_locations')
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        referer = self.request.META.get('HTTP_REFERER', '')
+        current_url = self.request.build_absolute_uri()
+        if referer != current_url:
+            context['next_param'] = referer
+        return context
 
 
 class TestingDBT12DCreateView(CreateView):

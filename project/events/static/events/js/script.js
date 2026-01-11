@@ -19,10 +19,15 @@ const FIELD_TRANSLATIONS = {
     'nominal_capacity_5': 'Номинальная ёмкость при 5-ти часовом разряде',
     'self_discharge': 'Саморазряд, %',
     'internal_resistance': 'Внутреннее сопротивление, мОм',
+    'weight': 'Вес АБ, кг',
 
     //InstallationLocation
     'location_title': 'Название места установки',
-    'system_title': 'Название системы',
+    'location_type': 'Тип места установки',
+    'system_title': 'Описание',
+    'system_name': 'Название системы',
+    'nominal_capacity': 'Номинальная емкость АБ, А⋅ч',
+    'battery_count': 'Количество АБ',
     'parent_location': 'Родительское место',
     'nesting_level': 'Уровень вложенности',
 
@@ -359,6 +364,14 @@ function translateFieldName(field) {
 function formatValue(value) {
     if (value === null || value === undefined || value === 'null' || value === 'None') {
         return '<span style="color: #999; font-style: italic;">(не задано)</span>';
+    }
+
+    // ОСОБЫЙ СЛУЧАЙ: location_type
+    if (value === 'virtual') {
+        return 'Промежуточное место, путь';
+    }
+    if (value === 'container') {
+        return 'Шкаф';
     }
     
     if (typeof value === 'boolean') {

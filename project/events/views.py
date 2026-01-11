@@ -27,6 +27,46 @@ def events_list(request):
     users_with_events = User.objects.filter(
         event__isnull=False
     ).distinct().order_by('username')
+
+    # Определяем доступные модели для фильтрации
+    from django.contrib.contenttypes.models import ContentType
+    
+    # Модели, которые мы отслеживаем
+    watched_models = {
+        "journal.installationlocation": "Место установки",
+        "journal.battery": "Аккумуляторная батарея",
+        "journal.serialparameters": "Серийные параметры",
+        "journal.batteryinstallationhistory": "История установки АБ",
+        "journal.testingdbt12d": "Тестирование DBT12D",
+        "journal.testingic105": "Тестирование IC105",
+        "battery_types.batterytype": "Тип АБ",
+    }
+    
+    # Получаем ContentType для отображения
+    content_types = []
+    for model_key, model_name in watched_models.items():
+        try:
+            app_label, model = model_key.split('.')
+            ct = ContentType.objects.get(app_label=app_label, model=model)
+            content_types.append({
+                'id': ct.id,
+                'name': model_name,
+                'app_label': app_label,
+                'model': model
+            })
+        except ContentType.DoesNotExist:
+            continue
+    
+    # Получаем выбранный тип объекта из GET-параметров
+    selected_content_type = request.GET.get('content_type', '')
+    
+    # Фильтруем события по типу объекта, если выбран
+    if selected_content_type:
+        try:
+            ct = ContentType.objects.get(id=selected_content_type)
+            events = events.filter(content_type=ct)
+        except (ContentType.DoesNotExist, ValueError):
+            pass
     
     # Типы событий для фильтра
     event_types = Event.EVENT_TYPE_CHOICES
@@ -89,12 +129,6 @@ def events_list(request):
         except (ValueError, TypeError):
             pass
     
-    # Подсчет событий для статистики
-    total_events = events.count()
-    create_count = events.filter(event_type='create').count()
-    update_count = events.filter(event_type='update').count()
-    delete_count = events.filter(event_type='delete').count()
-    
     # Генерация ссылок для быстрых фильтров по дате
     today = timezone.now().date()
     yesterday = today - timedelta(days=1)
@@ -109,6 +143,12 @@ def events_list(request):
             return date_obj.strftime('%d.%m.%Y')
         return date_str
     
+    # Подсчет событий для статистики
+    total_events = events.count()
+    create_count = events.filter(event_type='create').count()
+    update_count = events.filter(event_type='update').count()
+    delete_count = events.filter(event_type='delete').count()
+
     paginator = Paginator(events, 20)
     page_number = request.GET.get("page")
     page_obj = paginator.get_page(page_number)
@@ -127,6 +167,8 @@ def events_list(request):
         "create_count": create_count,
         "update_count": update_count,
         "delete_count": delete_count,
+        'content_types': content_types,
+        'selected_content_type': selected_content_type,
         "today": today.strftime('%Y-%m-%d'),
         "yesterday": yesterday.strftime('%Y-%m-%d'),
         "week_ago": week_ago.strftime('%Y-%m-%d'),

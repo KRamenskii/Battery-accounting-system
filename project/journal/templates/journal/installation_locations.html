@@ -32,10 +32,24 @@
         {% for item in locations %}
         <div class="installation-location"> 
             <div class="installation-location-info" data-url="{% url 'installation_locations' item.id %}">
-                <span class="installation-location-title">{{ item.location_title }}</span>
-                {% if item.system_title %}
-                    <span class="installation-location-description">{{ item.system_title }}</span>
-                {% endif %}
+                <div>
+                    <span class="installation-location-title">{{ item.location_title }}</span>
+                    {% if item.system_title %}
+                        <span class="installation-location-description">{{ item.system_title }}</span>
+                    {% endif %}
+                </div>
+                <div style="display: flex; gap: 10px; align-items: center;">
+                    {% if item.location_type == 'container' %}
+                        <span class="installation-location-description" style="color: red">{{ item.system_name|default:"" }}</span>
+                        {% if item.battery_count and item.nominal_capacity %}
+                            <span class="installation-location-description" style="color: black">{{ item.battery_count }} x {{ item.nominal_capacity }}</span>
+                        {% endif %}
+                        <i class="bi bi-box-fill"></i>
+                    {% else %}
+                        <span class="installation-location-description" style="color: red">{{ item.system_name|default:"" }}</span>
+                        <i class="bi bi-box-arrow-in-right"></i>
+                    {% endif %}
+                </div>
             </div>
             <div class="installation-location-actions">
                 <a class="installation-location-edit-button" href="{% url 'installation_location_edit' item.id %}">
