@@ -224,10 +224,7 @@
     padding: 10px;
     align-items: start;
     cursor: pointer;
-}
-
-.battery-detail-instllation {
-    background-color: red;
+    margin-bottom: 8px;
 }
 
 .battery-detail-instllation-table-wrapper {
@@ -239,6 +236,7 @@
     border: solid 3px #dff2ff;
     border-radius: 10px;
     padding: 8px;
+    padding-bottom: 0;
 }
 
 .battery-detail-instllation-table-wrapper::-webkit-scrollbar {
@@ -255,7 +253,9 @@
 
 .spaced-container {
     display: flex;
-    justify-content: space-between;
     width: 100%;
-    box-sizing: border-box;
+}
+
+.date-align-right {
+    margin-left: auto;
 }

@@ -70,46 +70,59 @@
             <div class="battery-detail-instllation-table-wrapper">
                 <table class="battery-detail-installation">
                     <tbody>
-                        {% for location, path in installations_path %}
-                            <tr data-item-id="{{ location.id }}"
-                                class="test-row"
-                                data-item-type="installation"
-                                data-delete-url="{% url 'delete_installation' location.id %}"
-                                onclick="console.log('Location ID: {{ location.id|default:'NO ID' }}')">
-                                <td class="installation-card">
-                                    <div>
-                                        {% for place in path %}
-                                            {% if forloop.last %}
-                                                <span class="final-location">{{ place.location_title }}</span>
-                                            {% else %}
-                                                <span class="path-item">{{ place.location_title }}</span> →
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
+                        {% for item in installations_path %}
+                            {% with location=item.history path=item.path installation_location=item.location_obj %}
+                                <tr data-item-id="{{ location.id }}"
+                                    class="test-row"
+                                    data-item-type="installation"
+                                    data-delete-url="{% url 'delete_installation' location.id %}"
+                                    onclick="console.log('Location ID: {{ location.id|default:'NO ID' }}')">
+                                    <td class="installation-card">
+                                        <div>
+                                            {% for place in path %}
+                                                {% if forloop.last %}
+                                                    <span class="final-location">{{ place.location_title }}</span>
+                                                {% else %}
+                                                    <span class="path-item">{{ place.location_title }}</span> →
+                                                {% endif %}
+                                            {% endfor %}
+                                        </div>
 
-                                    <hr class="separator">
+                                        <hr class="separator">
 
-                                    <span class="path-item" style="color: gray">Описание: {{ installation_location.system_title }}</span>
-                                    <span class="path-item" style="color: gray">Система: {{ installation_location.system_name }}</span>
-                                    
-                                    <div class="spaced-container">
-                                        <span class="final-location">
-                                            <i class="bi bi-battery-full"></i>
-                                            {{ installation_location.battery_count }} х {{ installation_location.nominal_capacity }} А∙ч
+                                        <span class="path-item" style="color: gray">
+                                            Описание: {{ installation_location.system_title|default:"—" }}
                                         </span>
-                                        <span class="path-item" style="align-items: end;">{{ location.installation_date|date:"d.m.Y" }}</span>
-                                    </div>
-                                </td>
-                            </tr>
+                                        {% if installation_location.location_title not in hide_system_for_locations %}
+                                            <span class="path-item" style="color: gray">
+                                                Система: {{ installation_location.system_name|default:"—" }}
+                                            </span>
+                                        {% endif %}
+                                        
+                                        <div class="spaced-container">
+                                             {% if installation_location.location_title not in hide_system_for_locations %}
+                                                <span class="final-location">
+                                                    <i class="bi bi-battery-full"></i>
+                                                    {{ installation_location.battery_count }} х {{ installation_location.nominal_capacity|default:"0" }} А∙ч
+                                                </span>
+                                            {% endif %}
+                                            
+                                            <span class="path-item date-align-right">
+                                                {{ location.installation_date|date:"d.m.Y" }}
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endwith %}
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
 
             <div class="battery-detail-button-h-container">
-                <a class="battery-detail-btn">На склад</a>
-                <a class="battery-detail-btn">В утилизацию</a>
-                <a class="battery-detail-btn">В архив</a>
+                <a class="battery-detail-btn" href="{% url 'add_installation_location_battery' battery.id %}?action=warehouse">На склад</a>
+                <a class="battery-detail-btn" href="{% url 'add_installation_location_battery' battery.id %}?action=utilization">В утилизацию</a>
+                <a class="battery-detail-btn" href="{% url 'add_installation_location_battery' battery.id %}?action=archive">В архив</a>
             </div>
         </div>
     </div>

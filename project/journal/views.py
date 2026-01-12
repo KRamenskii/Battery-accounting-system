@@ -1,3 +1,4 @@
+from django.utils import timezone
 from django.core.paginator import Paginator
 from django.db.models import OuterRef, Subquery
 from django.shortcuts import get_object_or_404, render
@@ -170,7 +171,35 @@ class BatteryInstallationHistoryCreateView(CreateView):
         initial = super().get_initial()
         battery_id = self.kwargs.get('battery_id')
         battery = get_object_or_404(Battery, id=battery_id)
+        
+        # Берем action из GET-параметра (если есть)
+        action = self.request.GET.get('action')
+        
+        # Всегда предзаполняем аккумулятор
         initial['battery'] = battery
+        
+        # Текущая дата по умолчанию
+        initial['installation_date'] = timezone.now().date()
+        
+        # Предзаполняем location только если указан action
+        if action:
+            location_map = {
+                'utilization': 'Утилизация',
+                'warehouse': 'Склад',
+                'archive': 'Архив',
+            }
+            
+            if action in location_map:
+                location, _ = InstallationLocation.objects.get_or_create(
+                    location_title=location_map[action],
+                    defaults={'description': f'Место: {location_map[action]}'}
+                )
+                initial['installation_location'] = location
+                
+                # Можно добавить заметку
+                if action == 'utilization':
+                    initial['notes'] = 'Перемещено в утилизацию'
+        
         return initial
 
     def get_form_kwargs(self):
@@ -338,15 +367,22 @@ def battery_detail(request, pk):
     testings_ic105 = TestingIC105.objects.filter(battery=battery).order_by('testing_date')
     installation_locations = BatteryInstallationHistory.objects.filter(battery=battery).order_by('installation_date')
     location_id = installation_locations.last().installation_location.id
-    installation_location = installation_locations.last().installation_location
 
     # Получаем все места установки для выпадающего списка
     all_installation_locations = InstallationLocation.objects.all()
-    
-    installations_path = [
-        (location, get_parent_locations(location.installation_location) + [location.installation_location])
-        for location in installation_locations
-    ]
+
+    # Определяем заголовки, которые нужно скрыть
+    hide_system_for_locations = ['Архив', 'Склад', 'Утилизация']
+
+    # Формируем пути для каждой записи
+    installations_path = []
+    for location in installation_locations:
+        path = get_parent_locations(location.installation_location) + [location.installation_location]
+        installations_path.append({
+            'history': location,  # Сама запись истории
+            'path': path,         # Путь к местоположению
+            'location_obj': location.installation_location  # Объект местоположения
+        })
 
     return render(request, 'journal/battery_detail.html', {
         'battery': battery,
@@ -358,7 +394,7 @@ def battery_detail(request, pk):
         'installations_path': installations_path,
         'location_id': location_id,
         'all_installation_locations': all_installation_locations,
-        'installation_location': installation_location
+        'hide_system_for_locations': hide_system_for_locations,
     })
 
 
@@ -396,7 +432,7 @@ def delete_installation(request, installation_id):
         return JsonResponse({'error': str(e)}, status=500)
     
 
-# Редавтирование результатов тестирования АБ и истории мест установок
+# Редактирование результатов тестирования АБ и истории мест установок
 # Для сериализации тестирований DBT12D
 def serialize_test_dbt12d(test):
     return {
