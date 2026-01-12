@@ -100,25 +100,25 @@
     <div class="battery-detail-half-container">
         <!-- Измерения DBT12D -->
         <div class="testing-container">
-            <h5 class="battery-detail-header">Измерения DBT12D</h5>
+            <div class="header-testing-container">
+                <h5 class="battery-detail-header">Измерения DBT12D</h5>
+                <a class="add-btn" href="{% url 'add_testing_dbt12d' battery.id %}">
+                    <i class="bi bi-plus fs-3"></i>
+                </a>
+            </div>
             
             {% include 'journal/battery_test_table.html' with testings=testings_dbt12d model=model_dbt12d test_type='dbt12d' %}
-
-            <div class="test-results-button-container">
-                <button class="battery-type-detail-btn chart-btn" type="button">Построить график</button>
-                <a class="battery-type-detail-btn add-test-btn" href="{% url 'add_testing_dbt12d' battery.id %}">Добавить измерение DBT12D</a>
-            </div> 
         </div>
 
         <div class="testing-container">
-            <h5 class="battery-detail-header">Измерения IC105</h5>
+            <div class="header-testing-container">
+                <h5 class="battery-detail-header">Измерения IC105</h5>
+                <a class="add-btn" href="{% url 'add_testing_ic105' battery.id %}">
+                    <i class="bi bi-plus fs-3"></i>
+                </a>
+            </div>
             
             {% include 'journal/battery_test_table.html' with testings=testings_ic105 model=model_ic105 test_type='ic105' %}
-
-            <div class="test-results-button-container">
-                <button class="battery-type-detail-btn chart-btn" type="button">Построить график</button>
-                <a class="battery-type-detail-btn add-test-btn" href="{% url 'add_testing_ic105' battery.id %}">Добавить измерение IC105</a>
-            </div>  
         </div>
     </div>
 </div>
