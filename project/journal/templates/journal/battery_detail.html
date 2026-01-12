@@ -13,7 +13,12 @@
     <!-- Левая часть: параметры АБ -->
     <div class="battery-detail-half-container">
         <div class="testing-container">
-            <h5 class="battery-detail-header">Параметры аккумуляторной батареи №{{ battery.battery_number }}</h5>
+            <div class="header-testing-container">
+                <a class="add-btn" href="{% url 'journal_filtered' location_id %}">
+                    <i class="bi bi-arrow-left fs-3"></i>
+                </a>
+                <h5 class="battery-detail-header">Аккумуляторная батарея №{{ battery.battery_number }}</h5>
+            </div>
 
             <div class="battery-detail-table-wrapper">
                 <table class="battery-detail-table">
@@ -55,43 +60,56 @@
         </div>
 
         <div class="testing-container">
-            <h5 class="battery-detail-header">История мест установки (хранения) АБ №{{ battery.battery_number }}</h5>
+            <div class="header-testing-container">
+                <h5 class="battery-detail-header">История мест установки (хранения) АБ №{{ battery.battery_number }}</h5>
+                <a class="add-btn" href="{% url 'add_installation_location_battery' battery.id %}">
+                    <i class="bi bi-plus fs-3"></i>
+                </a>
+            </div>
 
-            <div class="battery-detail-table-wrapper">
-                <table class="battery-detail-table inst-loc">
-                    <thead>
-                        <tr>
-                            <th>Место установки (хранения)</th>
-                            <th>Дата установки</th>
-                        </tr>
-                    </thead>
+            <div class="battery-detail-instllation-table-wrapper">
+                <table class="battery-detail-installation">
                     <tbody>
                         {% for location, path in installations_path %}
-                            <tr style="cursor: pointer;"
-                                data-item-id="{{ location.id }}"
+                            <tr data-item-id="{{ location.id }}"
                                 class="test-row"
                                 data-item-type="installation"
                                 data-delete-url="{% url 'delete_installation' location.id %}"
                                 onclick="console.log('Location ID: {{ location.id|default:'NO ID' }}')">
-                                <td>
-                                    {% for place in path %}
-                                        {% if forloop.last %}
-                                            <span class="final-location">{{ place.location_title }}</span>
-                                        {% else %}
-                                            <span class="path-item">{{ place.location_title }}</span> →
-                                        {% endif %}
-                                    {% endfor %}
+                                <td class="installation-card">
+                                    <div>
+                                        {% for place in path %}
+                                            {% if forloop.last %}
+                                                <span class="final-location">{{ place.location_title }}</span>
+                                            {% else %}
+                                                <span class="path-item">{{ place.location_title }}</span> →
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+
+                                    <hr class="separator">
+
+                                    <span class="path-item" style="color: gray">Описание: {{ installation_location.system_title }}</span>
+                                    <span class="path-item" style="color: gray">Система: {{ installation_location.system_name }}</span>
+                                    
+                                    <div class="spaced-container">
+                                        <span class="final-location">
+                                            <i class="bi bi-battery-full"></i>
+                                            {{ installation_location.battery_count }} х {{ installation_location.nominal_capacity }} А∙ч
+                                        </span>
+                                        <span class="path-item" style="align-items: end;">{{ location.installation_date|date:"d.m.Y" }}</span>
+                                    </div>
                                 </td>
-                                <td>{{ location.installation_date|date:"d.m.Y" }}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
 
-            <div class="test-results-button-container">
-                <a class="battery-type-detail-btn back-btn" href="{% url 'journal_filtered' location_id %}">В журнал</a>
-                <a class="battery-type-detail-btn add-test-btn" href="{% url 'add_installation_location_battery' battery.id %}">Добавить место установки</a>
+            <div class="battery-detail-button-h-container">
+                <a class="battery-detail-btn">На склад</a>
+                <a class="battery-detail-btn">В утилизацию</a>
+                <a class="battery-detail-btn">В архив</a>
             </div>
         </div>
     </div>

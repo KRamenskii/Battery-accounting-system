@@ -338,6 +338,7 @@ def battery_detail(request, pk):
     testings_ic105 = TestingIC105.objects.filter(battery=battery).order_by('testing_date')
     installation_locations = BatteryInstallationHistory.objects.filter(battery=battery).order_by('installation_date')
     location_id = installation_locations.last().installation_location.id
+    installation_location = installation_locations.last().installation_location
 
     # Получаем все места установки для выпадающего списка
     all_installation_locations = InstallationLocation.objects.all()
@@ -356,7 +357,8 @@ def battery_detail(request, pk):
         'installation_locations': installation_locations,
         'installations_path': installations_path,
         'location_id': location_id,
-        'all_installation_locations': all_installation_locations
+        'all_installation_locations': all_installation_locations,
+        'installation_location': installation_location
     })
 
 
