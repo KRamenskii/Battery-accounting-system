@@ -1,4 +1,9 @@
+import qrcode
+import hashlib
+from io import BytesIO
+from django.core.files.base import ContentFile
 from django.db import models
+import os
 
 class InstallationLocation(models.Model):
     LOCATION_TYPES = [
@@ -138,6 +143,21 @@ class Battery(models.Model):
         null=True, 
         blank=True
     )
+    qr_code = models.ImageField(
+        upload_to='qr_codes/batteries/',
+        verbose_name="QR-код",
+        null=True,
+        blank=True,
+        editable=False
+    )
+    qr_data_hash = models.CharField(
+        max_length=64,
+        verbose_name="Хэш данных QR",
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="Для определения, нужно ли перегенерировать QR"
+    )
 
     class Meta:
         verbose_name = "АБ"
@@ -149,6 +169,64 @@ class Battery(models.Model):
     def full_representation(self):
         serial_info = self.serial_parameters.serial_number if self.serial_parameters else "Н/Д"
         return f"АБ №{self.battery_number} ({self.battery_type.battery_type_title}, SN: {serial_info})"
+    
+    def get_qr_text(self):
+        """Текст, который будет виден при сканировании"""
+        return f"АБ №{self.battery_number} / {self.battery_type.manufacturer} {self.battery_type.battery_type_title}"
+    
+    def calculate_qr_hash(self):
+        """Вычисляет хэш от текста QR-кода для отслеживания изменений"""
+        text = self.get_qr_text()
+        return hashlib.sha256(text.encode()).hexdigest()
+    
+    def generate_qr_code(self, force_generate=False):
+        """Генерирует и сохраняет QR-код как изображение"""
+        # Проверяем, нужно ли генерировать заново
+        current_hash = self.calculate_qr_hash()
+        
+        if not force_generate and self.qr_data_hash == current_hash and self.qr_code:
+            return  # QR-код актуален, ничего не делаем
+        
+        # Генерируем QR-код
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_Q,  # Высокая коррекция для печати
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(self.get_qr_text())
+        qr.make(fit=True)
+        
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        # Сохраняем в буфер
+        buffer = BytesIO()
+        img.save(buffer, format='PNG')
+        buffer.seek(0)
+        
+        # Удаляем старый файл, если есть
+        if self.qr_code:
+            old_path = self.qr_code.path
+            if os.path.exists(old_path):
+                os.remove(old_path)
+        
+        # Сохраняем новый файл
+        filename = f'battery_qr_{self.id}_{self.battery_number}.png'
+        self.qr_code.save(filename, ContentFile(buffer.read()), save=False)
+        self.qr_data_hash = current_hash
+    
+    def save(self, *args, **kwargs):
+        """Переопределяем save для автоматической генерации QR-кода"""
+        is_new = self.pk is None
+        
+        # Сначала сохраняем объект, чтобы получить ID
+        super().save(*args, **kwargs)
+        
+        # Генерируем QR-код
+        self.generate_qr_code()
+        
+        # Сохраняем снова, чтобы обновить qr_code и qr_data_hash
+        super().save(update_fields=['qr_code', 'qr_data_hash'])
 
 
 class BatteryInstallationHistory(models.Model):
