@@ -180,38 +180,57 @@ class Battery(models.Model):
         return hashlib.sha256(text.encode()).hexdigest()
     
     def generate_qr_code(self, force_generate=False):
-        """Генерирует и сохраняет QR-код как изображение"""
-        # Проверяем, нужно ли генерировать заново
+        """
+        Генерирует и сохраняет QR-код как изображение.
+        QR пересоздаётся, если:
+        - изменились данные
+        - файл отсутствует
+        - передан force_generate=True
+        """
+
         current_hash = self.calculate_qr_hash()
-        
-        if not force_generate and self.qr_data_hash == current_hash and self.qr_code:
-            return  # QR-код актуален, ничего не делаем
-        
-        # Генерируем QR-код
+
+        # Проверяем наличие файла
+        file_exists = False
+        if self.qr_code and self.qr_code.name:
+            try:
+                file_exists = os.path.exists(self.qr_code.path)
+            except (ValueError, OSError):
+                file_exists = False
+
+        # Если всё актуально — выходим
+        if (
+            not force_generate
+            and self.qr_data_hash == current_hash
+            and file_exists
+        ):
+            return
+
+        # ---------- Генерация QR ----------
         qr = qrcode.QRCode(
             version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_Q,  # Высокая коррекция для печати
+            error_correction=qrcode.constants.ERROR_CORRECT_Q,
             box_size=10,
             border=4,
         )
         qr.add_data(self.get_qr_text())
         qr.make(fit=True)
-        
+
         img = qr.make_image(fill_color="black", back_color="white")
-        
-        # Сохраняем в буфер
+
         buffer = BytesIO()
-        img.save(buffer, format='PNG')
+        img.save(buffer, format="PNG")
         buffer.seek(0)
-        
-        # Удаляем старый файл, если есть
-        if self.qr_code:
-            old_path = self.qr_code.path
-            if os.path.exists(old_path):
-                os.remove(old_path)
-        
-        # Сохраняем новый файл
-        filename = f'battery_qr_{self.id}_{self.battery_number}.png'
+
+        # ---------- Удаляем старый файл ----------
+        if file_exists:
+            try:
+                os.remove(self.qr_code.path)
+            except OSError:
+                pass  # файл могли удалить параллельно — не критично
+
+        # ---------- Сохраняем новый ----------
+        filename = f"battery_qr_{self.id}_{self.battery_number}.png"
         self.qr_code.save(filename, ContentFile(buffer.read()), save=False)
         self.qr_data_hash = current_hash
     
