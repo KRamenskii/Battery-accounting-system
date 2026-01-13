@@ -90,6 +90,7 @@
     padding-inline: 10px;
     text-decoration: none;
     padding: 10px;
+    align-content: center;
 }
 
 .battery-detail-btn:hover {
@@ -258,4 +259,33 @@
 
 .date-align-right {
     margin-left: auto;
+}
+
+.battery-sticker {
+    display: flex;
+    flex-direction: row;
+    background-color: white;
+    border: solid 5px #dff2ff;
+    border-radius: 10px;
+    min-width: 60%;
+    height: 100%;
+}
+
+.battery-detail-button-v-container {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+}
+
+.battery-sticker-container {
+    display: flex;
+    gap: 10px;
+    height: 100%;
+    width: 100%;
+}
+
+.vertical-separator {
+    width: 3px;
+    height: 100%;
+    background-color: black;
 }

@@ -182,30 +182,23 @@ class Battery(models.Model):
     def generate_qr_code(self, force_generate=False):
         """
         Генерирует и сохраняет QR-код как изображение.
-        QR пересоздаётся, если:
-        - изменились данные
-        - файл отсутствует
-        - передан force_generate=True
+        Возвращает True если QR был сгенерирован, False если уже актуален.
         """
-
         current_hash = self.calculate_qr_hash()
-
-        # Проверяем наличие файла
-        file_exists = False
-        if self.qr_code and self.qr_code.name:
-            try:
-                file_exists = os.path.exists(self.qr_code.path)
-            except (ValueError, OSError):
-                file_exists = False
-
-        # Если всё актуально — выходим
-        if (
-            not force_generate
-            and self.qr_data_hash == current_hash
-            and file_exists
-        ):
-            return
-
+        
+        # ВАЖНО: Не проверяем существование файла на диске, только в БД
+        # Файл может отсутствовать физически, но это не должно ломать проверку
+        qr_exists_in_db = bool(self.qr_code and self.qr_code.name)
+        
+        # Если в БД есть запись о QR и хэш совпадает - выходим
+        if (not force_generate 
+            and self.qr_data_hash == current_hash 
+            and qr_exists_in_db):
+            print(f"QR уже актуален для АБ №{self.battery_number}")
+            return False
+        
+        print(f"Генерация QR для АБ №{self.battery_number}...")
+        
         # ---------- Генерация QR ----------
         qr = qrcode.QRCode(
             version=1,
@@ -215,37 +208,43 @@ class Battery(models.Model):
         )
         qr.add_data(self.get_qr_text())
         qr.make(fit=True)
-
+        
         img = qr.make_image(fill_color="black", back_color="white")
-
+        
         buffer = BytesIO()
         img.save(buffer, format="PNG")
         buffer.seek(0)
-
-        # ---------- Удаляем старый файл ----------
-        if file_exists:
+        
+        # ---------- Удаляем старый файл если он существует ----------
+        if qr_exists_in_db:
             try:
-                os.remove(self.qr_code.path)
-            except OSError:
-                pass  # файл могли удалить параллельно — не критично
-
+                # Безопасное удаление через storage
+                self.qr_code.storage.delete(self.qr_code.name)
+            except Exception as e:
+                print(f"Не удалось удалить старый файл: {e}")
+                # Не падаем, продолжаем
+        
         # ---------- Сохраняем новый ----------
         filename = f"battery_qr_{self.id}_{self.battery_number}.png"
         self.qr_code.save(filename, ContentFile(buffer.read()), save=False)
         self.qr_data_hash = current_hash
+        
+        print(f"QR создан: {self.qr_code.name}")
+        return True
     
     def save(self, *args, **kwargs):
         """Переопределяем save для автоматической генерации QR-кода"""
-        is_new = self.pk is None
-        
-        # Сначала сохраняем объект, чтобы получить ID
+        # Сохраняем объект, чтобы получить ID для новых записей
         super().save(*args, **kwargs)
         
-        # Генерируем QR-код
-        self.generate_qr_code()
-        
-        # Сохраняем снова, чтобы обновить qr_code и qr_data_hash
-        super().save(update_fields=['qr_code', 'qr_data_hash'])
+        # ВСЕГДА пытаемся сгенерировать QR, метод сам проверит нужно ли
+        try:
+            # generate_qr_code вернет True если что-то сгенерировал
+            generated = self.generate_qr_code()
+            if generated:
+                super().save(update_fields=['qr_code', 'qr_data_hash'])
+        except Exception as e:
+            print(f"ERROR: Не удалось сгенерировать QR для АБ №{self.battery_number}: {e}")
 
 
 class BatteryInstallationHistory(models.Model):

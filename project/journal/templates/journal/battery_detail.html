@@ -28,42 +28,62 @@
                 <h5 class="battery-detail-header">Аккумуляторная батарея №{{ battery.battery_number }}</h5>
             </div>
 
-            <div class="battery-detail-table-wrapper">
-                <table class="battery-detail-table">
-                    <tbody>
-                        <tr><td>Производитель</td><td>{{ battery.battery_type.manufacturer }}</td></tr>
-                        <tr><td>Тип</td><td>{{ battery.battery_type }}</td></tr>
-                        <tr><td>Серийный номер</td><td>{{ battery.serial_parameters.serial_number }}</td></tr>
-                        <tr>
-                            <td>Дата изготовления</td>
-                            <td>
-                                {% if battery.serial_parameters.manufacture_date %}
-                                    {{ battery.serial_parameters.manufacture_date|date:"d.m.Y" }}
-                                {% else %}
-                                    Отсутствует
-                                {% endif %}
-                            </td>
-                        </tr>
-                        <tr>
-                            <td>Дата приёмки</td>
-                            <td>
-                                {% if battery.acceptance_date %}
-                                    {{ battery.acceptance_date|date:"d.m.Y" }}
-                                {% else %}
-                                    Отсутствует
-                                {% endif %}
-                            </td>
-                        </tr>
-                        <tr><td>Срок службы</td><td>{{ battery.battery_type.lifespan }}</td></tr>
-                        <tr><td>Номинальное напряжение, В</td><td>{{ battery.battery_type.nominal_voltage }}</td></tr>
-                        <tr><td>Номинальная ёмкость, Ач</td><td>{{ battery.battery_type.nominal_capacity_20 }}</td></tr>
-                        <tr><td>Номинальное сопротивление, мОм</td><td>{{ battery.battery_type.internal_resistance }}</td></tr>
-                    </tbody>
-                </table>
-            </div>
+            <div class="battery-sticker-container">
+                <div class="battery-sticker">
+                    <div style="display: flex; flex-direction: column; align-items: center; padding-right: 10px; align-self: center; width: 50%">
+                        <span class="path-item">Место установки:</span>
+                        {% with last_item=installations_path|last %}
+                            <strong>{{ last_item.location_obj.location_title }}</strong>
+                        {% endwith %}
 
-            <div class="test-results-button-container">
-                <a class="battery-type-detail-btn edit-battery-btn" href="{% url 'battery_detail_edit' battery.id %}">Редактировать</a>
+                        {% if battery.qr_code and battery.qr_code.name %}
+                            <img src="{{ battery.qr_code.url }}" alt="QR" width="70%">
+                        {% else %}
+                            <!-- Заглушка -->
+                            <div style="width: 80%; height: 80%; background: #f8f9fa; 
+                                        border: 1px solid #dee2e6; border-radius: 4px;
+                                        display: flex; align-items: center; justify-content: center;">
+                                <span style="color: #6c757d; font-size: 10px; text-align: center;">
+                                    QR<br>недоступен
+                                </span>
+                            </div>
+                        {% endif %}
+                        <span class="path-item" style="font-weight: bold; text-align: center; display: block;">АБ №{{ battery.battery_number}}</span>
+                    </div>
+
+                    <div class="vertical-separator"></div>
+
+                    <div style="display: flex; flex-direction: column; align-items: start; padding-left: 10px; align-self: center">
+                        <span class="path-item">
+                            Тип: <strong>{{ battery.battery_type.manufacturer }} {{ battery.battery_type }}</strong>
+                        </span>
+                        <span class="path-item">
+                            S/N: <strong>{{ battery.serial_parameters.serial_number }}</strong>
+                        </span>
+                        <span class="path-item">Дата изготовления:</span>
+                        <span class="path-item" style="font-weight: bold;">{{ battery.serial_parameters.manufacture_date|date:"d.m.Y" }}</span>
+                        <span class="path-item">Дата измерения:</span>
+                        <strong>{{ testings_dbt12d.last.testing_date|date:"d.m.Y" }}</strong>
+                        <span class="path-item">
+                            SOH: <strong>{{ testings_dbt12d.last.SOH|floatformat:0 }}%</strong>, SOC: <strong>{{ testings_dbt12d.last.SOC|floatformat:0 }}%</strong>
+                        </span>
+                        <span class="path-item">
+                            Напряжение: <strong>{{ testings_dbt12d.last.VOL }} В</strong>
+                        </span>
+                        <span class="path-item">
+                            R<sub>ном</sub>: <strong>{{ battery.battery_type.internal_resistance }} мОм</strong>
+                        </span>
+                        <span class="path-item">
+                            R<sub>изм</sub>: <strong>{{ testings_dbt12d.last.R }} мОм</strong>
+                        </span>
+                    </div>
+                </div>
+
+                <div class="battery-detail-button-v-container">
+                    <a class="battery-detail-btn" href="{% url 'battery_detail_parameters' battery.id %}">Параметры АБ</a>
+                    <a class="battery-detail-btn">Скачать этикетку</a>
+                    <a class="battery-detail-btn" href="{% url 'battery_detail_edit' battery.id %}">Редактировать</a>
+                </div>
             </div>
         </div>
 

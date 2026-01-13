@@ -18,6 +18,7 @@ urlpatterns = [
     path('add_installation_location_battery/<int:battery_id>/', views.BatteryInstallationHistoryCreateView.as_view(), name='add_installation_location_battery'),
     path('test/delete/<str:test_type>/<int:test_id>/', views.delete_test, name='delete_test'),
     path('installation/delete/<int:installation_id>/', views.delete_installation, name='delete_installation'),
+    path('battery/<int:battery_id>/parameters/', views.battery_detail_parameters, name='battery_detail_parameters'),
     
     # API для получения данных
     path('api/test/dbt12d/<int:test_id>/', views.get_test_dbt12d, name='api_get_test_dbt12d'),

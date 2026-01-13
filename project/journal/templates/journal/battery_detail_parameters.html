@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Параметры АБ №{{ battery.battery_number }}{% endblock %}
+
+{% block content %}
+<div class="add-container">
+    <h3 class="add-container-header-title">Параметры АБ №{{ battery.battery_number }}</h3>
+    <!-- Контейнер для параметров -->
+    <div class="detail-content scrollable-form">
+        <table class="detail-table">
+            <tbody>
+                <tr><td>Производитель</td><td>{{ battery.battery_type.manufacturer }}</td></tr>
+                <tr><td>Тип</td><td>{{ battery.battery_type }}</td></tr>
+                <tr><td>Серийный номер</td><td>{{ battery.serial_parameters.serial_number }}</td></tr>
+                <tr>
+                    <td>Дата изготовления</td>
+                    <td>
+                        {% if battery.serial_parameters.manufacture_date %}
+                            {{ battery.serial_parameters.manufacture_date|date:"d.m.Y" }}
+                        {% else %}
+                            Отсутствует
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Дата приёмки</td>
+                    <td>
+                        {% if battery.acceptance_date %}
+                            {{ battery.acceptance_date|date:"d.m.Y" }}
+                        {% else %}
+                            Отсутствует
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr><td>Срок службы</td><td>{{ battery.battery_type.lifespan }}</td></tr>
+                <tr><td>Номинальное напряжение, В</td><td>{{ battery.battery_type.nominal_voltage }}</td></tr>
+                <tr><td>Номинальная ёмкость, Ач</td><td>{{ battery.battery_type.nominal_capacity_20 }}</td></tr>
+                <tr><td>Номинальное сопротивление, мОм</td><td>{{ battery.battery_type.internal_resistance }}</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <!-- Контейнер для кнопок -->
+    <div class="button-container">
+        <a class="battery-type-detail-btn back-btn" style="border-radius: 0 0 5px 5px" href="{% url 'battery_detail' battery.id %}">Назад</a>
+    </div>  
+</div>
+{% endblock %}

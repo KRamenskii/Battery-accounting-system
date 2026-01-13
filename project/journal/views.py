@@ -417,6 +417,14 @@ def battery_detail(request, pk):
     })
 
 
+def battery_detail_parameters(request, battery_id):
+    battery = get_object_or_404(Battery, id=battery_id)
+    
+    return render(request, 'journal/battery_detail_parameters.html', {
+        'battery': battery,
+    })
+
+
 @require_POST
 @csrf_exempt
 def delete_test(request, test_type, test_id):
