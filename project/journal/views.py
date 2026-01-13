@@ -374,6 +374,23 @@ def battery_detail(request, pk):
     # Определяем заголовки, которые нужно скрыть
     hide_system_for_locations = ['Архив', 'Склад', 'Утилизация']
 
+    # ВАЖНО: Получаем предыдущий location_id из GET-параметра
+    previous_location_id = request.GET.get('from_location') or request.session.get('saved_location_id')
+    previous_page = request.GET.get('page') or request.session.get('saved_page', 1)
+
+    # Сохраняем в сессии
+    if previous_location_id:
+        request.session['saved_location_id'] = previous_location_id
+    if previous_page:
+        request.session['saved_page'] = previous_page
+
+    # Если не передан, пытаемся взять из сессии
+    if not previous_location_id:
+        previous_location_id = request.session.get('previous_location_id')
+    else:
+        # Сохраняем в сессии на будущее
+        request.session['previous_location_id'] = previous_location_id
+
     # Формируем пути для каждой записи
     installations_path = []
     for location in installation_locations:
@@ -393,6 +410,8 @@ def battery_detail(request, pk):
         'installation_locations': installation_locations,
         'installations_path': installations_path,
         'location_id': location_id,
+        'previous_location_id': previous_location_id,  # Откуда пришли
+        'previous_page': previous_page,
         'all_installation_locations': all_installation_locations,
         'hide_system_for_locations': hide_system_for_locations,
     })
