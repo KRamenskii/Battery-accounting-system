@@ -14,15 +14,14 @@
     <div class="battery-detail-half-container">
         <div class="testing-container">
             <div class="header-testing-container">
-                {% if previous_location_id %}
-                    <!-- Если есть сохраненный location_id, используем его -->
+                {% if previous_location_id and previous_location_id != '0' and previous_location_id != 'None' %}
                     <a class="add-btn" 
-                    href="{% url 'journal_filtered' previous_location_id %}?page={{ previous_page }}">
+                    href="{% url 'journal_filtered' previous_location_id %}{% if previous_page and previous_page != '1' %}?page={{ previous_page }}{% endif %}">
                         <i class="bi bi-arrow-left fs-3"></i>
                     </a>
                 {% else %}
-                    <!-- Иначе используем location_id батареи (шкаф) -->
-                    <a class="add-btn" href="{% url 'journal_filtered' location_id %}">
+                    <!-- Просто возвращаемся на главную страницу журнала -->
+                    <a class="add-btn" href="{% url 'journal' %}">
                         <i class="bi bi-arrow-left fs-3"></i>
                     </a>
                 {% endif %}
