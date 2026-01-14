@@ -58,23 +58,60 @@
                             Тип: <strong>{{ battery.battery_type.manufacturer }} {{ battery.battery_type }}</strong>
                         </span>
                         <span class="path-item">
-                            S/N: <strong>{{ battery.serial_parameters.serial_number }}</strong>
+                            S/N: <strong>{{ battery.serial_parameters.serial_number|default:"Н/Д" }}</strong>
                         </span>
                         <span class="path-item">Дата изготовления:</span>
-                        <span class="path-item" style="font-weight: bold;">{{ battery.serial_parameters.manufacture_date|date:"d.m.Y" }}</span>
+                        <span class="path-item" style="font-weight: bold;">{{ battery.serial_parameters.manufacture_date|date:"d.m.Y"|default:"Н/Д" }}</span>
                         <span class="path-item">Дата измерения:</span>
-                        <strong>{{ testings_dbt12d.last.testing_date|date:"d.m.Y" }}</strong>
+                        <strong>{{ testings_dbt12d.last.testing_date|date:"d.m.Y"|default:"Н/Д" }}</strong>
                         <span class="path-item">
-                            SOH: <strong>{{ testings_dbt12d.last.SOH|floatformat:0 }}%</strong>, SOC: <strong>{{ testings_dbt12d.last.SOC|floatformat:0 }}%</strong>
+                            SOH: 
+                            {% with testings_dbt12d.last as last_test %}
+                                <strong>
+                                    {% if last_test and last_test.SOH %}
+                                        {{ testings_dbt12d.last.SOH|floatformat:0|default:"Н/Д" }}%
+                                    {% else %}
+                                        Н/Д
+                                    {% endif %}
+                                </strong>
+                            {% endwith %}
+                            SOC: 
+                            {% with testings_dbt12d.last as last_test %}
+                                <strong>
+                                    {% if last_test and last_test.SOC %}
+                                        {{ testings_dbt12d.last.SOC|floatformat:0|default:"Н/Д" }}%
+                                    {% else %}
+                                        Н/Д
+                                    {% endif %}
+                                </strong>
+                            {% endwith %}
                         </span>
                         <span class="path-item">
-                            Напряжение: <strong>{{ testings_dbt12d.last.VOL }} В</strong>
+                            Напряжение: 
+                            {% with testings_dbt12d.last as last_test %}
+                                <strong>
+                                    {% if last_test and last_test.VOL %}
+                                        {{ last_test.VOL }} В
+                                    {% else %}
+                                        Н/Д
+                                    {% endif %}
+                                </strong>
+                            {% endwith %}
                         </span>
                         <span class="path-item">
-                            R<sub>ном</sub>: <strong>{{ battery.battery_type.internal_resistance }} мОм</strong>
+                            R<sub>ном</sub>: <strong>{{ battery.battery_type.internal_resistance|default:"Н/Д" }} мОм</strong>
                         </span>
                         <span class="path-item">
-                            R<sub>изм</sub>: <strong>{{ testings_dbt12d.last.R }} мОм</strong>
+                            R<sub>изм</sub>: 
+                            {% with testings_dbt12d.last as last_test %}
+                                <strong>
+                                    {% if last_test and last_test.R %}
+                                        {{ last_test.R }} мОм
+                                    {% else %}
+                                        Н/Д
+                                    {% endif %}
+                                </strong>
+                            {% endwith %}
                         </span>
                     </div>
                 </div>
