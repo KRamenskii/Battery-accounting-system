@@ -19,6 +19,7 @@ urlpatterns = [
     path('test/delete/<str:test_type>/<int:test_id>/', views.delete_test, name='delete_test'),
     path('installation/delete/<int:installation_id>/', views.delete_installation, name='delete_installation'),
     path('battery/<int:battery_id>/parameters/', views.battery_detail_parameters, name='battery_detail_parameters'),
+    path('battery/<int:battery_id>/download-label/', views.download_battery_label, name='battery_download_label'),
     
     # API для получения данных
     path('api/test/dbt12d/<int:test_id>/', views.get_test_dbt12d, name='api_get_test_dbt12d'),

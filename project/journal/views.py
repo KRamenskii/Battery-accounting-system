@@ -2,7 +2,7 @@ from django.utils import timezone
 from django.core.paginator import Paginator
 from django.db.models import OuterRef, Subquery
 from django.shortcuts import get_object_or_404, render
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.http import JsonResponse
 from django.views.generic import CreateView, UpdateView, DeleteView
@@ -11,8 +11,16 @@ from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.http import require_http_methods
 
+import io
+from PIL import Image, ImageDraw, ImageFont
+import os
+
 from .models import Battery, BatteryInstallationHistory, InstallationLocation, TestingDBT12D, TestingIC105
 from .forms import InstallationLocationForm, TestingDBT12DForm, TestingIC105Form, BatteryForm, BatteryInstallationHistoryForm, BatteryUpdateForm
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+FONT_REGULAR = os.path.join(BASE_DIR, 'fonts', 'Roboto-Regular.ttf')
+FONT_BOLD = os.path.join(BASE_DIR, 'fonts', 'Roboto-Bold.ttf')
 
 
 class InstallationLocationCreateView(CreateView):
@@ -657,3 +665,234 @@ def update_installation_history(request, installation_id):
         return JsonResponse({'success': False, 'errors': errors}, status=400)
     except Exception as e:
         return JsonResponse({'success': False, 'message': str(e)}, status=500)
+
+
+def download_battery_label(request, battery_id):
+    """Генерирует и возвращает изображение этикетки АБ для скачивания."""
+    battery = get_object_or_404(Battery, id=battery_id)
+    installation_locations = BatteryInstallationHistory.objects.filter(battery=battery).order_by('installation_date')
+    testings_dbt12d = TestingDBT12D.objects.filter(battery=battery).order_by('testing_date')
+
+    # 1. ПАРАМЕТРЫ ИЗОБРАЖЕНИЯ
+    # Размеры для этикетки 40x60 мм при 203 DPI
+    width_px = 480
+    height_px = 320
+    # Создаем белое изображение
+    img = Image.new('RGB', (width_px, height_px), 'white')
+    draw = ImageDraw.Draw(img)
+
+    # 2. ЗАГРУЗКА ШРИФТА (важно указать путь к существующему файлу)
+    try:
+        # Загружаем шрифт по локальному пути
+        font_regular = ImageFont.truetype(FONT_REGULAR, 16)
+        font_bold = ImageFont.truetype(FONT_BOLD, 16)
+    except IOError:
+        # Запасной вариант: используем системный шрифт
+        try:
+            # Попробуем найти стандартный системный шрифт
+            font_big = ImageFont.truetype("arial.ttf", 16)  # Pillow сам ищет в системных папках[citation:1]
+        except IOError:
+            # Если и это не сработало, используем базовый (не поддерживает русский)
+            font_big = ImageFont.load_default()
+            print("Внимание: используется шрифт по умолчанию, кириллица не отобразится.")
+
+    # 3. РИСУЕМ РАЗДЕЛИТЕЛЬНУЮ ЛИНИЮ
+    # Вычисляем середину по ширине
+    middle_x = width_px // 2
+    
+    # Рисуем линию от (x1, y1) до (x2, y2)
+    # y1 = 20 (отступ сверху), y2 = height-20 (отступ снизу)
+    draw.line(
+        [(middle_x, 10), (middle_x, height_px - 10)],  # Координаты начала и конца
+        fill='black',
+        width=3
+    )
+    
+    # 4. ПОДПИСЬ МЕСТА УСТАНОВКИ
+    title_installation = f"Место установки:"
+    bbox = draw.textbbox((0, 0), title_installation, font=font_regular)
+    text_width_installation = bbox[2] - bbox[0]
+    x_title_installation = ((width_px) // 2 - text_width_installation) // 2
+    y_title_installation = 35
+    draw.text((x_title_installation, y_title_installation), title_installation, fill='black', font=font_regular)
+
+    # Теперь само место установки
+    title_place = f"{installation_locations.last().installation_location.location_title}"
+    bbox = draw.textbbox((0, 0), title_place, font=font_regular)
+    text_width_installation = bbox[2] - bbox[0]
+    x_title_installation = ((width_px) // 2 - text_width_installation) // 2
+    y_title_installation = 55
+    draw.text((x_title_installation, y_title_installation), title_place, fill='black', font=font_bold)
+
+    # 5. ДОБАВЛЕНИЕ QR-КОДА (если он есть)
+    qr_y = 76
+    if battery.qr_code and hasattr(battery.qr_code, 'path'):
+        try:
+            # Открываем существующий QR-код как изображение
+            qr_img = Image.open(battery.qr_code.path)
+            # Изменяем размер QR-кода, если нужно (например, 100x100 пикселей)
+            qr_size = 168
+            qr_img = qr_img.resize((qr_size, qr_size))
+            # Вставляем QR-код в основное изображение (по центру)
+            qr_x = 36
+            img.paste(qr_img, (qr_x, qr_y))
+            # qr_y = 76
+        except FileNotFoundError:
+            # Если файл QR не найден, добавляем текстовую заглушку
+            draw.text((36, qr_y), "QR-код отсутствует", fill='red', font=font_regular)
+            qr_y = 76
+
+    # 6. ДОБАВЛЕНИЕ ДАННЫХ НА ИЗОБРАЖЕНИЕ
+    # Пример: Добавляем заголовок
+    title = f"АБ №{battery.battery_number}"
+    bbox = draw.textbbox((0, 0), title, font=font_bold)
+    text_width = bbox[2] - bbox[0]
+    
+    # Рассчитываем позицию для центрирования текста по ширине
+    x_title = ((width_px) // 2 - text_width) // 2
+    y_title = qr_y + qr_size + 10
+    draw.text((x_title, y_title), title, fill='black', font=font_bold)
+
+    # 7. ДОБАВЛЕНИЕ ОСТАЛЬНЫХ ПАРАМЕТРОВ АБ
+    x_right = 250
+    y = 20
+    padding_bottom = 25
+    
+    # Тип: обычный текст + жирное значение
+    draw_mixed_text(draw, [
+        ("Тип: ", font_regular),
+        (f"{ battery.battery_type.manufacturer } { battery.battery_type.battery_type_title }", font_bold)
+    ], x_right, y)
+    
+    y += padding_bottom
+
+    # S/N
+    serial_number = battery.serial_parameters.serial_number if battery.serial_parameters else "Н/Д"
+    draw_mixed_text(draw, [
+        ("S/N: ", font_regular),
+        (f"{ serial_number }", font_bold)
+    ], x_right, y)
+    
+    y += padding_bottom
+    
+    # Дата изготовления
+    draw_mixed_text(draw, [
+        ("Дата изготовления:", font_regular),
+    ], x_right, y)
+    
+    y += padding_bottom
+
+    if battery.serial_parameters and battery.serial_parameters.manufacture_date:
+        date_manufacter = battery.serial_parameters.manufacture_date.strftime('%d.%m.%Y')
+    else:
+        date_manufacter = "Н/Д"
+
+    draw_mixed_text(draw, [
+        (f"{ date_manufacter }", font_bold)
+    ], x_right, y)
+    
+    y += padding_bottom
+
+    # Дата измерения
+    draw_mixed_text(draw, [
+        ("Дата измерения:", font_regular),
+    ], x_right, y)
+    
+    y += padding_bottom
+
+    last_testing = testings_dbt12d.last()
+    if last_testing and last_testing.testing_date:
+        date_measure = last_testing.testing_date.strftime('%d.%m.%Y')
+    else:
+        date_measure = "Н/Д"
+
+    draw_mixed_text(draw, [
+        (f"{ date_measure }", font_bold)
+    ], x_right, y)
+    
+    y += padding_bottom
+    
+    # SOH, SOC
+    SOH = f"{ testings_dbt12d.last().SOH.to_integral_value() }%, " if last_testing and last_testing.SOH is not None else "Н/Д "
+    SOC = f"{ testings_dbt12d.last().SOC.to_integral_value() }%" if last_testing and last_testing.SOC is not None else "Н/Д"
+
+    draw_mixed_text(draw, [
+        ("SOH: ", font_regular),
+        (SOH, font_bold),
+        ("SOC: ", font_regular),
+        (SOC, font_bold)
+    ], x_right, y)
+
+    y += padding_bottom
+
+    # Напряжение
+    vol_text = f"{last_testing.VOL} В" if last_testing and last_testing.VOL is not None else "Н/Д"
+
+    draw_mixed_text(draw, [
+        ("Напряжение: ", font_regular),
+        (vol_text, font_bold)
+    ], x_right, y)
+
+    y += padding_bottom
+
+    # R ном
+    R_nom = f"{ battery.battery_type.internal_resistance } мОм" if battery.battery_type and battery.battery_type.internal_resistance is not None else "Н/Д"
+
+    draw_mixed_text(draw, [
+        ("R ном: ", font_regular),
+        (R_nom, font_bold)
+    ], x_right, y)
+    
+    y += padding_bottom
+
+    # R изм
+    R_meas = f"{ testings_dbt12d.last().R } мОм" if last_testing and last_testing.R is not None else "Н/Д"
+
+    draw_mixed_text(draw, [
+        ("R изм: ", font_regular),
+        (R_meas, font_bold)
+    ], x_right, y)
+    
+    # 8. СОХРАНЕНИЕ ИЗОБРАЖЕНИЯ В БУФЕР И ОТПРАВКА КЛИЕНТУ
+    # Сохраняем изображение в байтовый буфер
+    buffer = io.BytesIO()
+    img.save(buffer, format='PNG')
+    buffer.seek(0)
+
+    # Формируем HTTP-ответ с изображением
+    response = HttpResponse(buffer, content_type='image/png')
+    
+    # Указываем браузеру, что это файл для скачивания, а не для показа
+    filename = f"battery_label_{battery.battery_number}.png"
+    response['Content-Disposition'] = f'attachment; filename="{filename}"'
+    
+    return response
+
+
+def draw_mixed_text(draw, text_parts, x, y, fill='black'):
+    """
+    Рисует текст с разными шрифтами в одной строке
+    
+    Параметры:
+    - draw: объект ImageDraw
+    - text_parts: список кортежей [(текст1, шрифт1), (текст2, шрифт2), ...]
+    - x, y: начальные координаты
+    - fill: цвет
+    Возвращает: x-координату после последнего символа
+    """
+    current_x = x
+    
+    for text, font in text_parts:
+        bbox = draw.textbbox((0, 0), text, font=font)
+        text_height = bbox[3] - bbox[0]
+        
+        # Для вертикального выравнивания вычисляем смещение по Y
+        ascent, descent = font.getmetrics()
+        y_pos = y + ascent  # Это базовая линия текста
+        
+        draw.text((current_x, y_pos), text, fill=fill, font=font)
+        
+        # Сдвигаем X для следующей части
+        current_x += bbox[2] - bbox[0]
+    
+    return current_x

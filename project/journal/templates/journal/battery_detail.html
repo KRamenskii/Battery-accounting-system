@@ -81,7 +81,7 @@
 
                 <div class="battery-detail-button-v-container">
                     <a class="battery-detail-btn" href="{% url 'battery_detail_parameters' battery.id %}">Параметры АБ</a>
-                    <a class="battery-detail-btn">Скачать этикетку</a>
+                    <a class="battery-detail-btn" href="{% url 'battery_download_label' battery.id %}">Скачать этикетку</a>
                     <a class="battery-detail-btn" href="{% url 'battery_detail_edit' battery.id %}">Редактировать</a>
                 </div>
             </div>
