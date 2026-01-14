@@ -259,6 +259,7 @@ def journal_view(request, location_id=None):
     #  Получаем параметр фильтрации по типу из GET-запроса
     battery_type_id = request.GET.get('type')
     soh_filter = request.GET.get('soh', 'all')  # 'all', 'good', 'normal', 'poor', 'critical', 'no_data'
+    date_filter = request.GET.get('date_filter', 'all')
 
     last_installation_subquery = BatteryInstallationHistory.objects.filter(
         battery=OuterRef("pk")
@@ -298,6 +299,47 @@ def journal_view(request, location_id=None):
             battery=OuterRef('pk')
         ).order_by('-testing_date').values('SOH')[:1]
         batteries = batteries.annotate(last_soh_value=Subquery(latest_soh_subquery))
+    
+    # Применяем фильтр по дате последнего измерения
+    if date_filter != 'all':
+        # Рассчитываем дату порога
+        from datetime import datetime, timedelta
+        today = datetime.now().date()
+
+        # Аннотируем батареи последней датой измерения
+        latest_date_subquery = TestingDBT12D.objects.filter(
+            battery=OuterRef('pk')
+        ).order_by('-testing_date').values('testing_date')[:1]
+        
+        batteries = batteries.annotate(last_test_date=Subquery(latest_date_subquery))
+        
+        # Фильтруем по дате в зависимости от выбранного варианта
+        if date_filter == 'no_data':
+            batteries = batteries.filter(last_test_date__isnull=True)
+        elif date_filter == 'lt3':
+            threshold_date = today - timedelta(days=90)
+            batteries = batteries.filter(last_test_date__gte=threshold_date)
+        elif date_filter == 'gt3':
+            threshold_date = today - timedelta(days=90)
+            batteries = batteries.filter(last_test_date__lt=threshold_date)
+        elif date_filter == 'lt6':
+            threshold_date = today - timedelta(days=180)
+            batteries = batteries.filter(last_test_date__gte=threshold_date)
+        elif date_filter == 'gt6':
+            threshold_date = today - timedelta(days=180)
+            batteries = batteries.filter(last_test_date__lt=threshold_date)
+        elif date_filter == 'gt9':
+            threshold_date = today - timedelta(days=270)
+            batteries = batteries.filter(last_test_date__lt=threshold_date)
+        elif date_filter == 'gt12':
+            threshold_date = today - timedelta(days=365)
+            batteries = batteries.filter(last_test_date__lt=threshold_date)
+    else:
+        # Все даты - тоже аннотируем для отображения
+        latest_date_subquery = TestingDBT12D.objects.filter(
+            battery=OuterRef('pk')
+        ).order_by('-testing_date').values('testing_date')[:1]
+        batteries = batteries.annotate(last_test_date=Subquery(latest_date_subquery))
 
     used_locations = set(batteries.values_list("last_location", flat=True))
     parent_ids = set()
@@ -365,7 +407,8 @@ def journal_view(request, location_id=None):
             "soh": soh_numeric,
             "soh_display": soh_display,
             "vol": battery.last_vol,
-            "battery_id": battery.id
+            "battery_id": battery.id,
+            "last_test_date": battery.last_test_date,
         })
 
     paginator = Paginator(journal_data, 10)
@@ -381,6 +424,7 @@ def journal_view(request, location_id=None):
         "battery_types": battery_types,
         "selected_battery_type": int(battery_type_id) if battery_type_id and battery_type_id != 'all' else None,
         "selected_soh_filter": soh_filter,
+        "selected_date_filter": date_filter,
     })
 
 

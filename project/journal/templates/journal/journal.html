@@ -13,7 +13,7 @@
         <div class="filters-header">
             <h3>Фильтры</h3>
             <div class="filter-header-btn">
-                {% if selected_battery_type or selected_soh_filter != 'all' %}
+                {% if selected_battery_type or selected_soh_filter != 'all' or selected_date_filter != 'all' %}
                     <a href="?page=1" class="filter-reset-all-btn">
                         <i class="fas fa-redo"></i> Сбросить все фильтры
                     </a>
@@ -166,6 +166,135 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Фильтр по типу дате измерения -->
+            <div class="filter-group">
+                <div class="filter-container">
+                    <div class="filter-header-container">
+                        <h5 style="margin-bottom: 0px">Последнее измерение</h5>
+                    </div>
+                    
+                    <div class="filter-container-path">
+                        <!-- Все даты -->
+                        {% if selected_date_filter == 'all' %}
+                            <span class="current-location">
+                                Все даты
+                            </span>
+                        {% else %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}date_filter=all&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                Все даты
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Последние 3 месяца -->
+                        {% if selected_date_filter == 'lt3' %}
+                            <span class="current-location">
+                                <i class="fas fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>
+                                ≤ 3 месяцев
+                            </span>
+                        {% else %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}date_filter=lt3&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                <i class="fas fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>
+                                ≤ 3 месяцев
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Более 3 месяцев -->
+                        {% if selected_date_filter == 'gt3' %}
+                            <span class="current-location">
+                                <i class="fas fa-clock" style="color: #ffc107; margin-right: 5px;"></i>
+                                > 3 месяцев
+                            </span>
+                        {% else %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}date_filter=gt3&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                <i class="fas fa-clock" style="color: #ffc107; margin-right: 5px;"></i>
+                                > 3 месяцев
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Последние 6 месяцев -->
+                        {% if selected_date_filter == 'lt6' %}
+                            <span class="current-location">
+                                <i class="fas fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>
+                                ≤ 6 месяцев
+                            </span>
+                        {% else %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}date_filter=lt6&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                <i class="fas fa-check-circle" style="color: #28a745; margin-right: 5px;"></i>
+                                ≤ 6 месяцев
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Более 6 месяцев -->
+                        {% if selected_date_filter == 'gt6' %}
+                            <span class="current-location">
+                                <i class="fas fa-clock" style="color: #fd7e14; margin-right: 5px;"></i>
+                                > 6 месяцев
+                            </span>
+                        {% else %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}date_filter=gt6&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                <i class="fas fa-clock" style="color: #fd7e14; margin-right: 5px;"></i>
+                                > 6 месяцев
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Более 9 месяцев -->
+                        {% if selected_date_filter == 'gt9' %}
+                            <span class="current-location">
+                                <i class="fas fa-clock" style="color: #dc3545; margin-right: 5px;"></i>
+                                > 9 месяцев
+                            </span>
+                        {% else %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}date_filter=gt9&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                <i class="fas fa-clock" style="color: #dc3545; margin-right: 5px;"></i>
+                                > 9 месяцев
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Более 12 месяцев -->
+                        {% if selected_date_filter == 'gt12' %}
+                            <span class="current-location">
+                                <i class="fas fa-exclamation-triangle" style="color: #dc3545; margin-right: 5px;"></i>
+                                > 12 месяцев
+                            </span>
+                        {% else %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}date_filter=gt12&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                <i class="fas fa-exclamation-triangle" style="color: #dc3545; margin-right: 5px;"></i>
+                                > 12 месяцев
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Нет данных -->
+                        {% if selected_date_filter == 'no_data' %}
+                            <span class="current-location">
+                                <i class="fas fa-question-circle" style="color: #6c757d; margin-right: 5px;"></i>
+                                Нет измерений
+                            </span>
+                        {% else %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}date_filter=no_data&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                <i class="fas fa-question-circle" style="color: #6c757d; margin-right: 5px;"></i>
+                                Нет измерений
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -185,7 +314,7 @@
             <table class="battery-types-table">
                 <tbody>
                     {% for item in page_obj %}
-                    <tr data-href="{% url 'battery_detail' item.battery_id %}?from_location={{ selected_location_id }}&page={{ page_obj.number }}{% if selected_battery_type %}&type={{ selected_battery_type }}{% endif %}{% if selected_soh_filter != 'all' %}&soh={{ selected_soh_filter }}{% endif %}" class="clickable-row">
+                    <tr data-href="{% url 'battery_detail' item.battery_id %}?from_location={{ selected_location_id }}&page={{ page_obj.number }}{% if selected_battery_type %}&type={{ selected_battery_type }}{% endif %}{% if selected_soh_filter != 'all' %}&soh={{ selected_soh_filter }}{% endif %}{% if selected_date_filter != 'all' %}&date_filter={{ selected_date_filter }}{% endif %}" class="clickable-row">
                         <td>{{ item.index }}</td>
                         <td>{{ item.installation_location }}</td>
                         <td>{{ item.battery_number }}</td>
@@ -230,11 +359,11 @@
             <span>
                 {% if page_obj.has_previous %}
                     <a class="pagination-button" 
-                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}page=1">
+                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}{% if selected_date_filter != 'all' %}date_filter={{ selected_date_filter }}&{% endif %}page=1">
                         В начало
                     </a>
                     <a class="pagination-button" 
-                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}{% if selected_date_filter != 'all' %}date_filter={{ selected_date_filter }}&{% endif %}page={{ page_obj.previous_page_number }}">
                         Назад
                     </a>
                 {% endif %}
@@ -243,11 +372,11 @@
 
                 {% if page_obj.has_next %}
                     <a class="pagination-button" 
-                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}page={{ page_obj.next_page_number }}">
+                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}{% if selected_date_filter != 'all' %}date_filter={{ selected_date_filter }}&{% endif %}page={{ page_obj.next_page_number }}">
                         Далее
                     </a>
                     <a class="pagination-button" 
-                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}page={{ page_obj.paginator.num_pages }}">
+                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}{% if selected_date_filter != 'all' %}date_filter={{ selected_date_filter }}&{% endif %}page={{ page_obj.paginator.num_pages }}">
                         В конец
                     </a>
                 {% endif %}
