@@ -74,11 +74,11 @@
     place-items: center;
 }
 
-.add-button {
+.add-battery-btn {
     background-color: #dff2ff;
     color: black;
     border: none;
-    border-radius: 0 10px 0 0;
+    border-radius: 10px;
     padding: 10px;
     font-weight: bold;
     cursor: pointer;
@@ -88,7 +88,7 @@
     align-content: center;
 }
 
-.add-button:hover {
+.add-battery-btn:hover {
     background-color: #dd862e;
     color: black;
 }
@@ -100,7 +100,16 @@
     background-color: rgba(40, 102, 163, 0.5);
     font-weight: bold;
     text-align: center;
+    border-radius: 10px 10px 0 0;
     border: 2px solid #dff2ff;
+}
+
+.journal-table-header div:first-child {
+    border-radius: 10px 0 0 0;
+}
+
+.journal-table-header div:last-child {
+    border-radius: 0 10px 0 0;
 }
 
 .journal-table-header div {
