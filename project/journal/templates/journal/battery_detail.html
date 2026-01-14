@@ -14,17 +14,19 @@
     <div class="battery-detail-half-container">
         <div class="testing-container">
             <div class="header-testing-container">
-                {% if previous_location_id and previous_location_id != '0' and previous_location_id != 'None' %}
-                    <a class="add-btn" 
-                    href="{% url 'journal_filtered' previous_location_id %}{% if previous_page and previous_page != '1' %}?page={{ previous_page }}{% endif %}">
-                        <i class="bi bi-arrow-left fs-3"></i>
-                    </a>
-                {% else %}
-                    <!-- Просто возвращаемся на главную страницу журнала -->
-                    <a class="add-btn" href="{% url 'journal' %}">
-                        <i class="bi bi-arrow-left fs-3"></i>
-                    </a>
-                {% endif %}
+                {% with request.GET.urlencode as query_params %}
+                    {% if previous_location_id and previous_location_id != '0' and previous_location_id != 'None' %}
+                        <a class="add-btn" 
+                        href="{% url 'journal_filtered' previous_location_id %}{% if query_params %}?{{ query_params }}{% endif %}">
+                            <i class="bi bi-arrow-left fs-3"></i>
+                        </a>
+                    {% else %}
+                        <a class="add-btn" 
+                        href="{% url 'journal' %}{% if query_params %}?{{ query_params }}{% endif %}">
+                            <i class="bi bi-arrow-left fs-3"></i>
+                        </a>
+                    {% endif %}
+                {% endwith %}
                 <h5 class="battery-detail-header">Аккумуляторная батарея №{{ battery.battery_number }}</h5>
             </div>
 

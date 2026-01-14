@@ -22,28 +22,6 @@ document.querySelectorAll('.installation-location-info').forEach(item => {
     });
 });
 
-function toggleDropdownJournal(event) {
-    event.stopPropagation();
-    const dropdown = document.getElementById('typeFilterDropdown');
-    if (dropdown.style.display === 'block') {
-        dropdown.style.display = 'none';
-    } else {
-        dropdown.style.display = 'block';
-        // Прокрутка к активному элементу
-        const activeItem = dropdown.querySelector('.active');
-        if (activeItem) {
-            activeItem.scrollIntoView({ block: 'nearest' });
-        }
-    }
-}
-
-document.addEventListener('click', function(event) {
-    const dropdown = document.getElementById('typeFilterDropdown');
-    if (!event.target.closest('.dropdown') && dropdown.style.display === 'block') {
-        dropdown.style.display = 'none';
-    }
-});
-
 // Запрещаем закрытие при клике внутри скроллящейся области
 const scrollContainer = document.querySelector('.dropdown-scroll-container');
 if (scrollContainer) { // Проверяем существование элемента

@@ -7,32 +7,174 @@
     <!-- Шапка страницы -->
     {% include 'journal/header_journal.html' %}
 
+    <!-- Фильтры -->
+    <div class="events-filter-container">
+        <!-- Заголовок фильтров с кнопкой скрытия -->
+        <div class="filters-header">
+            <h3>Фильтры</h3>
+            <div class="filter-header-btn">
+                {% if selected_battery_type or selected_location_id or selected_soh_filter != 'all' %}
+                    <a href="?page=1" class="filter-reset-all-btn">
+                        <i class="fas fa-redo"></i> Сбросить все фильтры
+                    </a>
+                {% endif %}
+                <button class="toggle-filters-btn" onclick="toggleFilters()">
+                    <!-- Иконка будет изменена JavaScript -->
+                    <i class="fas fa-chevron-down"></i>
+                    Показать
+                </button>
+            </div>
+        </div>
+
+        <div id="filterContent">
+            <!-- Фильтр по типу АБ -->
+            <div class="filter-group">
+                <div class="filter-container">
+                    <div class="filter-header-container">
+                        <h5 style="margin-bottom: 0px">Тип АБ</h5>
+                    </div>
+                    
+                    <div class="filter-container-path">
+                        <!-- Ссылка "Все типы" -->
+                        {% if selected_battery_type %}
+                            <!-- Если выбран конкретный тип - показываем "Все типы" как обычную ссылку -->
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}type={{ type_id }}&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                Все типы
+                            </a>
+                        {% else %}
+                            <!-- Если выбран "Все типы" или ничего - показываем как выбранный элемент -->
+                            <span class="current-location">
+                                Все типы
+                            </span>
+                        {% endif %}
+                        
+                        <!-- Список типов объектов -->
+                        {% for type_id, type_name in battery_types %}
+                            {% if selected_battery_type == type_id %}
+                                <!-- Выбранный тип АБ - span вместо ссылки -->
+                                <span class="current-location">
+                                    {{ type_name }}
+                                </span>
+                            {% else %}
+                                <!-- Не выбранный тип АБ - обычная ссылка -->
+                                <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}type={{ type_id }}&page=1"
+                                class="filter-link"
+                                onclick="closeDropdown()">
+                                    {{ type_name }}
+                                </a>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Фильтр по типу состоянию АБ -->
+            <div class="filter-group">
+                <div class="filter-container">
+                    <div class="filter-header-container">
+                        <h5 style="margin-bottom: 0px">Состояние АБ (SOH)</h5>
+                    </div>
+                    
+                    <div class="filter-container-path">
+                        <!-- Все состояния -->
+                        {% if selected_soh_filter == 'all' %}
+                            <span class="current-location">
+                                Все состояния
+                            </span>
+                        {% else %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}soh=all&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                Все состояния
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Хорошее состояние -->
+                        {% if selected_soh_filter == 'good' %}
+                            <span class="current-location">
+                                <i class="fa-solid fa-battery-full" style="color: rgb(0, 255, 0); margin-right: 5px;"></i>
+                                Хорошее (≥80%)
+                            </span>
+                        {% else %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}soh=good&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                <i class="fa-solid fa-battery-full" style="color: rgb(0, 255, 0); margin-right: 5px;"></i>
+                                Хорошее (≥80%)
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Нормальное состояние -->
+                        {% if selected_soh_filter == 'normal' %}
+                            <span class="current-location">
+                                <i class="fa-solid fa-battery-half" style="color: rgb(246, 255, 0); margin-right: 5px;"></i>
+                                Нормальное (60-79%)
+                            </span>
+                        {% else %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}soh=normal&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                <i class="fa-solid fa-battery-half" style="color: rgb(246, 255, 0); margin-right: 5px;"></i>
+                                Нормальное (60-79%)
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Плохое состояние -->
+                        {% if selected_soh_filter == 'poor' %}
+                            <span class="current-location">
+                                <i class="fa-solid fa-battery-half" style="color: rgb(255, 174, 0); margin-right: 5px;"></i>
+                                Плохое (40-59%)
+                            </span>
+                        {% else %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}soh=poor&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                <i class="fa-solid fa-battery-half" style="color: rgb(255, 174, 0); margin-right: 5px;"></i>
+                                Плохое (40-59%)
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Критическое состояние -->
+                        {% if selected_soh_filter == 'critical' %}
+                            <span class="current-location">
+                                <i class="fa-solid fa-battery-empty" style="color: rgb(255, 0, 0); margin-right: 5px;"></i>
+                                Критическое (<40%)
+                            </span>
+                        {% else %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}soh=critical&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                <i class="fa-solid fa-battery-empty" style="color: rgb(255, 0, 0); margin-right: 5px;"></i>
+                                Критическое (<40%)
+                            </a>
+                        {% endif %}
+                        
+                        <!-- Нет данных -->
+                        {% if selected_soh_filter == 'no_data' %}
+                            <span class="current-location">
+                                Нет данных
+                            </span>
+                        {% else %}
+                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}soh=no_data&page=1"
+                            class="filter-link"
+                            onclick="closeDropdown()">
+                                Нет данных
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Шапка таблицы -->
     <div class="journal-table-header">
         <div class="battery-types-table-cell">№</div>
         <div class="battery-types-table-cell">Место установки</div>
         <div class="battery-types-table-cell">Номер</div>
-        <div class="type-filter-cell">
-            <div class="filter-header">
-                <span class="filter-title center-item">Тип</span>
-                <div class="dropdown right-item">
-                    <button class="dropbtn" title="Фильтр по типу" onclick="toggleDropdownJournal(event)">
-                        <i class="fas fa-filter"></i>
-                    </button>
-                    <div class="dropdown-content" id="typeFilterDropdown">
-                        <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}type=all&page=1" 
-                           onclick="closeDropdown()">Все типы</a>
-                        {% for type_id, type_name in battery_types %}
-                            <a href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}type={{ type_id }}&page=1"
-                               {% if selected_battery_type == type_id %}class="active"{% endif %}
-                               onclick="closeDropdown()">
-                                {{ type_name }}
-                            </a>
-                        {% endfor %}
-                    </div>
-                </div>
-            </div>
-        </div>
+        <div class="battery-types-table-cell">Тип</div>
         <div class="battery-types-table-cell">Дата измерения</div>
         <div class="battery-types-table-cell">Состояние</div>
     </div>
@@ -42,7 +184,7 @@
         <table class="battery-types-table">
             <tbody>
                 {% for item in page_obj %}
-                <tr data-href="{% url 'battery_detail' item.battery_id %}?from_location={{ selected_location_id }}&page={{ page_obj.number }}" class="clickable-row">
+                <tr data-href="{% url 'battery_detail' item.battery_id %}?from_location={{ selected_location_id }}&page={{ page_obj.number }}{% if selected_battery_type %}&type={{ selected_battery_type }}{% endif %}{% if selected_soh_filter != 'all' %}&soh={{ selected_soh_filter }}{% endif %}" class="clickable-row">
                     <td>{{ item.index }}</td>
                     <td>{{ item.installation_location }}</td>
                     <td>{{ item.battery_number }}</td>
@@ -74,15 +216,27 @@
         <div class="pagination">
             <span>
                 {% if page_obj.has_previous %}
-                    <a class="pagination-button" href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}page=1">В начало</a>
-                    <a class="pagination-button" href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}page={{ page_obj.previous_page_number }}">Назад</a>
+                    <a class="pagination-button" 
+                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}page=1">
+                        В начало
+                    </a>
+                    <a class="pagination-button" 
+                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                        Назад
+                    </a>
                 {% endif %}
 
                 Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}
 
                 {% if page_obj.has_next %}
-                    <a class="pagination-button" href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}page={{ page_obj.next_page_number }}">Далее</a>
-                    <a class="pagination-button" href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}page={{ page_obj.paginator.num_pages }}">В конец</a>
+                    <a class="pagination-button" 
+                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}page={{ page_obj.next_page_number }}">
+                        Далее
+                    </a>
+                    <a class="pagination-button" 
+                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}page={{ page_obj.paginator.num_pages }}">
+                        В конец
+                    </a>
                 {% endif %}
             </span>
         </div>

@@ -258,6 +258,7 @@ def journal_view(request, location_id=None):
     """Отображение страницы журнала с учетом фильтрации по местоположению и типу АБ"""
     #  Получаем параметр фильтрации по типу из GET-запроса
     battery_type_id = request.GET.get('type')
+    soh_filter = request.GET.get('soh', 'all')  # 'all', 'good', 'normal', 'poor', 'critical', 'no_data'
 
     last_installation_subquery = BatteryInstallationHistory.objects.filter(
         battery=OuterRef("pk")
@@ -270,6 +271,33 @@ def journal_view(request, location_id=None):
     # Применяем фильтр по типу АБ, если он задан
     if battery_type_id and battery_type_id != 'all':
         batteries = batteries.filter(battery_type_id=battery_type_id)
+    
+    # Применяем фильтр по состоянию (SOH)
+    if soh_filter != 'all':
+        # Аннотируем батареи последним SOH
+        latest_soh_subquery = TestingDBT12D.objects.filter(
+            battery=OuterRef('pk')
+        ).order_by('-testing_date').values('SOH')[:1]
+        
+        batteries = batteries.annotate(last_soh_value=Subquery(latest_soh_subquery))
+        
+        # Применяем фильтр в зависимости от выбранной категории
+        if soh_filter == 'good':
+            batteries = batteries.filter(last_soh_value__gte=80)
+        elif soh_filter == 'normal':
+            batteries = batteries.filter(last_soh_value__gte=60, last_soh_value__lt=80)
+        elif soh_filter == 'poor':
+            batteries = batteries.filter(last_soh_value__gte=40, last_soh_value__lt=60)
+        elif soh_filter == 'critical':
+            batteries = batteries.filter(last_soh_value__lt=40)
+        elif soh_filter == 'no_data':
+            batteries = batteries.filter(last_soh_value__isnull=True)
+    else:
+        # Все состояния - тоже аннотируем для отображения
+        latest_soh_subquery = TestingDBT12D.objects.filter(
+            battery=OuterRef('pk')
+        ).order_by('-testing_date').values('SOH')[:1]
+        batteries = batteries.annotate(last_soh_value=Subquery(latest_soh_subquery))
 
     used_locations = set(batteries.values_list("last_location", flat=True))
     parent_ids = set()
@@ -299,17 +327,12 @@ def journal_view(request, location_id=None):
         battery=OuterRef('pk')
     ).order_by('-testing_date').values('testing_date')[:1]
 
-    latest_soh_subquery = TestingDBT12D.objects.filter(
-        battery=OuterRef('pk')
-    ).order_by('-testing_date').values('SOH')[:1]
-
     latest_vol_subquery = TestingDBT12D.objects.filter(
         battery=OuterRef('pk')
     ).order_by('-testing_date').values('VOL')[:1]
 
     batteries = batteries.annotate(
         last_testing_date=Subquery(latest_test_subquery),
-        last_soh=Subquery(latest_soh_subquery),
         last_vol=Subquery(latest_vol_subquery)
     )
 
@@ -318,20 +341,32 @@ def journal_view(request, location_id=None):
                            .values_list('battery_type__id', 'battery_type__battery_type_title') \
                            .distinct()
 
-    journal_data = [
-        {
+    journal_data = []
+    for index, battery in enumerate(batteries, start=1):
+        # Получаем SOH значение
+        soh_value = battery.last_soh_value
+        
+        # Форматируем SOH для отображения
+        if soh_value is None:
+            soh_display = "Нет данных"
+            soh_numeric = 0
+        else:
+            soh_display = f"{soh_value:.0f}%"
+            soh_numeric = float(soh_value)
+        
+        journal_data.append({
             "index": index,
-            "installation_location": InstallationLocation.objects.get(id=battery.last_location).location_title
-            if battery.last_location else "Не установлено",
+            "installation_location": InstallationLocation.objects.get(
+                id=battery.last_location
+            ).location_title if battery.last_location else "Не установлено",
             "battery_number": battery.battery_number,
             "battery_type": battery.battery_type.battery_type_title,
             "testing_date": battery.last_testing_date or "Нет данных",
-            "soh": battery.last_soh or "Нет данных",
+            "soh": soh_numeric,
+            "soh_display": soh_display,
             "vol": battery.last_vol,
             "battery_id": battery.id
-        }
-        for index, battery in enumerate(batteries, start=1)
-    ]
+        })
 
     paginator = Paginator(journal_data, 10)
     page_number = request.GET.get("page")
@@ -344,7 +379,8 @@ def journal_view(request, location_id=None):
         "parent_locations": parent_locations,
         "selected_location_id": selected_location.id if selected_location else None,
         "battery_types": battery_types,
-        "selected_battery_type": int(battery_type_id) if battery_type_id and battery_type_id != 'all' else None
+        "selected_battery_type": int(battery_type_id) if battery_type_id and battery_type_id != 'all' else None,
+        "selected_soh_filter": soh_filter,
     })
 
 
