@@ -498,3 +498,51 @@ document.addEventListener('DOMContentLoaded', function () {
     // Инициализируем контекстное меню
     initTableContextMenu();
 });
+
+// Сохраняем состояние фильтров
+function toggleFilters() {
+    const filterContent = document.getElementById('filterContent');
+    const btn = document.querySelector('.toggle-filters-btn');
+    const header = document.querySelector('.filters-header');
+    
+    const isVisible = filterContent.style.display === 'block';
+    
+    if (!isVisible) {
+        // Показать
+        filterContent.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-chevron-up"></i> Скрыть';
+        header.classList.add('open');
+        localStorage.setItem('filtersVisible', 'true');
+    } else {
+        // Скрыть
+        filterContent.style.display = 'none';
+        btn.innerHTML = '<i class="fas fa-chevron-down"></i> Показать';
+        header.classList.remove('open');
+        localStorage.setItem('filtersVisible', 'false');
+    }
+}
+
+// При загрузке
+document.addEventListener('DOMContentLoaded', function() {
+    const filterContent = document.getElementById('filterContent');
+    const btn = document.querySelector('.toggle-filters-btn');
+    const header = document.querySelector('.filters-header');
+    
+    if (!filterContent || !btn || !header) return;
+    
+    // Проверяем сохраненное состояние
+    const savedState = localStorage.getItem('filtersVisible');
+    
+    // По умолчанию показываем если есть активные фильтры
+    const hasActiveFilters = document.querySelector('.current-filter') !== null;
+    
+    if (savedState === 'true' || (savedState === null && hasActiveFilters)) {
+        filterContent.style.display = 'block';
+        btn.innerHTML = '<i class="fas fa-chevron-up"></i> Скрыть';
+        header.classList.add('open');
+    } else {
+        filterContent.style.display = 'none';
+        btn.innerHTML = '<i class="fas fa-chevron-down"></i> Показать';
+        header.classList.remove('open');
+    }
+});
