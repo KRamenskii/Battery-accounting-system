@@ -41,7 +41,7 @@
     </div>
     <!-- Контейнер для кнопок -->
     <div class="button-container">
-        <a class="battery-type-detail-btn back-btn" style="border-radius: 0 0 5px 5px" href="{% url 'battery_detail' battery.id %}">Назад</a>
+        <a class="battery-type-detail-btn back-btn" style="border-radius: 0 0 5px 5px" href="{% url 'battery_detail' battery.id %}{% if get_params.urlencode %}?{{ get_params.urlencode }}{% endif %}">Назад</a>
     </div>  
 </div>
 {% endblock %}

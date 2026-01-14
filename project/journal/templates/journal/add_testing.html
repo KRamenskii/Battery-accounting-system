@@ -11,7 +11,7 @@
             {{ form.as_p }}
         </div>
         <div class="button-container">
-            <a class="battery-type-detail-btn back-btn" href="{% url 'battery_detail' form.initial.battery.id %}">Назад</a>
+            <a class="battery-type-detail-btn back-btn" href="{% url 'battery_detail' form.initial.battery.id %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}">Назад</a>
             <button class="battery-type-detail-btn update-btn" type="submit">Добавить</button>
         </div>
     </form>

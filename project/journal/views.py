@@ -107,8 +107,15 @@ class TestingDBT12DCreateView(CreateView):
         return initial
     
     def get_success_url(self):
-        # Используем pk вместо battery_id
-        return reverse_lazy('battery_detail', kwargs={'pk': self.object.battery.id})
+        # Проверяем параметр next из POST (из скрытого поля)
+        next_url = self.request.POST.get('next')
+        if next_url:
+            return next_url
+        
+        # Если нет next, возвращаем с сохранением GET-параметров
+        params = self.request.GET.urlencode()
+        url = reverse('battery_detail', kwargs={'pk': self.object.battery.id})
+        return f"{url}?{params}" if params else url
 
 
 class TestingIC105CreateView(CreateView):
@@ -124,8 +131,15 @@ class TestingIC105CreateView(CreateView):
         return initial
     
     def get_success_url(self):
-        # Используем pk вместо battery_id
-        return reverse_lazy('battery_detail', kwargs={'pk': self.object.battery.id})
+        # Проверяем параметр next из POST (из скрытого поля)
+        next_url = self.request.POST.get('next')
+        if next_url:
+            return next_url
+        
+        # Если нет next, возвращаем с сохранением GET-параметров
+        params = self.request.GET.urlencode()
+        url = reverse('battery_detail', kwargs={'pk': self.object.battery.id})
+        return f"{url}?{params}" if params else url
 
 
 class BatteryUpdateView(UpdateView):
@@ -217,7 +231,15 @@ class BatteryInstallationHistoryCreateView(CreateView):
         return kwargs
 
     def get_success_url(self):
-        return reverse_lazy('battery_detail', kwargs={'pk': self.object.battery.id})
+        # Проверяем параметр next из POST (из скрытого поля)
+        next_url = self.request.POST.get('next')
+        if next_url:
+            return next_url
+        
+        # Если нет next, возвращаем с сохранением GET-параметров
+        params = self.request.GET.urlencode()
+        url = reverse('battery_detail', kwargs={'pk': self.object.battery.id})
+        return f"{url}?{params}" if params else url
 
 
 def get_last_installation():
@@ -508,8 +530,12 @@ def battery_detail(request, pk):
 def battery_detail_parameters(request, battery_id):
     battery = get_object_or_404(Battery, id=battery_id)
     
+    # Получаем все GET-параметры для передачи обратно
+    get_params = request.GET
+    
     return render(request, 'journal/battery_detail_parameters.html', {
         'battery': battery,
+        'get_params': get_params,  # Передаем все GET-параметры
     })
 
 

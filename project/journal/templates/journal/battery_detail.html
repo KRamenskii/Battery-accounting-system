@@ -119,7 +119,7 @@
                 </div>
 
                 <div class="battery-detail-button-v-container">
-                    <a class="battery-detail-btn" href="{% url 'battery_detail_parameters' battery.id %}">Параметры АБ</a>
+                    <a class="battery-detail-btn" href="{% url 'battery_detail_parameters' battery.id %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}">Параметры АБ</a>
                     <a class="battery-detail-btn" href="{% url 'battery_download_label' battery.id %}">Скачать этикетку</a>
                     <a class="battery-detail-btn" href="{% url 'battery_detail_edit' battery.id %}">Редактировать</a>
                 </div>
@@ -129,7 +129,7 @@
         <div class="testing-container">
             <div class="header-testing-container">
                 <h5 class="battery-detail-header">История мест установки (хранения) АБ №{{ battery.battery_number }}</h5>
-                <a class="add-btn" href="{% url 'add_installation_location_battery' battery.id %}">
+                <a class="add-btn" href="{% url 'add_installation_location_battery' battery.id %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}">
                     <i class="bi bi-plus fs-3"></i>
                 </a>
             </div>
@@ -200,7 +200,7 @@
         <div class="testing-container">
             <div class="header-testing-container">
                 <h5 class="battery-detail-header">Измерения DBT12D</h5>
-                <a class="add-btn" href="{% url 'add_testing_dbt12d' battery.id %}">
+                <a class="add-btn" href="{% url 'add_testing_dbt12d' battery.id %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}">
                     <i class="bi bi-plus fs-3"></i>
                 </a>
             </div>
@@ -211,7 +211,7 @@
         <div class="testing-container">
             <div class="header-testing-container">
                 <h5 class="battery-detail-header">Измерения IC105</h5>
-                <a class="add-btn" href="{% url 'add_testing_ic105' battery.id %}">
+                <a class="add-btn" href="{% url 'add_testing_ic105' battery.id %}{% if request.GET.urlencode %}?{{ request.GET.urlencode }}{% endif %}">
                     <i class="bi bi-plus fs-3"></i>
                 </a>
             </div>
