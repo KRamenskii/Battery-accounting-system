@@ -1,4 +1,9 @@
+import qrcode
+import hashlib
+from io import BytesIO
+from django.core.files.base import ContentFile
 from django.db import models
+import os
 
 class InstallationLocation(models.Model):
     LOCATION_TYPES = [
@@ -138,6 +143,21 @@ class Battery(models.Model):
         null=True, 
         blank=True
     )
+    qr_code = models.ImageField(
+        upload_to='qr_codes/batteries/',
+        verbose_name="QR-код",
+        null=True,
+        blank=True,
+        editable=False
+    )
+    qr_data_hash = models.CharField(
+        max_length=64,
+        verbose_name="Хэш данных QR",
+        null=True,
+        blank=True,
+        editable=False,
+        help_text="Для определения, нужно ли перегенерировать QR"
+    )
 
     class Meta:
         verbose_name = "АБ"
@@ -149,6 +169,82 @@ class Battery(models.Model):
     def full_representation(self):
         serial_info = self.serial_parameters.serial_number if self.serial_parameters else "Н/Д"
         return f"АБ №{self.battery_number} ({self.battery_type.battery_type_title}, SN: {serial_info})"
+    
+    def get_qr_text(self):
+        """Текст, который будет виден при сканировании"""
+        return f"АБ №{self.battery_number} / {self.battery_type.manufacturer} {self.battery_type.battery_type_title}"
+    
+    def calculate_qr_hash(self):
+        """Вычисляет хэш от текста QR-кода для отслеживания изменений"""
+        text = self.get_qr_text()
+        return hashlib.sha256(text.encode()).hexdigest()
+    
+    def generate_qr_code(self, force_generate=False):
+        """
+        Генерирует и сохраняет QR-код как изображение.
+        Возвращает True если QR был сгенерирован, False если уже актуален.
+        """
+        current_hash = self.calculate_qr_hash()
+        
+        # ВАЖНО: Не проверяем существование файла на диске, только в БД
+        # Файл может отсутствовать физически, но это не должно ломать проверку
+        qr_exists_in_db = bool(self.qr_code and self.qr_code.name)
+        
+        # Если в БД есть запись о QR и хэш совпадает - выходим
+        if (not force_generate 
+            and self.qr_data_hash == current_hash 
+            and qr_exists_in_db):
+            print(f"QR уже актуален для АБ №{self.battery_number}")
+            return False
+        
+        print(f"Генерация QR для АБ №{self.battery_number}...")
+        
+        # ---------- Генерация QR ----------
+        qr = qrcode.QRCode(
+            version=1,
+            error_correction=qrcode.constants.ERROR_CORRECT_Q,
+            box_size=10,
+            border=4,
+        )
+        qr.add_data(self.get_qr_text())
+        qr.make(fit=True)
+        
+        img = qr.make_image(fill_color="black", back_color="white")
+        
+        buffer = BytesIO()
+        img.save(buffer, format="PNG")
+        buffer.seek(0)
+        
+        # ---------- Удаляем старый файл если он существует ----------
+        if qr_exists_in_db:
+            try:
+                # Безопасное удаление через storage
+                self.qr_code.storage.delete(self.qr_code.name)
+            except Exception as e:
+                print(f"Не удалось удалить старый файл: {e}")
+                # Не падаем, продолжаем
+        
+        # ---------- Сохраняем новый ----------
+        filename = f"battery_qr_{self.id}_{self.battery_number}.png"
+        self.qr_code.save(filename, ContentFile(buffer.read()), save=False)
+        self.qr_data_hash = current_hash
+        
+        print(f"QR создан: {self.qr_code.name}")
+        return True
+    
+    def save(self, *args, **kwargs):
+        """Переопределяем save для автоматической генерации QR-кода"""
+        # Сохраняем объект, чтобы получить ID для новых записей
+        super().save(*args, **kwargs)
+        
+        # ВСЕГДА пытаемся сгенерировать QR, метод сам проверит нужно ли
+        try:
+            # generate_qr_code вернет True если что-то сгенерировал
+            generated = self.generate_qr_code()
+            if generated:
+                super().save(update_fields=['qr_code', 'qr_data_hash'])
+        except Exception as e:
+            print(f"ERROR: Не удалось сгенерировать QR для АБ №{self.battery_number}: {e}")
 
 
 class BatteryInstallationHistory(models.Model):

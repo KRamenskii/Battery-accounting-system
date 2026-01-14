@@ -1,5 +1,5 @@
 <div class="filter-container-wrapper">
-    <div class="filter-container">
+    <div class="filter-container all-rounded">
         <h5>Путь к текущему разделу</h5>
         <div class="filter-container-path">
             <a href="{% url 'journal' %}" class="filter-link">Все АБ</a>
@@ -14,11 +14,11 @@
         </div>
     </div>
 
-    <a class="add-button" href="{% url 'add_battery' %}?selected_location_id={{ selected_location.id }}">Добавить АБ</a>
+    <a class="add-battery-btn" href="{% url 'add_battery' %}?selected_location_id={{ selected_location.id }}">Добавить АБ</a>
 </div>
 
 {% if locations %}
-    <div class="filter-container no-rounded">
+    <div class="filter-container all-rounded">
         <a class="header-link" href="{% url 'installation_locations' %}">
             <h5>Места установки / хранения</h5>
         </a>

@@ -8,7 +8,7 @@
     display: flex; /* Для выравнивания содержимого */
     flex-direction: row; /* Расположение элементов по вертикали */
     padding: 10px;
-    gap: 10px;
+    gap: 20px;
     overflow: auto;
 }
 
@@ -28,8 +28,9 @@
     flex-direction: column;
     gap: 10px;
     overflow-y: auto;
-    border: solid 1px black;
+    border: solid 2px #dff2ff;
     background-color: #dff2ff;
+    border-radius: 10px;
 }
 
 /* Скрытие полосы прокрутки */
@@ -37,13 +38,33 @@
     display: none;
 }
 
+.header-testing-container {
+    display: inline-flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.add-btn {
+    color: black;
+    font-weight: bold;
+    background-color: #dff2ff;
+    border-radius: 10px;
+    padding-inline: 10px;
+}
+
+.add-btn:hover {
+    background-color: #ffa600;
+}
+
 .battery-detail-header {
     color: rgba(40, 102, 163);
     font-weight: bold;
     background-color: #dff2ff;
-    border-radius: 10px 10px 0 0;
+    border-radius: 10px;
     padding: 10px;
     margin-bottom: 0;
+    width: 100%;
+    align-content: center;
 }
 
 .testing-container {
@@ -53,6 +74,29 @@
     min-height: 50%;
 }
 
+.battery-detail-button-h-container {
+    display: grid;
+    grid-auto-flow: column;
+    grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+    gap: 10px;
+    width: 100%;
+}
+
+.battery-detail-btn {
+    color: black;
+    font-weight: bold;
+    background-color: #dff2ff;
+    border-radius: 10px;
+    padding-inline: 10px;
+    text-decoration: none;
+    padding: 10px;
+    align-content: center;
+}
+
+.battery-detail-btn:hover {
+    background-color: #ffa600;
+    cursor: pointer;
+}
 
 /* Таблица с параметрами АБ */
 .battery-detail-table {
@@ -171,4 +215,77 @@
 
 .inst-loc tr:hover {
     background-color: rgba(40, 102, 163, 0.5);
+}
+
+.installation-card {
+    display: flex;
+    flex-direction: column;
+    background-color: #dff2ff;
+    border-radius: 10px;
+    padding: 10px;
+    align-items: start;
+    cursor: pointer;
+    margin-bottom: 8px;
+}
+
+.battery-detail-instllation-table-wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    overflow-y: auto;
+    border: solid 3px #dff2ff;
+    border-radius: 10px;
+    padding: 8px;
+    padding-bottom: 0;
+}
+
+.battery-detail-instllation-table-wrapper::-webkit-scrollbar {
+    display: none; /* Скрываем полосу прокрутки в Chrome, Safari */
+}
+
+.separator {
+    border: none;
+    border-top: 2px solid black;
+    width: 100%;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.spaced-container {
+    display: flex;
+    width: 100%;
+}
+
+.date-align-right {
+    margin-left: auto;
+}
+
+.battery-sticker {
+    display: flex;
+    flex-direction: row;
+    background-color: white;
+    border: solid 5px #dff2ff;
+    border-radius: 10px;
+    min-width: 60%;
+    height: 100%;
+}
+
+.battery-detail-button-v-container {
+    display: grid;
+    gap: 10px;
+    width: 100%;
+}
+
+.battery-sticker-container {
+    display: flex;
+    gap: 10px;
+    height: 100%;
+    width: 100%;
+}
+
+.vertical-separator {
+    width: 3px;
+    height: 100%;
+    background-color: black;
 }

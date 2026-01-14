@@ -71,6 +71,11 @@ class BatteryInstallationHistoryForm(forms.ModelForm):
     class Meta:
         model = BatteryInstallationHistory
         fields = ['installation_location', 'installation_date']  # Убираем 'battery'
+        widgets = {
+            'installation_date': forms.DateInput(attrs={
+                'type': 'date',
+            })
+        }
 
     def __init__(self, *args, **kwargs):
         # Получаем аккумулятор из аргументов

@@ -6,8 +6,8 @@ from journal.models import Battery, BatteryInstallationHistory, TestingDBT12D, T
 
 
 def homepage(request):
-    storage = "Б-143, Б-144 (C)"
-    utilization = "Б-143, Б-144 (У)"
+    storage = "Склад"
+    utilization = "Утилизация"
 
     # Получаем последнюю установку каждой АБ
     all_installations = (
