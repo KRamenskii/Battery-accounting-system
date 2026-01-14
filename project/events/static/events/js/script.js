@@ -479,7 +479,7 @@ function formatRelatedField(fieldName, value) {
     return value;
 }
 
-// Сохраняем состояние фильтров
+// Общая функция для всех страниц
 function toggleFilters() {
     const filterContent = document.getElementById('filterContent');
     const btn = document.querySelector('.toggle-filters-btn');
@@ -492,17 +492,18 @@ function toggleFilters() {
         filterContent.style.display = 'block';
         btn.innerHTML = '<i class="fas fa-chevron-up"></i> Скрыть';
         header.classList.add('open');
-        localStorage.setItem('filtersVisible', 'true');
+        // Используем путь страницы как ключ
+        localStorage.setItem(`filtersVisible_${window.location.pathname}`, 'true');
     } else {
         // Скрыть
         filterContent.style.display = 'none';
         btn.innerHTML = '<i class="fas fa-chevron-down"></i> Показать';
         header.classList.remove('open');
-        localStorage.setItem('filtersVisible', 'false');
+        localStorage.setItem(`filtersVisible_${window.location.pathname}`, 'false');
     }
 }
 
-// При загрузке
+// Общая функция при загрузке
 document.addEventListener('DOMContentLoaded', function() {
     const filterContent = document.getElementById('filterContent');
     const btn = document.querySelector('.toggle-filters-btn');
@@ -510,8 +511,9 @@ document.addEventListener('DOMContentLoaded', function() {
     
     if (!filterContent || !btn || !header) return;
     
-    // Проверяем сохраненное состояние
-    const savedState = localStorage.getItem('filtersVisible');
+    // Используем путь страницы как ключ
+    const storageKey = `filtersVisible_${window.location.pathname}`;
+    const savedState = localStorage.getItem(storageKey);
     
     // По умолчанию показываем если есть активные фильтры
     const hasActiveFilters = document.querySelector('.current-filter') !== null;
