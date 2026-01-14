@@ -13,7 +13,7 @@
         <div class="filters-header">
             <h3>Фильтры</h3>
             <div class="filter-header-btn">
-                {% if selected_battery_type or selected_location_id or selected_soh_filter != 'all' %}
+                {% if selected_battery_type or selected_soh_filter != 'all' %}
                     <a href="?page=1" class="filter-reset-all-btn">
                         <i class="fas fa-redo"></i> Сбросить все фильтры
                     </a>
@@ -169,47 +169,60 @@
         </div>
     </div>
 
-    <!-- Шапка таблицы -->
-    <div class="journal-table-header">
-        <div class="battery-types-table-cell">№</div>
-        <div class="battery-types-table-cell">Место установки</div>
-        <div class="battery-types-table-cell">Номер</div>
-        <div class="battery-types-table-cell">Тип</div>
-        <div class="battery-types-table-cell">Дата измерения</div>
-        <div class="battery-types-table-cell">Состояние</div>
-    </div>
+    {% if page_obj %}
+        <!-- Шапка таблицы -->
+        <div class="journal-table-header">
+            <div class="battery-types-table-cell">№</div>
+            <div class="battery-types-table-cell">Место установки</div>
+            <div class="battery-types-table-cell">Номер</div>
+            <div class="battery-types-table-cell">Тип</div>
+            <div class="battery-types-table-cell">Дата измерения</div>
+            <div class="battery-types-table-cell">Состояние</div>
+        </div>
 
-    <!-- Обёртка для таблицы -->
-    <div class="battery-types-table-wrapper">
-        <table class="battery-types-table">
-            <tbody>
-                {% for item in page_obj %}
-                <tr data-href="{% url 'battery_detail' item.battery_id %}?from_location={{ selected_location_id }}&page={{ page_obj.number }}{% if selected_battery_type %}&type={{ selected_battery_type }}{% endif %}{% if selected_soh_filter != 'all' %}&soh={{ selected_soh_filter }}{% endif %}" class="clickable-row">
-                    <td>{{ item.index }}</td>
-                    <td>{{ item.installation_location }}</td>
-                    <td>{{ item.battery_number }}</td>
-                    <td>{{ item.battery_type }}</td>
-                    <td>{{ item.testing_date }}</td>
-                    <td>
-                        {% if item.soh >= 80 %}
-                            <i class="fa-solid fa-battery-full" style="color: rgb(0, 255, 0);"></i>
-                        {% elif item.soh >= 60 %}
-                            <i class="fa-solid fa-battery-half" style="color: rgb(246, 255, 0);"></i>
-                        {% elif item.soh >= 40 %}
-                            <i class="fa-solid fa-battery-half" style="color: rgb(255, 174, 0);"></i>
-                        {% else %}
-                            <i class="fa-solid fa-battery-empty" style="color: rgb(255, 0, 0);"></i>
-                        {% endif %}
-                        {{ item.soh|floatformat:0 }}%
-                        
-                        <i class="fa-solid fa-car-battery" style="margin-left: 10px;"></i> 
-                        {{ item.vol }} В
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-    </div>
+        <!-- Обёртка для таблицы -->
+        <div class="battery-types-table-wrapper">
+            <table class="battery-types-table">
+                <tbody>
+                    {% for item in page_obj %}
+                    <tr data-href="{% url 'battery_detail' item.battery_id %}?from_location={{ selected_location_id }}&page={{ page_obj.number }}{% if selected_battery_type %}&type={{ selected_battery_type }}{% endif %}{% if selected_soh_filter != 'all' %}&soh={{ selected_soh_filter }}{% endif %}" class="clickable-row">
+                        <td>{{ item.index }}</td>
+                        <td>{{ item.installation_location }}</td>
+                        <td>{{ item.battery_number }}</td>
+                        <td>{{ item.battery_type }}</td>
+                        <td>{{ item.testing_date }}</td>
+                        <td>
+                            {% if item.soh >= 80 %}
+                                <i class="fa-solid fa-battery-full" style="color: rgb(0, 255, 0);"></i>
+                            {% elif item.soh >= 60 %}
+                                <i class="fa-solid fa-battery-half" style="color: rgb(246, 255, 0);"></i>
+                            {% elif item.soh >= 40 %}
+                                <i class="fa-solid fa-battery-half" style="color: rgb(255, 174, 0);"></i>
+                            {% else %}
+                                <i class="fa-solid fa-battery-empty" style="color: rgb(255, 0, 0);"></i>
+                            {% endif %}
+                            {{ item.soh|floatformat:0 }}%
+                            
+                            <i class="fa-solid fa-car-battery" style="margin-left: 10px;"></i> 
+                            {{ item.vol }} В
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <!-- Минималистичное сообщение -->
+        <div class="text-center py-5" style="background-color: #f8f9fa; border-radius: 8px; margin-top: 0">
+            <i class="fas fa-search fa-3x text-muted mb-3"></i>
+            <h4 class="text-muted mb-3">Аккумуляторные батареи не найдены</h4>
+            {% if selected_location_id or selected_battery_type or selected_soh_filter != 'all' %}
+                <p class="text-muted mb-4">Попробуйте изменить параметры фильтрации или сбросить фильтры</p>
+            {% else %}
+                <p class="text-muted">В выбранном местоположении нет АБ</p>
+            {% endif %}
+        </div>
+    {% endif %}
 
     <!-- Пагинация -->
     {% if page_obj.paginator.num_pages > 1 %}
