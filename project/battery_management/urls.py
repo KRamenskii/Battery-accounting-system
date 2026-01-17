@@ -11,6 +11,7 @@ urlpatterns = [
     path('battery_types/', include('battery_types.urls')),
     path('homepage/', include('homepage.urls')),
     path('events/', include('events.urls')),
+    path('api/', include('api.urls')),
 ]
 
 if settings.DEBUG:

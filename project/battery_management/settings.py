@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'homepage',
     'utils',
     'events',
+    'rest_framework',
+    'api',
 ]
 
 MIDDLEWARE = [
