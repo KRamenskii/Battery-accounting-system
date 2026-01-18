@@ -24,12 +24,14 @@ class BatteryType(models.Model):
     nominal_capacity_10 = models.DecimalField(
         verbose_name = 'Номинальная ёмкость при 10-ти часовом разряде',
         max_digits=10, 
-        decimal_places=2
+        decimal_places=2,
+        help_text='Ввести 0 при отсутствии данных'
     )
     nominal_capacity_5 = models.DecimalField(
         verbose_name = 'Номинальная ёмкость при 5-ти часовом разряде',
         max_digits=10, 
-        decimal_places=2
+        decimal_places=2,
+        help_text='Ввести 0 при отсутствии данных'
     )
     self_discharge = models.DecimalField(
         verbose_name = 'Саморазряд, %',
