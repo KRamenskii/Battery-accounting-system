@@ -10,7 +10,7 @@ class InstallationLocationAdmin(admin.ModelAdmin):
 
 @admin.register(SerialParameters)
 class SerialParametersAdmin(admin.ModelAdmin):
-    list_display = ('serial_number', 'battery_type', 'manufacture_date')
+    list_display = ('id', 'serial_number', 'battery_type', 'manufacture_date')
     list_filter = ('battery_type',)
     search_fields = ('serial_number',)
 

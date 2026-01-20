@@ -9,9 +9,15 @@ from drf_spectacular.views import (
 )
 
 urlpatterns = [
-    path('battery-types/', include('api.battery_types.urls')),
-    path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    # Docs
     path('schema/', SpectacularAPIView.as_view(), name='schema'),
     path('docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+
+    # Auth
+    path('auth/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('auth/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    # Apps
+    path('battery-types/', include('api.battery_types.urls')),
+    path('serial-parameters/', include('api.serial_parameters.urls')),
 ]
