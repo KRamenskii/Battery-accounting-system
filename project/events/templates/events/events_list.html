@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load custom_filters %}
+
 {% block title %}События{% endblock %}
 
 {% block content %}
@@ -256,8 +258,10 @@
         <div class="events-table-header">
             <div class="battery-types-table-cell">№</div>
             <div class="battery-types-table-cell">Дата</div>
+            <div class="battery-types-table-cell">Время</div>
             <div class="battery-types-table-cell">Пользователь</div>
             <div class="battery-types-table-cell">Объект</div>
+            <div class="battery-types-table-cell">Событие</div>
         </div>
 
         <!-- Обёртка для таблицы -->
@@ -279,7 +283,8 @@
                         onclick="showEventModalFromAttributes(this)"
                         style="cursor: pointer;">
                         <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
-                        <td>{{ event.timestamp|date:"d.m.Y H:i:s" }}</td>
+                        <td>{{ event.timestamp|date:"d.m.Y" }}</td>
+                        <td>{{ event.timestamp|date:"H:i:s" }}</td>
                         <td>
                             {% if event.user %}
                                 {{ event.user.sur_name|default:"" }} 
@@ -293,7 +298,8 @@
                                 Пользователь не указан
                             {% endif %}
                         </td>
-                        <td>{{ event.full_representation|default:event.object_repr }}</td>
+                        <td style="text-align: start;">{{ event.content_type|after_pipe }}</td>
+                        <td style="text-align: start;">{{ event.full_representation|default:event.object_repr }}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
