@@ -185,3 +185,20 @@
     font-size: 12px;
     transition: transform 0.3s;
 }
+
+/* Добавьте внутренний контейнер для контента */
+.container-content {
+    overflow-y: auto; /* Вертикальный скролл */
+    overflow-x: hidden; /* Горизонтальный скролл отключен */
+    padding-right: 10px; /* Отступ, чтобы контент не прилипал к краю */
+    
+    /* Скрываем полосу прокрутки для разных браузеров */
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE и Edge */
+}
+
+/* Скрываем полосу прокрутки для WebKit-браузеров (Chrome, Safari) */
+.container-content::-webkit-scrollbar {
+    display: none;
+    width: 0;
+}

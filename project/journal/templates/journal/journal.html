@@ -342,22 +342,39 @@
         </div>
     {% else %}
         <!-- Минималистичное сообщение -->
-         <div class="text-center py-5" style="background-color: #f8f9fa; border-radius: 8px;">
+        <div class="text-center py-5 container-content" style="background-color: #f8f9fa; border-radius: 8px;">
             <i class="fas fa-search fa-3x text-muted mb-3"></i>
 
             {% if search_not_found %}
                 <h4 class="text-muted mb-3">Ничего не найдено</h4>
                 <p class="text-muted">
-                    {% comment %} {% if search_query%} {% endcomment %}
                     {% if is_numeric %}
                         По запросу <strong style="color: red;">{{ search_query }}</strong> не найдено аккумуляторной батареи
                     {% else %}
                         По запросу <strong style="color: red;">{{ search_query }}</strong> не найдено места установки
                     {% endif %}
                 </p>
-                <a href="{% url 'journal' %}" class="btn btn-outline-secondary mt-3">
-                    Сбросить поиск
-                </a>
+                
+                {% if not is_numeric and similar_locations %}
+                    <div class="similar-locations-container mt-4">
+                        <p class="text-muted mb-2">Возможно, вы искали:</p>
+                        <div class="similar-locations-list">
+                            {% for location in similar_locations %}
+                                <a href="{% url 'journal_filtered' location.id %}" 
+                                class="btn btn-outline-primary btn-sm m-1 btn-outline-secondary">
+                                    <i class="fas fa-map-marker-alt mr-1"></i>
+                                    {{ location.location_title }}
+                                </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+                
+                <div class="mt-4">
+                    <a href="{% url 'journal' %}" class="btn btn-outline-secondary">
+                        Сбросить поиск
+                    </a>
+                </div>
             {% else %}
                 <h4 class="text-muted mb-3">Аккумуляторные батареи не найдены</h4>
                 {% if selected_location_id or selected_battery_type or selected_soh_filter != 'all' %}

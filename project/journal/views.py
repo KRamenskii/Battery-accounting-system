@@ -1,6 +1,7 @@
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.db.models import OuterRef, Subquery
+from django.db.models.functions import Lower
 from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse, reverse_lazy
@@ -282,6 +283,7 @@ def journal_view(request, location_id=None):
     is_search = False
     search_not_found = False
     found_battery = None
+    similar_locations = []
 
     if q:
         q = q.strip()
@@ -303,7 +305,6 @@ def journal_view(request, location_id=None):
 
                 if last_installation:
                     location_id = last_installation.installation_location_id
-                    # +++ НОВЫЙ КОД: проверяем количество АБ в месте установки +++
                     # Получаем количество АБ в этом месте
                     battery_count_in_location = BatteryInstallationHistory.objects.filter(
                         installation_location_id=location_id,
@@ -320,21 +321,38 @@ def journal_view(request, location_id=None):
             else:
                 search_not_found = True
 
-        # ===== Поиск по месту установки (ТОЧНОЕ совпадение) =====
+        # ===== Поиск по месту установки =====
         else:
-            location = InstallationLocation.objects.filter(
-                location_title__iexact=q
-            ).first()
-
+            q_clean = q.strip().lower()
+            
+            # Загружаем все места в память
+            all_locations = list(InstallationLocation.objects.all())
+            
+            location = None
+            similar = []
+            
+            for loc in all_locations:
+                loc_title_lower = loc.location_title.lower()
+                
+                # Точное совпадение
+                if loc_title_lower == q_clean:
+                    location = loc
+                    break
+                
+                # Похожие места
+                if q_clean in loc_title_lower:
+                    similar.append(loc)
+            
             if location:
                 location_id = location.id
-                # +++ НОВЫЙ КОД: очищаем флаг поиска по одной батарее +++
                 request.session.pop('search_only_battery_id', None)
             else:
+                similar_locations = similar
                 search_not_found = True
 
     # Очищаем флаг, если это не поиск
     if not is_search:
+        request.session.pop('search_query', None)
         request.session.pop('search_only_battery_id', None)
 
     """Отображение страницы журнала с учетом фильтрации по местоположению и типу АБ"""
@@ -507,6 +525,7 @@ def journal_view(request, location_id=None):
         "search_query": q,
         "search_not_found": search_not_found,
         'is_numeric': search_query.lstrip('-').replace('.', '', 1).isdigit(),
+        "similar_locations": similar_locations,
     })
 
 
