@@ -298,7 +298,7 @@
         </div>
     </div>
 
-    {% if page_obj %}
+    {% if page_obj and not search_not_found %}
         <!-- Шапка таблицы -->
         <div class="journal-table-header">
             <div class="battery-types-table-cell">№</div>
@@ -314,7 +314,7 @@
             <table class="battery-types-table">
                 <tbody>
                     {% for item in page_obj %}
-                    <tr data-href="{% url 'battery_detail' item.battery_id %}?from_location={{ selected_location_id }}&page={{ page_obj.number }}{% if selected_battery_type %}&type={{ selected_battery_type }}{% endif %}{% if selected_soh_filter != 'all' %}&soh={{ selected_soh_filter }}{% endif %}{% if selected_date_filter != 'all' %}&date_filter={{ selected_date_filter }}{% endif %}" class="clickable-row">
+                    <tr data-href="{% url 'battery_detail' item.battery_id %}?from_location={{ selected_location_id }}&page={{ page_obj.number }}{% if selected_battery_type %}&type={{ selected_battery_type }}{% endif %}{% if selected_soh_filter != 'all' %}&soh={{ selected_soh_filter }}{% endif %}{% if selected_date_filter != 'all' %}&date_filter={{ selected_date_filter }}{% endif %}{% if search_query %}&q={{ search_query|urlencode }}{% endif %}" class="clickable-row">
                         <td>{{ item.index }}</td>
                         <td>{{ item.installation_location }}</td>
                         <td>{{ item.battery_number }}</td>
@@ -342,28 +342,44 @@
         </div>
     {% else %}
         <!-- Минималистичное сообщение -->
-        <div class="text-center py-5" style="background-color: #f8f9fa; border-radius: 8px; margin-top: 0">
+         <div class="text-center py-5" style="background-color: #f8f9fa; border-radius: 8px;">
             <i class="fas fa-search fa-3x text-muted mb-3"></i>
-            <h4 class="text-muted mb-3">Аккумуляторные батареи не найдены</h4>
-            {% if selected_location_id or selected_battery_type or selected_soh_filter != 'all' %}
-                <p class="text-muted mb-4">Попробуйте изменить параметры фильтрации или сбросить фильтры</p>
+
+            {% if search_not_found %}
+                <h4 class="text-muted mb-3">Ничего не найдено</h4>
+                <p class="text-muted">
+                    {% comment %} {% if search_query%} {% endcomment %}
+                    {% if is_numeric %}
+                        По запросу <strong style="color: red;">{{ search_query }}</strong> не найдено аккумуляторной батареи
+                    {% else %}
+                        По запросу <strong style="color: red;">{{ search_query }}</strong> не найдено места установки
+                    {% endif %}
+                </p>
+                <a href="{% url 'journal' %}" class="btn btn-outline-secondary mt-3">
+                    Сбросить поиск
+                </a>
             {% else %}
-                <p class="text-muted">В выбранном местоположении нет АБ</p>
+                <h4 class="text-muted mb-3">Аккумуляторные батареи не найдены</h4>
+                {% if selected_location_id or selected_battery_type or selected_soh_filter != 'all' %}
+                    <p class="text-muted mb-4">Попробуйте изменить параметры фильтрации или сбросить фильтры</p>
+                {% else %}
+                    <p class="text-muted">В выбранном местоположении нет АБ</p>
+                {% endif %}
             {% endif %}
         </div>
     {% endif %}
 
     <!-- Пагинация -->
-    {% if page_obj.paginator.num_pages > 1 %}
+    {% if page_obj.paginator.num_pages > 1 and not search_not_found %}
         <div class="pagination">
             <span>
                 {% if page_obj.has_previous %}
                     <a class="pagination-button" 
-                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}{% if selected_date_filter != 'all' %}date_filter={{ selected_date_filter }}&{% endif %}page=1">
+                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}{% if selected_date_filter != 'all' %}date_filter={{ selected_date_filter }}&{% endif %}{% if search_query %}q={{ search_query|urlencode }}&{% endif %}page=1">
                         В начало
                     </a>
                     <a class="pagination-button" 
-                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}{% if selected_date_filter != 'all' %}date_filter={{ selected_date_filter }}&{% endif %}page={{ page_obj.previous_page_number }}">
+                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}{% if selected_date_filter != 'all' %}date_filter={{ selected_date_filter }}&{% endif %}{% if search_query %}q={{ search_query|urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}">
                         Назад
                     </a>
                 {% endif %}
@@ -372,11 +388,11 @@
 
                 {% if page_obj.has_next %}
                     <a class="pagination-button" 
-                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}{% if selected_date_filter != 'all' %}date_filter={{ selected_date_filter }}&{% endif %}page={{ page_obj.next_page_number }}">
+                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}{% if selected_date_filter != 'all' %}date_filter={{ selected_date_filter }}&{% endif %}{% if search_query %}q={{ search_query|urlencode }}&{% endif %}page={{ page_obj.next_page_number }}">
                         Далее
                     </a>
                     <a class="pagination-button" 
-                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}{% if selected_date_filter != 'all' %}date_filter={{ selected_date_filter }}&{% endif %}page={{ page_obj.paginator.num_pages }}">
+                    href="?{% if selected_location_id %}location_id={{ selected_location_id }}&{% endif %}{% if selected_battery_type %}type={{ selected_battery_type }}&{% endif %}{% if selected_soh_filter != 'all' %}soh={{ selected_soh_filter }}&{% endif %}{% if selected_date_filter != 'all' %}date_filter={{ selected_date_filter }}&{% endif %}{% if search_query %}q={{ search_query|urlencode }}&{% endif %}page={{ page_obj.paginator.num_pages }}">
                         В конец
                     </a>
                 {% endif %}

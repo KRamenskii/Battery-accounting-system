@@ -133,3 +133,55 @@
 .battery-types-table-cell {
     align-content: center;
 }
+
+.search-input {
+    font-size: 14px;
+    width: 300px;
+}
+
+.search-input-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(40, 102, 163, 0.5);
+    border: 0px;
+    border-radius: 10px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+    transition: all 0.2s;
+}
+
+.search-input-btn:hover {
+    background: #ffa600;
+}
+
+.search-input-btn i {
+    font-size: 12px;
+    transition: transform 0.3s;
+}
+
+.search-reset-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(201, 84, 84, 0.57);
+    border: 0px;
+    border-radius: 10px;
+    padding: 6px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    color: white;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.search-reset-btn:hover {
+    background: #ff0000;
+}
+
+.search-reset-btn i {
+    font-size: 12px;
+    transition: transform 0.3s;
+}

@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django.core.paginator import Paginator
 from django.db.models import OuterRef, Subquery
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_object_or_404, render, redirect
 from django.http import HttpResponseRedirect, HttpResponse
 from django.urls import reverse, reverse_lazy
 from django.http import JsonResponse
@@ -277,11 +277,72 @@ def get_parent_locations(location):
 
 
 def journal_view(request, location_id=None):
+    q = request.GET.get("q")
+
+    is_search = False
+    search_not_found = False
+    found_battery = None
+
+    if q:
+        q = q.strip()
+        is_search = True
+
+        # ===== Поиск по номеру АБ (ТОЧНОЕ совпадение) =====
+        if q.isdigit():
+            found_battery = Battery.objects.filter(
+                battery_number=q
+            ).first()
+
+            if found_battery:
+                last_installation = (
+                    BatteryInstallationHistory.objects
+                    .filter(battery=found_battery)
+                    .order_by("-installation_date")
+                    .first()
+                )
+
+                if last_installation:
+                    location_id = last_installation.installation_location_id
+                    # +++ НОВЫЙ КОД: проверяем количество АБ в месте установки +++
+                    # Получаем количество АБ в этом месте
+                    battery_count_in_location = BatteryInstallationHistory.objects.filter(
+                        installation_location_id=location_id,
+                        id__in=Subquery(
+                            BatteryInstallationHistory.objects.filter(
+                                battery=OuterRef('battery')
+                            ).order_by('-installation_date').values('id')[:1]
+                        )
+                    ).count()
+                    
+                    # Если больше 8 АБ, запоминаем ID найденной батареи для фильтрации
+                    if battery_count_in_location > 8:
+                        request.session['search_only_battery_id'] = found_battery.id
+            else:
+                search_not_found = True
+
+        # ===== Поиск по месту установки (ТОЧНОЕ совпадение) =====
+        else:
+            location = InstallationLocation.objects.filter(
+                location_title__iexact=q
+            ).first()
+
+            if location:
+                location_id = location.id
+                # +++ НОВЫЙ КОД: очищаем флаг поиска по одной батарее +++
+                request.session.pop('search_only_battery_id', None)
+            else:
+                search_not_found = True
+
+    # Очищаем флаг, если это не поиск
+    if not is_search:
+        request.session.pop('search_only_battery_id', None)
+
     """Отображение страницы журнала с учетом фильтрации по местоположению и типу АБ"""
-    #  Получаем параметр фильтрации по типу из GET-запроса
+    # Получаем параметр фильтрации по типу из GET-запроса
     battery_type_id = request.GET.get('type')
-    soh_filter = request.GET.get('soh', 'all')  # 'all', 'good', 'normal', 'poor', 'critical', 'no_data'
+    soh_filter = request.GET.get('soh', 'all')
     date_filter = request.GET.get('date_filter', 'all')
+    search_query = request.GET.get('q', '')
 
     last_installation_subquery = BatteryInstallationHistory.objects.filter(
         battery=OuterRef("pk")
@@ -291,20 +352,22 @@ def journal_view(request, location_id=None):
         last_location=Subquery(last_installation_subquery)
     )
 
+    # +++ НОВЫЙ КОД: если есть флаг поиска по одной батарее, фильтруем только её +++
+    if is_search and 'search_only_battery_id' in request.session:
+        batteries = batteries.filter(id=request.session['search_only_battery_id'])
+
     # Применяем фильтр по типу АБ, если он задан
     if battery_type_id and battery_type_id != 'all':
         batteries = batteries.filter(battery_type_id=battery_type_id)
     
     # Применяем фильтр по состоянию (SOH)
     if soh_filter != 'all':
-        # Аннотируем батареи последним SOH
         latest_soh_subquery = TestingDBT12D.objects.filter(
             battery=OuterRef('pk')
         ).order_by('-testing_date').values('SOH')[:1]
         
         batteries = batteries.annotate(last_soh_value=Subquery(latest_soh_subquery))
         
-        # Применяем фильтр в зависимости от выбранной категории
         if soh_filter == 'good':
             batteries = batteries.filter(last_soh_value__gte=80)
         elif soh_filter == 'normal':
@@ -316,7 +379,6 @@ def journal_view(request, location_id=None):
         elif soh_filter == 'no_data':
             batteries = batteries.filter(last_soh_value__isnull=True)
     else:
-        # Все состояния - тоже аннотируем для отображения
         latest_soh_subquery = TestingDBT12D.objects.filter(
             battery=OuterRef('pk')
         ).order_by('-testing_date').values('SOH')[:1]
@@ -324,18 +386,15 @@ def journal_view(request, location_id=None):
     
     # Применяем фильтр по дате последнего измерения
     if date_filter != 'all':
-        # Рассчитываем дату порога
         from datetime import datetime, timedelta
         today = datetime.now().date()
 
-        # Аннотируем батареи последней датой измерения
         latest_date_subquery = TestingDBT12D.objects.filter(
             battery=OuterRef('pk')
         ).order_by('-testing_date').values('testing_date')[:1]
         
         batteries = batteries.annotate(last_test_date=Subquery(latest_date_subquery))
         
-        # Фильтруем по дате в зависимости от выбранного варианта
         if date_filter == 'no_data':
             batteries = batteries.filter(last_test_date__isnull=True)
         elif date_filter == 'lt3':
@@ -357,7 +416,6 @@ def journal_view(request, location_id=None):
             threshold_date = today - timedelta(days=365)
             batteries = batteries.filter(last_test_date__lt=threshold_date)
     else:
-        # Все даты - тоже аннотируем для отображения
         latest_date_subquery = TestingDBT12D.objects.filter(
             battery=OuterRef('pk')
         ).order_by('-testing_date').values('testing_date')[:1]
@@ -376,7 +434,7 @@ def journal_view(request, location_id=None):
 
     if location_id:
         selected_location = get_object_or_404(InstallationLocation, id=location_id)
-        parent_locations = get_parent_locations(selected_location)  # Получаем родителей
+        parent_locations = get_parent_locations(selected_location)
         child_location_ids = get_child_locations(location_id)
         locations = InstallationLocation.objects.filter(
             parent_location=location_id, id__in=valid_locations
@@ -407,10 +465,8 @@ def journal_view(request, location_id=None):
 
     journal_data = []
     for index, battery in enumerate(batteries, start=1):
-        # Получаем SOH значение
         soh_value = battery.last_soh_value
         
-        # Форматируем SOH для отображения
         if soh_value is None:
             soh_display = "Нет данных"
             soh_numeric = 0
@@ -447,6 +503,10 @@ def journal_view(request, location_id=None):
         "selected_battery_type": int(battery_type_id) if battery_type_id and battery_type_id != 'all' else None,
         "selected_soh_filter": soh_filter,
         "selected_date_filter": date_filter,
+        "is_search": is_search,
+        "search_query": q,
+        "search_not_found": search_not_found,
+        'is_numeric': search_query.lstrip('-').replace('.', '', 1).isdigit(),
     })
 
 

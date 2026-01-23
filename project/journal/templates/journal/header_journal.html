@@ -1,5 +1,5 @@
 <div class="filter-container-wrapper">
-    <div class="filter-container all-rounded">
+    <div class="filter-container all-rounded" style="height: 100%">
         <h5>Путь к текущему разделу</h5>
         <div class="filter-container-path">
             <a href="{% url 'journal' %}" class="filter-link">Все АБ</a>
@@ -14,7 +14,32 @@
         </div>
     </div>
 
-    <a class="add-battery-btn" href="{% url 'add_battery' %}?selected_location_id={{ selected_location.id }}">Добавить АБ</a>
+    <div class="filter-container all-rounded" style="height: 100%; width: auto">
+        <h5>Поиск</h5>
+        <form method="get" action="{% url 'journal' %}">
+            <div class="filter-container-path" style="flex-wrap: nowrap;">
+                <input type="text" 
+                       name="q" 
+                       value="{{ search_query|default:"" }}" 
+                       placeholder="Поиск по номеру или месту установки АБ"
+                       class="search-input"
+                       {% if is_search %}autofocus{% endif %}>
+
+                <button type="submit" class="search-input-btn">
+                    <i class="fas fa-search"></i> Найти
+                </button>
+
+                {% if is_search and not search_not_found %}
+                    <a href="{% url 'journal' %}" 
+                    class="search-reset-btn">
+                        <i class="fas fa-redo"></i> Сбросить
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+
+    <a class="add-battery-btn" style="height: 100%" href="{% url 'add_battery' %}?selected_location_id={{ selected_location.id }}">Добавить АБ</a>
 </div>
 
 {% if locations %}
