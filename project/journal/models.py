@@ -274,7 +274,7 @@ class BatteryInstallationHistory(models.Model):
         return self.full_representation()
 
     def full_representation(self):
-        return f"{self.battery} установлен в {self.installation_location} на {self.installation_date}"
+        return f"{self.battery} установлен в {self.installation_location}"
 
 
 class TestingDBT12D(models.Model):
