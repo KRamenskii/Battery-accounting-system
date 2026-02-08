@@ -869,13 +869,13 @@ def download_battery_label(request, battery_id):
     # 2. ЗАГРУЗКА ШРИФТА (важно указать путь к существующему файлу)
     try:
         # Загружаем шрифт по локальному пути
-        font_regular = ImageFont.truetype(FONT_REGULAR, 16)
-        font_bold = ImageFont.truetype(FONT_BOLD, 16)
+        font_regular = ImageFont.truetype(FONT_REGULAR, 20)
+        # font_bold = ImageFont.truetype(FONT_BOLD, 16)
     except IOError:
         # Запасной вариант: используем системный шрифт
         try:
             # Попробуем найти стандартный системный шрифт
-            font_big = ImageFont.truetype("arial.ttf", 16)  # Pillow сам ищет в системных папках[citation:1]
+            font_big = ImageFont.truetype("arial.ttf", 20)  # Pillow сам ищет в системных папках[citation:1]
         except IOError:
             # Если и это не сработало, используем базовый (не поддерживает русский)
             font_big = ImageFont.load_default()
@@ -907,7 +907,7 @@ def download_battery_label(request, battery_id):
     text_width_installation = bbox[2] - bbox[0]
     x_title_installation = ((width_px) // 2 - text_width_installation) // 2
     y_title_installation = 55
-    draw.text((x_title_installation, y_title_installation), title_place, fill='black', font=font_bold)
+    draw.text((x_title_installation, y_title_installation), title_place, fill='black', font=font_regular)
 
     # 5. ДОБАВЛЕНИЕ QR-КОДА (если он есть)
     qr_y = 76
@@ -930,13 +930,13 @@ def download_battery_label(request, battery_id):
     # 6. ДОБАВЛЕНИЕ ДАННЫХ НА ИЗОБРАЖЕНИЕ
     # Пример: Добавляем заголовок
     title = f"АБ №{battery.battery_number}"
-    bbox = draw.textbbox((0, 0), title, font=font_bold)
+    bbox = draw.textbbox((0, 0), title, font=font_regular)
     text_width = bbox[2] - bbox[0]
     
     # Рассчитываем позицию для центрирования текста по ширине
     x_title = ((width_px) // 2 - text_width) // 2
     y_title = qr_y + qr_size + 10
-    draw.text((x_title, y_title), title, fill='black', font=font_bold)
+    draw.text((x_title, y_title), title, fill='black', font=font_regular)
 
     # 7. ДОБАВЛЕНИЕ ОСТАЛЬНЫХ ПАРАМЕТРОВ АБ
     x_right = 250
@@ -946,7 +946,7 @@ def download_battery_label(request, battery_id):
     # Тип: обычный текст + жирное значение
     draw_mixed_text(draw, [
         ("Тип: ", font_regular),
-        (f"{ battery.battery_type.manufacturer } { battery.battery_type.battery_type_title }", font_bold)
+        (f"{ battery.battery_type.manufacturer } { battery.battery_type.battery_type_title }", font_regular)
     ], x_right, y)
     
     y += padding_bottom
@@ -955,7 +955,7 @@ def download_battery_label(request, battery_id):
     serial_number = battery.serial_parameters.serial_number if battery.serial_parameters else "Н/Д"
     draw_mixed_text(draw, [
         ("S/N: ", font_regular),
-        (f"{ serial_number }", font_bold)
+        (f"{ serial_number }", font_regular)
     ], x_right, y)
     
     y += padding_bottom
@@ -973,7 +973,7 @@ def download_battery_label(request, battery_id):
         date_manufacter = "Н/Д"
 
     draw_mixed_text(draw, [
-        (f"{ date_manufacter }", font_bold)
+        (f"{ date_manufacter }", font_regular)
     ], x_right, y)
     
     y += padding_bottom
@@ -992,7 +992,7 @@ def download_battery_label(request, battery_id):
         date_measure = "Н/Д"
 
     draw_mixed_text(draw, [
-        (f"{ date_measure }", font_bold)
+        (f"{ date_measure }", font_regular)
     ], x_right, y)
     
     y += padding_bottom
@@ -1003,9 +1003,9 @@ def download_battery_label(request, battery_id):
 
     draw_mixed_text(draw, [
         ("SOH: ", font_regular),
-        (SOH, font_bold),
+        (SOH, font_regular),
         ("SOC: ", font_regular),
-        (SOC, font_bold)
+        (SOC, font_regular)
     ], x_right, y)
 
     y += padding_bottom
@@ -1015,7 +1015,7 @@ def download_battery_label(request, battery_id):
 
     draw_mixed_text(draw, [
         ("Напряжение: ", font_regular),
-        (vol_text, font_bold)
+        (vol_text, font_regular)
     ], x_right, y)
 
     y += padding_bottom
@@ -1025,7 +1025,7 @@ def download_battery_label(request, battery_id):
 
     draw_mixed_text(draw, [
         ("R ном: ", font_regular),
-        (R_nom, font_bold)
+        (R_nom, font_regular)
     ], x_right, y)
     
     y += padding_bottom
@@ -1035,7 +1035,7 @@ def download_battery_label(request, battery_id):
 
     draw_mixed_text(draw, [
         ("R изм: ", font_regular),
-        (R_meas, font_bold)
+        (R_meas, font_regular)
     ], x_right, y)
     
     # 8. СОХРАНЕНИЕ ИЗОБРАЖЕНИЯ В БУФЕР И ОТПРАВКА КЛИЕНТУ
