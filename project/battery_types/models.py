@@ -54,6 +54,7 @@ class BatteryType(models.Model):
     class Meta:
         verbose_name = 'Тип АБ'
         verbose_name_plural = 'Типы АБ'
+        ordering = ['manufacturer', '-nominal_capacity_20']
         # Уникальность по комбинации производителя и модели
         constraints = [
             models.UniqueConstraint(
