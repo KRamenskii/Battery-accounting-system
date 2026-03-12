@@ -57,6 +57,7 @@ class InstallationLocation(models.Model):
     class Meta:
         verbose_name = "Место установки"
         verbose_name_plural = "Места установки"
+        ordering = ['location_title']
         constraints = [
             models.UniqueConstraint(
                 fields=['location_title', 'location_type', 'system_name'],
