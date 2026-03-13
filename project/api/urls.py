@@ -20,4 +20,6 @@ urlpatterns = [
     # Apps
     path('battery-types/', include('api.battery_types.urls')),
     path('serial-parameters/', include('api.serial_parameters.urls')),
+    path('installation-locations/', include('api.installation_locations.urls')),
+    path('battery/', include('api.battery.urls')),
 ]
