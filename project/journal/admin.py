@@ -35,7 +35,7 @@ class BatteryInstallationHistory(admin.ModelAdmin):
 @admin.register(Battery)
 class BatteryAdmin(admin.ModelAdmin):
     form = BatteryAdminForm  # Используем нашу кастомную форму
-    list_display = ('battery_number', 'battery_type', 'get_serial_number', 'get_manufacture_date', 'acceptance_date')
+    list_display = ('id', 'battery_number', 'battery_type', 'get_serial_number', 'get_manufacture_date', 'acceptance_date')
     list_filter = ('battery_type',)
     search_fields = ('battery_number',)
     

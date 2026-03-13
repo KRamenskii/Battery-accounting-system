@@ -3,6 +3,8 @@ import hashlib
 from io import BytesIO
 from django.core.files.base import ContentFile
 from django.db import models
+from django.db.models.functions import Cast
+from django.db.models import IntegerField
 import os
 
 class InstallationLocation(models.Model):
@@ -163,6 +165,8 @@ class Battery(models.Model):
     class Meta:
         verbose_name = "АБ"
         verbose_name_plural = "АБ"
+        # ordering = ['battery_number']
+        ordering = [Cast('battery_number', IntegerField()).asc(nulls_last=True)]
 
     def __str__(self):
         return self.full_representation()
